@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/debug/track_builder.dart';
 import 'package:flutter_factory/game/equipment/crafter.dart';
 import 'package:flutter_factory/game/equipment/dispenser.dart';
 import 'package:flutter_factory/game/equipment/sorter.dart';
@@ -166,7 +167,7 @@ class InfoWindow extends StatelessWidget {
     Widget _child;
 
     if(_bloc.currentWindow == GameWindows.settings){
-      _child = _showSettings();
+      _child = _showSettings(context);
     }else{
       _child = _showModify(context);
     }
@@ -752,29 +753,29 @@ class InfoWindow extends StatelessWidget {
     );
   }
 
-  Widget _showSettings(){
+  Widget _showSettings(BuildContext context){
     return Container(
-      child: Row(
+      margin: const EdgeInsets.all(36.0),
+      height: 300.0,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FloatingActionButton(
                 onPressed: _bloc.increaseGameSpeed,
-                mini: true,
                 child: Icon(Icons.remove),
               ),
               Text('Game speed: ${_bloc.gameSpeed}'),
               FloatingActionButton(
                 onPressed: _bloc.decreaseGameSpeed,
-                mini: true,
                 child: Icon(Icons.add),
               ),
             ],
           ),
-
-          Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text('Show arrows'),
               FloatingActionButton(
@@ -785,7 +786,48 @@ class InfoWindow extends StatelessWidget {
                 child: Icon(_bloc.showArrows ? Icons.visibility : Icons.visibility_off),
               ),
             ],
-          )
+          ),
+
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton(
+                onPressed: (){
+                  _bloc.equipment.clear();
+                  _bloc.equipment.addAll(buildDummy());
+                },
+                child: Text('Dummy'),
+              ),
+              FlatButton(
+                onPressed: (){
+                  _bloc.equipment.clear();
+                  _bloc.equipment.addAll(buildChipProduction());
+                },
+                child: Text('Chip production'),
+              ),
+              FlatButton(
+                onPressed: (){
+                  _bloc.equipment.clear();
+                  _bloc.equipment.addAll(buildStressTestChipProduction());
+                },
+                child: Text('Stress test'),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 28.0),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80.0,
+            child: RaisedButton(
+              color: Colors.red,
+              onPressed: () {
+                _bloc.equipment.clear();
+              },
+              child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+            ),
+          ),
         ],
       ),
     );

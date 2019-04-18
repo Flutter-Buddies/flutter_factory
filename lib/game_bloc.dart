@@ -20,7 +20,7 @@ enum GameWindows{
 class GameBloc{
   GameBloc(){
     _waitForTick();
-    _equipment.addAll(buildChipProduction());
+    _equipment.addAll(buildStressTestChipProduction());
   }
 
   Duration _duration = Duration();
