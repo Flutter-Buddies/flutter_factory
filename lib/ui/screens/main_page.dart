@@ -185,8 +185,11 @@ class InfoWindow extends StatelessWidget {
     final List<Widget> _options = <Widget>[];
 
     if(_bloc.selectedTiles.isEmpty){
-      return Center(
-        child: Text('Nothing selected!'),
+      return Container(
+        height: 300.0,
+        child: Center(
+          child: Text('Nothing selected.', style: Theme.of(context).textTheme.headline.copyWith(color: Colors.black26, fontWeight: FontWeight.w900)),
+        ),
       );
     }
 
@@ -295,7 +298,9 @@ class InfoWindow extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-                  child: Text('${_equipment.type.toString().replaceAll('EquipmentType.', '').toUpperCase()}'),
+                  child: Text('${_equipment.type.toString().replaceAll('EquipmentType.', '').toUpperCase()}',
+                    style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0),
+                  ),
                 ),
               ],
             ),
