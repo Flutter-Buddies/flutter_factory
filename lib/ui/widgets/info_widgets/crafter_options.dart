@@ -72,8 +72,8 @@ class CrafterOptionsWidget extends StatelessWidget {
                   return DropdownMenuItem<FactoryMaterialType>(
                     value: fmt,
                     child: Container(
-                      margin: const EdgeInsets.all(12.0),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Row(
                             children: <Widget>[

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/material/aluminium.dart';
 import 'package:flutter_factory/game/material/copper.dart';
 import 'package:flutter_factory/game/material/diamond.dart';
 import 'package:flutter_factory/game/material/gold.dart';
@@ -52,6 +53,8 @@ class Dispenser extends FactoryEquipment{
         return Diamond.fromOffset(pointingOffset);
       case FactoryMaterialType.copper:
         return Copper.fromOffset(pointingOffset);
+      case FactoryMaterialType.aluminium:
+        return Aluminium.fromOffset(pointingOffset);
       default:
         return Iron.fromOffset(pointingOffset);
     }

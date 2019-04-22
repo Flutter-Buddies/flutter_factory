@@ -36,7 +36,7 @@ class Crafter extends FactoryEquipment{
   @override
   List<FactoryMaterial> tick() {
     counter++;
-    isCrafting = counter % tickDuration != 0;
+    isCrafting = isCrafting && counter % tickDuration != 0;
 
     if(isCrafting){
       return <FactoryMaterial>[];

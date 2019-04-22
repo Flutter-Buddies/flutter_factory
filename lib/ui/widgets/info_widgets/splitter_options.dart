@@ -37,10 +37,7 @@ class SplitterOptionsWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      ChoiceChip(
-                        label: Text('${d.toString().replaceAll('Direction.', '').toUpperCase()}'),
-                        selected: false,
-                      ),
+                      Text('${d.toString().replaceAll('Direction.', '').toUpperCase()}'),
                       FlatButton(
                         onPressed: null,
                         child: Text('EntryPoint'),
@@ -55,12 +52,7 @@ class SplitterOptionsWidget extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    ActionChip(
-                      label: Text('${d.toString().replaceAll('Direction.', '').toUpperCase()} - (${splitter.directions.where((Direction _d) => _d == d).length})'),
-                      onPressed: (){
-
-                      },
-                    ),
+                    Text('${d.toString().replaceAll('Direction.', '').toUpperCase()}\n[${splitter.directions.where((Direction _d) => _d == d).length}]', textAlign: TextAlign.center,),
                     FlatButton.icon(
                       onPressed: (){
                         splitter.directions.add(d);
