@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/craftables/computer_chip.dart';
+import 'package:flutter_factory/game/craftables/processor.dart';
+import 'package:flutter_factory/game/material/aluminium.dart';
 import 'package:flutter_factory/game/material/copper.dart';
 import 'package:flutter_factory/game/material/diamond.dart';
 import 'package:flutter_factory/game/material/gold.dart';
@@ -21,18 +23,22 @@ abstract class FactoryMaterial{
   FactoryMaterialType type;
 
 
-  static FactoryMaterial getFromType(FactoryMaterialType type){
+  static FactoryMaterial getFromType(FactoryMaterialType type, {Offset offset = Offset.zero}){
     switch(type){
       case FactoryMaterialType.iron:
-        return Iron.fromOffset(Offset.zero);
+        return Iron.fromOffset(offset);
       case FactoryMaterialType.copper:
-        return Copper.fromOffset(Offset.zero);
+        return Copper.fromOffset(offset);
       case FactoryMaterialType.diamond:
-        return Diamond.fromOffset(Offset.zero);
+        return Diamond.fromOffset(offset);
       case FactoryMaterialType.gold:
-        return Gold.fromOffset(Offset.zero);
+        return Gold.fromOffset(offset);
+      case FactoryMaterialType.aluminium:
+        return Aluminium.fromOffset(offset);
       case FactoryMaterialType.computerChip:
-        return ComputerChip.fromOffset(Offset.zero);
+        return ComputerChip.fromOffset(offset);
+      case FactoryMaterialType.processor:
+        return Processor.fromOffset(offset);
       default:
         return null;
     }
@@ -41,18 +47,21 @@ abstract class FactoryMaterial{
   bool get isRawMaterial => type == FactoryMaterialType.iron
     || type == FactoryMaterialType.copper
     || type == FactoryMaterialType.gold
-    || type == FactoryMaterialType.diamond;
+    || type == FactoryMaterialType.diamond
+    || type == FactoryMaterialType.aluminium;
 
   Color getColor(){
     switch(type){
       case FactoryMaterialType.iron:
-        return Colors.grey.shade200;
+        return Colors.grey.shade300;
       case FactoryMaterialType.copper:
         return Colors.orange;
       case FactoryMaterialType.diamond:
         return Colors.blue;
       case FactoryMaterialType.gold:
         return Colors.yellow;
+      case FactoryMaterialType.aluminium:
+        return Colors.grey.shade100;
       default:
         return Colors.red;
     }
@@ -65,6 +74,11 @@ abstract class FactoryMaterial{
           FactoryMaterialType.iron: 2,
           FactoryMaterialType.gold: 1
         };
+      case FactoryMaterialType.processor:
+        return <FactoryMaterialType, int>{
+          FactoryMaterialType.computerChip: 2,
+          FactoryMaterialType.aluminium: 2
+        };
       /// Raw materials don't have recipe
       default:
         return <FactoryMaterialType, int>{};
@@ -74,6 +88,7 @@ abstract class FactoryMaterial{
   static bool isRaw(FactoryMaterialType type){
     switch(type){
       case FactoryMaterialType.computerChip:
+      case FactoryMaterialType.processor:
         return false;
       /// Raw materials don't have recipe
       default:
@@ -95,7 +110,7 @@ abstract class FactoryMaterial{
 }
 
 enum FactoryMaterialType{
-  iron, copper, diamond, gold, computerChip
+  iron, copper, diamond, gold, aluminium, computerChip, processor
 }
 
 class FactoryRecipe{

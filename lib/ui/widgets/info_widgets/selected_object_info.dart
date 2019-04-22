@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
+
+class SelectedObjectInfoWidget extends StatelessWidget {
+  SelectedObjectInfoWidget({this.progress = 0.0, @required this.equipment, Key key}) : super(key: key);
+
+  final double progress;
+  final FactoryEquipment equipment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80.0,
+      margin: EdgeInsets.symmetric(vertical: 36.0, horizontal: 24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 36.0),
+                child: CustomPaint(
+                  painter: ObjectPainter(
+                    progress,
+                    equipment: equipment
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
+                child: Text('${equipment.type.toString().replaceAll('EquipmentType.', '').toUpperCase()}',
+                  style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0),
+                ),
+              ),
+            ],
+          ),
+          Divider(),
+        ],
+      ),
+    );
+  }
+}

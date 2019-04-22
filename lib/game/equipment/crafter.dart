@@ -17,7 +17,15 @@ class Crafter extends FactoryEquipment{
 
   bool isCrafting = false;
 
+  int getRecipeAmount(FactoryMaterialType fmt){
+    return _recipe[fmt] ?? 0;
+  }
+
   bool get canCraft{
+    if(isCrafting){
+      return false;
+    }
+
     bool canCraft = true;
     _recipe.keys.forEach((FactoryMaterialType fmt){
       canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterial fm) => fm.type == fmt).length;
@@ -27,10 +35,10 @@ class Crafter extends FactoryEquipment{
 
   @override
   List<FactoryMaterial> tick() {
+    counter++;
     isCrafting = counter % tickDuration != 0;
 
     if(isCrafting){
-      counter++;
       return <FactoryMaterial>[];
     }
 
@@ -54,13 +62,14 @@ class Crafter extends FactoryEquipment{
 
   void _craft(){
     if(canCraft){
+      isCrafting = true;
       _recipe.keys.forEach((FactoryMaterialType fmt){
         for(int j = 0; j < _recipe[fmt]; j++){
           objects.remove(objects.firstWhere((FactoryMaterial fm) => fm.type == fmt, orElse: () => null));
         }
       });
 
-      _crafted = ComputerChip.fromOffset(pointingOffset);
+      _crafted = FactoryMaterial.getFromType(craftMaterial, offset: pointingOffset);
     }
   }
 
@@ -78,7 +87,7 @@ class Crafter extends FactoryEquipment{
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(isCrafting || _crafted == null){
+    if((counter + 1) % tickDuration != 0 || _crafted == null){
       return;
     }
 
