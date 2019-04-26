@@ -16,8 +16,10 @@ import 'package:flutter_factory/ui/widgets/info_widgets/crafter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/dispenser_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_footer.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dart';
+import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/sorter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
+import 'package:dropdown_menu/dropdown_menu.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({Key key}) : super(key: key);
@@ -66,7 +68,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     _bloc ??= GameBloc();
 
     return Backdrop(
@@ -206,6 +208,10 @@ class InfoWindow extends StatelessWidget {
       return BuildEquipmentWidget(_bloc);
     }
 
+    Widget _showSellerOptions(){
+      return SellerInfo(equipment: _equipment);
+    }
+
     Widget _showSelectedInfo(){
       return SelectedObjectInfoWidget(equipment: _equipment, progress: _bloc.progress);
     }
@@ -227,7 +233,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showRotationOptions(){
-      return SelectedObjectFooter(_bloc, equipment: _equipment);
+      return SelectedObjectFooter(_bloc, equipment: _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList());
     }
 
     if(_equipment == null){
@@ -250,6 +256,9 @@ class InfoWindow extends StatelessWidget {
         break;
       case EquipmentType.sorter:
         _options.add(_showSorterOptions());
+        break;
+      case EquipmentType.seller:
+        _options.add(_showSellerOptions());
         break;
     }
 

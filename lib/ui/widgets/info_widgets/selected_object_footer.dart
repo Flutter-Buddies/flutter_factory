@@ -7,7 +7,7 @@ class SelectedObjectFooter extends StatelessWidget {
   SelectedObjectFooter(this._bloc, {@required this.equipment, Key key}) : super(key: key);
 
   final GameBloc _bloc;
-  final FactoryEquipment equipment;
+  final List<FactoryEquipment> equipment;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,9 @@ class SelectedObjectFooter extends StatelessWidget {
                         child: FloatingActionButton(
                           child: Icon(Icons.rotate_left),
                           onPressed: (){
-                            equipment.direction = Direction.values[(equipment.direction.index - 1) % Direction.values.length];
+                            equipment.forEach((FactoryEquipment fe){
+                              fe.direction = Direction.values[(fe.direction.index - 1) % Direction.values.length];
+                            });
                           },
                         ),
                       ),
@@ -41,7 +43,9 @@ class SelectedObjectFooter extends StatelessWidget {
                         child: FloatingActionButton(
                           child: Icon(Icons.rotate_right),
                           onPressed: (){
-                            equipment.direction = Direction.values[(equipment.direction.index + 1) % Direction.values.length];
+                            equipment.forEach((FactoryEquipment fe){
+                              fe.direction = Direction.values[(fe.direction.index + 1) % Direction.values.length];
+                            });
                           },
                         ),
                       ),
@@ -57,7 +61,11 @@ class SelectedObjectFooter extends StatelessWidget {
             height: 80.0,
             child: RaisedButton(
               color: Colors.red,
-              onPressed: () => _bloc.equipment.remove(equipment),
+              onPressed: (){
+                equipment.forEach((FactoryEquipment fe){
+                  _bloc.equipment.remove(fe);
+                });
+              },
               child: Text('DELETE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
             ),
           ),

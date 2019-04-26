@@ -57,4 +57,13 @@ class Roller extends FactoryEquipment{
 
     canvas.restore();
   }
+
+  @override
+  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, int tickDuration}) {
+    return Roller(
+      coordinates ?? this.coordinates,
+      direction ?? this.direction,
+      rollerTickDuration: tickDuration ?? this.tickDuration
+    );
+  }
 }

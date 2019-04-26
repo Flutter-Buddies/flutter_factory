@@ -7,6 +7,8 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 abstract class FactoryEquipment{
   FactoryEquipment(this.coordinates, this.direction, this.type, {this.tickDuration = 1});
 
+  FactoryEquipment copyWith({Coordinates coordinates, Direction direction});
+
   Coordinates coordinates;
   Direction direction;
   EquipmentType type;
@@ -116,5 +118,5 @@ enum Direction{
 }
 
 enum EquipmentType{
-  dispenser, roller, crafter, splitter, sorter
+  dispenser, roller, crafter, splitter, sorter, seller
 }

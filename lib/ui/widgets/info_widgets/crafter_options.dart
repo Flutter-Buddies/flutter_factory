@@ -15,49 +15,6 @@ class CrafterOptionsWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text('Craft queue:'),
-              Column(
-                children: FactoryMaterialType.values.map((FactoryMaterialType fmt){
-                  return Chip(
-                    label: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: CustomPaint(
-                                painter: ObjectPainter(
-                                  progress,
-                                  material: FactoryMaterial.getFromType(fmt)
-                                ),
-                              ),
-                            ),
-                            Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
-                          ],
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 4.0),
-                          height: 26.0,
-                          width: 96.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20.0),
-                            color: Colors.grey.shade800
-                          ),
-                          child: Center(child: Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              )
-            ],
-          ),
-          SizedBox(height: 28.0),
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,6 +74,49 @@ class CrafterOptionsWidget extends StatelessWidget {
                     child: Container(
                       margin: const EdgeInsets.all(12.0),
                       child: Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}')
+                    ),
+                  );
+                }).toList(),
+              )
+            ],
+          ),
+          SizedBox(height: 28.0),
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('Craft queue:'),
+              Column(
+                children: FactoryMaterialType.values.map((FactoryMaterialType fmt){
+                  return Chip(
+                    label: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: CustomPaint(
+                                painter: ObjectPainter(
+                                  progress,
+                                  material: FactoryMaterial.getFromType(fmt)
+                                ),
+                              ),
+                            ),
+                            Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
+                          ],
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 4.0),
+                          height: 26.0,
+                          width: 96.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: Colors.grey.shade800
+                          ),
+                          child: Center(child: Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
+                        ),
+                      ],
                     ),
                   );
                 }).toList(),

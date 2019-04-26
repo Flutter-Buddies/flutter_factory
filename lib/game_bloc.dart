@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_factory/debug/track_builder.dart';
 import 'package:flutter_factory/game/equipment/crafter.dart';
 import 'package:flutter_factory/game/equipment/roller.dart';
+import 'package:flutter_factory/game/equipment/seller.dart';
 import 'package:flutter_factory/game/equipment/sorter.dart';
 import 'package:flutter_factory/game/equipment/splitter.dart';
 import 'package:flutter_factory/game/equipment/dispenser.dart';
@@ -56,21 +57,30 @@ class GameBloc{
   }
 
   void buildSelected(){
+    void _addEquipment(FactoryEquipment e){
+      selectedTiles.forEach((Coordinates c){
+        _equipment.add(e.copyWith(coordinates: c));
+      });
+    }
+
     switch(buildSelectedEquipmentType){
       case EquipmentType.dispenser:
-        _equipment.add(Dispenser(selectedTiles.first, buildSelectedEquipmentDirection, FactoryMaterialType.iron));
+        _addEquipment(Dispenser(Coordinates(0, 0), buildSelectedEquipmentDirection, FactoryMaterialType.iron));
         break;
       case EquipmentType.roller:
-        _equipment.add(Roller(selectedTiles.first, buildSelectedEquipmentDirection));
+        _addEquipment(Roller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
       case EquipmentType.crafter:
-        _equipment.add(Crafter(selectedTiles.first, buildSelectedEquipmentDirection, FactoryMaterialType.computerChip));
+        _addEquipment(Crafter(Coordinates(0, 0), buildSelectedEquipmentDirection, FactoryMaterialType.computerChip));
         break;
       case EquipmentType.splitter:
-        _equipment.add(Splitter(selectedTiles.first, buildSelectedEquipmentDirection, <Direction>[buildSelectedEquipmentDirection]));
+        _addEquipment(Splitter(Coordinates(0, 0), buildSelectedEquipmentDirection, <Direction>[buildSelectedEquipmentDirection]));
         break;
       case EquipmentType.sorter:
-        _equipment.add(Sorter(selectedTiles.first, buildSelectedEquipmentDirection, <FactoryMaterialType, Direction>{}));
+        _addEquipment(Sorter(Coordinates(0, 0), buildSelectedEquipmentDirection, <FactoryMaterialType, Direction>{}));
+        break;
+      case EquipmentType.seller:
+        _addEquipment(Seller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
     }
   }
@@ -93,6 +103,7 @@ class GameBloc{
   }
 
   List<FactoryMaterial> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterial>[], (List<FactoryMaterial> _folded, List<FactoryMaterial> _m) => _folded..addAll(_m)).toList();
+  List<FactoryMaterial> get getLastExcessMaterial => _excessMaterial.first;
   List<FactoryEquipment> get equipment => _equipment;
 
   void _tick(){
@@ -133,7 +144,7 @@ class GameBloc{
   final List<FactoryEquipment> _equipment = <FactoryEquipment>[];
   final List<List<FactoryMaterial>> _excessMaterial = <List<FactoryMaterial>>[];
 
-  final int _excessMaterialCleanup = 6;
+  final int _excessMaterialCleanup = 2;
 
   Stream<GameUpdate> get gameUpdate => _gameUpdate.stream;
 

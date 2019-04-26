@@ -83,7 +83,74 @@ class Sorter extends FactoryEquipment{
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.blueGrey.shade500);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade700);
+
+    Paint _gatesPaint = Paint();
+    _gatesPaint.color = Colors.grey.shade600;
+
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.south) != -1){
+      _gatesPaint.color = Colors.green;
+    }else{
+      _gatesPaint.color = Colors.grey.shade600;
+    }
+
+    canvas.drawRRect(RRect.fromRectAndCorners(
+      Rect.fromPoints(
+        Offset(size * 0.02, size / 2.2),
+        Offset(-size * 0.02, size * 0.25),
+      ),
+      topRight: Radius.circular(6.0),
+      topLeft: Radius.circular(6.0)
+    ), _gatesPaint);
+
+
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.north) != -1){
+      _gatesPaint.color = Colors.green;
+    }else{
+      _gatesPaint.color = Colors.grey.shade600;
+    }
+
+    canvas.drawRRect(RRect.fromRectAndCorners(
+      Rect.fromPoints(
+        Offset(-size * 0.02, -size / 2.2),
+        Offset(size * 0.02, -size * 0.25),
+      ),
+      bottomLeft: Radius.circular(6.0),
+      bottomRight: Radius.circular(6.0)
+    ), _gatesPaint);
+
+
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.east) != -1){
+      _gatesPaint.color = Colors.green;
+    }else{
+      _gatesPaint.color = Colors.grey.shade600;
+    }
+
+    canvas.drawRRect(RRect.fromRectAndCorners(
+      Rect.fromPoints(
+        Offset(size / 2.2, size * 0.02),
+        Offset(size * 0.25, -size * 0.02),
+      ),
+      topLeft: Radius.circular(6.0),
+      bottomLeft: Radius.circular(6.0),
+    ), _gatesPaint);
+
+
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.west) != -1){
+      _gatesPaint.color = Colors.green;
+    }else{
+      _gatesPaint.color = Colors.grey.shade600;
+    }
+
+    canvas.drawRRect(RRect.fromRectAndCorners(
+      Rect.fromPoints(
+        Offset(-size / 2.2, -size * 0.02),
+        Offset(-size * 0.25, size * 0.02),
+      ),
+      topRight: Radius.circular(6.0),
+      bottomRight: Radius.circular(6.0),
+    ), _gatesPaint);
+
     canvas.restore();
   }
 
@@ -110,5 +177,14 @@ class Sorter extends FactoryEquipment{
 
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
+  }
+
+  @override
+  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
+    return Sorter(
+      coordinates ?? this.coordinates,
+      direction ?? this.direction,
+      directions ?? this.directions,
+    );
   }
 }

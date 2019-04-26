@@ -16,6 +16,7 @@ class Crafter extends FactoryEquipment{
   FactoryMaterial _crafted;
 
   bool isCrafting = false;
+  bool _didToggle = false;
 
   int getRecipeAmount(FactoryMaterialType fmt){
     return _recipe[fmt] ?? 0;
@@ -33,10 +34,17 @@ class Crafter extends FactoryEquipment{
     return canCraft;
   }
 
+  bool _temp;
+
   @override
   List<FactoryMaterial> tick() {
     counter++;
+    _temp = isCrafting && counter % tickDuration == tickDuration - 1;
+
     isCrafting = isCrafting && counter % tickDuration != 0;
+    _didToggle = _temp == isCrafting;
+
+    print('Did toggle: $isCrafting - $_didToggle - $counter');
 
     if(isCrafting){
       return <FactoryMaterial>[];
@@ -70,6 +78,8 @@ class Crafter extends FactoryEquipment{
       });
 
       _crafted = FactoryMaterial.getFromType(craftMaterial, offset: pointingOffset);
+    }else{
+      _didToggle = false;
     }
   }
 
@@ -77,8 +87,17 @@ class Crafter extends FactoryEquipment{
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.grey.shade900);
-    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
+//    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.grey.shade900);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade900);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(Colors.red, Colors.green, _didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.grey.shade900);
+
+
+    canvas.save();
+    canvas.scale(0.6);
+    FactoryMaterial.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
+    canvas.restore();
+//    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
     canvas.restore();
   }
 
@@ -107,5 +126,15 @@ class Crafter extends FactoryEquipment{
     }
 
     _crafted.drawMaterial(offset + Offset(_moveX + _crafted.offsetX, _moveY + _crafted.offsetY), canvas, progress);
+  }
+
+  @override
+  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterial craftMaterial}) {
+    return Crafter(
+      coordinates ?? this.coordinates,
+      direction ?? this.direction,
+      craftMaterial ?? this.craftMaterial,
+      craftingTickDuration: tickDuration ?? this.tickDuration
+    );
   }
 }

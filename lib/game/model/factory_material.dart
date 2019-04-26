@@ -10,13 +10,14 @@ import 'package:flutter_factory/game/material/gold.dart';
 import 'package:flutter_factory/game/material/iron.dart';
 
 abstract class FactoryMaterial{
-  FactoryMaterial(this.x, this.y, this.type, {this.size = 8.0}) : offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
+  FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0}) : offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
 
   double x;
   double y;
 
   double size;
 
+  final double value;
   final double offsetX;
   final double offsetY;
 
@@ -96,15 +97,15 @@ abstract class FactoryMaterial{
     }
   }
 
-  void drawMaterial(Offset offset, Canvas canvas, double progress){
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     canvas.drawRect(
       Rect.fromCircle(center: offset, radius: size + 0.2),
-      Paint()..color = Colors.black
+      Paint()..color = Colors.black.withOpacity(opacity)
     );
 
     canvas.drawRect(
       Rect.fromCircle(center: offset, radius: size),
-      Paint()..color = getColor()
+      Paint()..color = getColor().withOpacity(opacity)
     );
   }
 }

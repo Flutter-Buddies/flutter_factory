@@ -107,4 +107,13 @@ class Splitter extends FactoryEquipment{
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
   }
+
+  @override
+  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
+    return Splitter(
+      coordinates ?? this.coordinates,
+      direction ?? this.direction,
+      directions ?? this.directions,
+    );
+  }
 }

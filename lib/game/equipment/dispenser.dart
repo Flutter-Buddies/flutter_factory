@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TextStyle;
 import 'package:flutter_factory/game/material/aluminium.dart';
 import 'package:flutter_factory/game/material/copper.dart';
 import 'package:flutter_factory/game/material/diamond.dart';
@@ -20,10 +20,12 @@ class Dispenser extends FactoryEquipment{
   int dispenseAmount;
   List<FactoryMaterial> _materials = <FactoryMaterial>[];
 
+  bool _didToggle = false;
 
   @override
   List<FactoryMaterial> tick() {
     counter++;
+    _didToggle = tickDuration > 1 && (counter % tickDuration == 0 || counter % tickDuration == tickDuration - 1);
 
     if(_materials.isNotEmpty){
       final List<FactoryMaterial> _fml = <FactoryMaterial>[]..addAll(_materials);
@@ -64,7 +66,24 @@ class Dispenser extends FactoryEquipment{
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.red);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade200);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(Colors.red, Colors.green, _didToggle ? (counter % tickDuration == tickDuration - 1 ? progress : 1 - progress) : (counter % tickDuration == 0 ? 1 : 0)));
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.grey.shade200);
+
+    canvas.save();
+    canvas.scale(0.6);
+    FactoryMaterial.getFromType(dispenseMaterial).drawMaterial(Offset.zero, canvas, progress);
+//    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
+//    _paragraphBuilder.pushStyle(TextStyle(color: Colors.black87));
+//    _paragraphBuilder.addText(dispenseMaterial.toString().replaceAll('FactoryMaterialType.', ''));
+//
+//    Paragraph _paragraph = _paragraphBuilder.build();
+//    _paragraph.layout(ParagraphConstraints(width: size));
+//
+//    canvas.drawParagraph(_paragraph, Offset(-size / 2, size / 6));
+
+    canvas.restore();
+
     canvas.restore();
   }
 
@@ -95,5 +114,16 @@ class Dispenser extends FactoryEquipment{
     _materials.forEach((FactoryMaterial fm){
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
+  }
+
+  @override
+  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialType dispenseMaterial, int dispenseAmount}) {
+    return Dispenser(
+      coordinates ?? this.coordinates,
+      direction ?? this.direction,
+      dispenseMaterial ?? this.dispenseMaterial,
+      dispenseTickDuration: tickDuration ?? this.tickDuration,
+      dispenseAmount: dispenseAmount ?? this.dispenseAmount,
+    );
   }
 }

@@ -51,8 +51,13 @@ class _GameWidgetState extends State<GameWidget> {
             if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
             }else{
-              _selected.clear();
-              _selected.add(_coordinate);
+              if(_selected.isNotEmpty && _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _selected.first, orElse: () => null) != null){
+                _selected.clear();
+              }
+
+              if(_selected.isEmpty || _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null) == null){
+                _selected.add(_coordinate);
+              }
             }
 
 
@@ -60,7 +65,7 @@ class _GameWidgetState extends State<GameWidget> {
             _selected.forEach((Coordinates c) => print('X: ${c.x} / Y: ${c.y}'));
           },
           child: CustomPaint(
-            painter: GamePainter(30, 30, _bloc.progress, _gameCameraPosition, _cubeSize, selectedTiles: _selected, equipment: _bloc.equipment, showArrows: _bloc.showArrows, material: _bloc.getExcessMaterial),
+            painter: GamePainter(_bloc, 30, 30, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
             child: const SizedBox.expand(),
           ),
         );
@@ -70,18 +75,15 @@ class _GameWidgetState extends State<GameWidget> {
 }
 
 class GamePainter extends CustomPainter{
-  const GamePainter(this.rows, this.columns, this.progress, this.camera, this.cubeSize, {this.equipment, this.selectedTiles, this.showArrows = false, this.material, Listenable repaint}) : super(repaint: repaint);
+  const GamePainter(this.bloc, this.rows, this.columns, this.camera, this.cubeSize, {this.selectedTiles, Listenable repaint}) : super(repaint: repaint);
 
   final int rows;
   final int columns;
   final double cubeSize;
-  final List<FactoryEquipment> equipment;
-  final List<FactoryMaterial> material;
-  final double progress;
+  final GameBloc bloc;
 
   final List<Coordinates> selectedTiles;
   final GameCameraPosition camera;
-  final bool showArrows;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -105,40 +107,42 @@ class GamePainter extends CustomPainter{
 
     for(int x = 0; x < rows; x++){
       for(int y = 0; y < columns; y++){
-        final FactoryEquipment _equipment = equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
+        final FactoryEquipment _equipment = bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
 
         if(_equipment != null){
-          _equipment.drawTrack(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, progress);
+          _equipment.drawTrack(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, bloc.progress);
         }
       }
     }
 
     for(int x = 0; x < rows; x++){
       for(int y = 0; y < columns; y++){
-        final FactoryEquipment _equipment = equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
+        final FactoryEquipment _equipment = bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
 
         if(_equipment != null){
-          _equipment.drawMaterial(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, progress);
+          _equipment.drawMaterial(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, bloc.progress);
         }
       }
     }
 
     for(int x = 0; x < rows; x++){
       for(int y = 0; y < columns; y++){
-        FactoryEquipment _equipment = equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
-        List<FactoryMaterial> _material = material.where((FactoryMaterial fe) => fe.x.round() == x && fe.y.round() == y).toList();
+        FactoryEquipment _equipment = bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
+        List<FactoryMaterial> _material = bloc.getExcessMaterial.where((FactoryMaterial fe) => fe.x.round() == x && fe.y.round() == y).toList();
 
-        if(_material.isNotEmpty){
-          _material.forEach((FactoryMaterial fm){
-            fm.drawMaterial(Offset(fm.offsetX + x * cubeSize, fm.offsetY + y * cubeSize), canvas, progress);
-          });
-        }
+        _material.forEach((FactoryMaterial fm){
+          if(bloc.getLastExcessMaterial.contains(fm)){
+            fm.drawMaterial(Offset(fm.offsetX + x * cubeSize, fm.offsetY + y * cubeSize), canvas, bloc.progress, opacity: 1.0 - bloc.progress);
+          }else{
+            fm.drawMaterial(Offset(fm.offsetX + x * cubeSize, fm.offsetY + y * cubeSize), canvas, bloc.progress);
+          }
+        });
 
 
         if(_equipment != null){
-          _equipment.drawEquipment(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, progress);
+          _equipment.drawEquipment(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, bloc.progress);
 
-          if(showArrows){
+          if(bloc.showArrows){
             _paintArrows(x, y, canvas, _equipment);
           }
         }
