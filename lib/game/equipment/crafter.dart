@@ -12,7 +12,6 @@ class Crafter extends FactoryEquipment{
   final Map<FactoryMaterialType, int> _recipe;
   FactoryMaterialType craftMaterial;
 
-  int counter = 0;
   FactoryMaterial _crafted;
 
   bool isCrafting = false;
@@ -38,13 +37,10 @@ class Crafter extends FactoryEquipment{
 
   @override
   List<FactoryMaterial> tick() {
-    counter++;
     _temp = isCrafting && counter % tickDuration == tickDuration - 1;
 
     isCrafting = isCrafting && counter % tickDuration != 0;
     _didToggle = _temp == isCrafting;
-
-    print('Did toggle: $isCrafting - $_didToggle - $counter');
 
     if(isCrafting){
       return <FactoryMaterial>[];
@@ -78,6 +74,7 @@ class Crafter extends FactoryEquipment{
       });
 
       _crafted = FactoryMaterial.getFromType(craftMaterial, offset: pointingOffset);
+      _crafted.direction = direction;
     }else{
       _didToggle = false;
     }

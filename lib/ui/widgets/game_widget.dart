@@ -42,7 +42,11 @@ class _GameWidgetState extends State<GameWidget> {
           },
           onScaleUpdate: (ScaleUpdateDetails sud){
             _gameCameraPosition.scale = _scaleEnd * sud.scale;
-            _gameCameraPosition.position = sud.focalPoint - _startPoint;
+
+            final Offset normalizedOffset = _startPoint / _scaleEnd;
+            Offset _offset = sud.focalPoint - normalizedOffset * _gameCameraPosition.scale;
+
+            _gameCameraPosition.position = _offset;
           },
           onTapUp: (TapUpDetails tud){
             final Offset _selectedOffset = tud.globalPosition - _gameCameraPosition.position.scale(_gameCameraPosition.scale, _gameCameraPosition.scale).translate(-_cubeSize / 2, -_cubeSize / 2);

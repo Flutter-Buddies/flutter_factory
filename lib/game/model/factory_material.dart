@@ -9,6 +9,8 @@ import 'package:flutter_factory/game/material/diamond.dart';
 import 'package:flutter_factory/game/material/gold.dart';
 import 'package:flutter_factory/game/material/iron.dart';
 
+import 'factory_equipment.dart';
+
 abstract class FactoryMaterial{
   FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0}) : offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
 
@@ -16,6 +18,7 @@ abstract class FactoryMaterial{
   double y;
 
   double size;
+  Direction direction;
 
   final double value;
   final double offsetX;

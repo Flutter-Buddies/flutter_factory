@@ -112,7 +112,7 @@ class GameBloc{
     if(_duration.inMilliseconds ~/ _tickSpeed == _lastTrigger ~/ _tickSpeed){
       _material = _equipment.fold(<FactoryMaterial>[], (List<FactoryMaterial> _material, FactoryEquipment e) => _material..addAll(e.objects));
     }else{
-      _material = _equipment.fold(<FactoryMaterial>[], (List<FactoryMaterial> _material, FactoryEquipment e) => _material..addAll(e.tick()));
+      _material = _equipment.fold(<FactoryMaterial>[], (List<FactoryMaterial> _material, FactoryEquipment e) => _material..addAll(e.equipmentTick()));
       _lastTrigger = _duration.inMilliseconds;
 
       if(_excessMaterial.length > _excessMaterialCleanup){

@@ -16,7 +16,6 @@ class Dispenser extends FactoryEquipment{
 
   FactoryMaterialType dispenseMaterial;
 
-  int counter = 0;
   int dispenseAmount;
   List<FactoryMaterial> _materials = <FactoryMaterial>[];
 
@@ -24,7 +23,6 @@ class Dispenser extends FactoryEquipment{
 
   @override
   List<FactoryMaterial> tick() {
-    counter++;
     _didToggle = tickDuration > 1 && (counter % tickDuration == 0 || counter % tickDuration == tickDuration - 1);
 
     if(_materials.isNotEmpty){
@@ -32,7 +30,7 @@ class Dispenser extends FactoryEquipment{
       _materials.clear();
 
       if(tickDuration == 1){
-        _materials = List<FactoryMaterial>.generate(dispenseAmount, (int index) => _getMaterial());
+        _materials = List<FactoryMaterial>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
       }
 
       return _fml;
@@ -40,7 +38,7 @@ class Dispenser extends FactoryEquipment{
       return <FactoryMaterial>[];
     }
 
-    _materials = List<FactoryMaterial>.generate(dispenseAmount, (int index) => _getMaterial());
+    _materials = List<FactoryMaterial>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
 
     return <FactoryMaterial>[];
   }
