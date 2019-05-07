@@ -97,9 +97,12 @@ class GameBloc{
         return Splitter(selectedTiles.first, buildSelectedEquipmentDirection, <Direction>[buildSelectedEquipmentDirection]);
       case EquipmentType.sorter:
         return Sorter(selectedTiles.first, buildSelectedEquipmentDirection, <FactoryMaterialType, Direction>{});
-      default:
-        return null;
+      case EquipmentType.seller:
+        return Seller(selectedTiles.first, buildSelectedEquipmentDirection);
+        break;
     }
+
+    return null;
   }
 
   List<FactoryMaterial> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterial>[], (List<FactoryMaterial> _folded, List<FactoryMaterial> _m) => _folded..addAll(_m)).toList();

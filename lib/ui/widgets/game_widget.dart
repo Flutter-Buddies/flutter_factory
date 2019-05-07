@@ -44,18 +44,18 @@ class _GameWidgetState extends State<GameWidget> {
             _gameCameraPosition.scale = _scaleEnd * sud.scale;
 
             final Offset normalizedOffset = _startPoint / _scaleEnd;
-            Offset _offset = sud.focalPoint - normalizedOffset * _gameCameraPosition.scale;
+            final Offset _offset = sud.focalPoint - normalizedOffset * _gameCameraPosition.scale;
 
             _gameCameraPosition.position = _offset;
           },
           onTapUp: (TapUpDetails tud){
-            final Offset _selectedOffset = tud.globalPosition - _gameCameraPosition.position.scale(_gameCameraPosition.scale, _gameCameraPosition.scale).translate(-_cubeSize / 2, -_cubeSize / 2);
+            final Offset _selectedOffset = tud.globalPosition - (_gameCameraPosition.position + Offset(-_cubeSize / 2, -_cubeSize / 2)) * _gameCameraPosition.scale;
             final Coordinates _coordinate = Coordinates(_selectedOffset.dx ~/ (_cubeSize * _gameCameraPosition.scale), _selectedOffset.dy ~/ (_cubeSize * _gameCameraPosition.scale));
 
             if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
             }else{
-              if(_selected.isNotEmpty && _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _selected.first, orElse: () => null) != null){
+              if(_selected.isNotEmpty && (_bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null) != null || _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _selected.first, orElse: () => null) != null)){
                 _selected.clear();
               }
 
@@ -64,9 +64,7 @@ class _GameWidgetState extends State<GameWidget> {
               }
             }
 
-
             _bloc.selectedTiles = _selected;
-            _selected.forEach((Coordinates c) => print('X: ${c.x} / Y: ${c.y}'));
           },
           child: CustomPaint(
             painter: GamePainter(_bloc, 30, 30, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
@@ -91,9 +89,13 @@ class GamePainter extends CustomPainter{
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(camera.scale, camera.scale);
-    canvas.translate(camera.position.dx, camera.position.dy);
+    canvas.saveLayer(null, Paint());
+
+    final Matrix4 _transformMatrix = Matrix4.identity()
+      ..scale(camera.scale)
+      ..translate(camera.position.dx, camera.position.dy);
+
+    canvas.transform(_transformMatrix.storage);
 
     for(int x = 0; x < rows; x++){
       for(int y = 0; y < columns; y++){
