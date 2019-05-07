@@ -45,8 +45,8 @@ class Roller extends FactoryEquipment{
     if(direction == Direction.east || direction == Direction.west){
       canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
       for(int i = 0; i < 3; i++){
-        double _xOffset = ((size / 6) * i + (direction == Direction.east ? progress : -progress) * size) % (size * 0.5);
-        canvas.drawLine(Offset(_xOffset - size / 3 + size / 12, size / 3), Offset(_xOffset - size / 3 + size / 12, -size / 3), Paint()..color = Colors.white70);
+        final double _xOffset = ((size / 6) * i + (direction == Direction.east ? progress : -progress) * size) % (size * 0.5);
+        canvas.drawLine(Offset(_xOffset - size / 6, size / 3), Offset(_xOffset - size / 6, -size / 3), Paint()..color = Colors.white70);
       }
     }else{
       canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
@@ -54,7 +54,7 @@ class Roller extends FactoryEquipment{
       for(int i = 0; i < 3; i++){
         double _yOffset = ((size / 6) * i + (direction == Direction.north ? progress : -progress) * size) % (size * 0.5);
 
-        canvas.drawLine(Offset(size / 3, _yOffset - size / 3 + size / 12), Offset(-size / 3, _yOffset - size / 3 + size / 12), Paint()..color = Colors.white70);
+        canvas.drawLine(Offset(size / 3, _yOffset - size / 3), Offset(-size / 3, _yOffset - size / 3), Paint()..color = Colors.white70);
       }
     }
 

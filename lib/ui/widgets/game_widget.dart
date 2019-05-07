@@ -49,8 +49,8 @@ class _GameWidgetState extends State<GameWidget> {
             _gameCameraPosition.position = _offset;
           },
           onTapUp: (TapUpDetails tud){
-            final Offset _selectedOffset = tud.globalPosition - (_gameCameraPosition.position + Offset(-_cubeSize / 2, -_cubeSize / 2)) * _gameCameraPosition.scale;
-            final Coordinates _coordinate = Coordinates(_selectedOffset.dx ~/ (_cubeSize * _gameCameraPosition.scale), _selectedOffset.dy ~/ (_cubeSize * _gameCameraPosition.scale));
+            final Offset _s = (tud.globalPosition - _gameCameraPosition.position) / _gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
+            final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
 
             if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
@@ -60,14 +60,16 @@ class _GameWidgetState extends State<GameWidget> {
               }
 
               if(_selected.isEmpty || _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null) == null){
-                _selected.add(_coordinate);
+                if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 1000 && _coordinate.y <= 1000){
+                  _selected.add(_coordinate);
+                }
               }
             }
 
             _bloc.selectedTiles = _selected;
           },
           child: CustomPaint(
-            painter: GamePainter(_bloc, 30, 30, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
+            painter: GamePainter(_bloc, 1000, 1000, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
             child: const SizedBox.expand(),
           ),
         );
@@ -92,68 +94,52 @@ class GamePainter extends CustomPainter{
     canvas.saveLayer(null, Paint());
 
     final Matrix4 _transformMatrix = Matrix4.identity()
-      ..scale(camera.scale)
-      ..translate(camera.position.dx, camera.position.dy);
+      ..translate(camera.position.dx, camera.position.dy)
+      ..scale(camera.scale);
 
     canvas.transform(_transformMatrix.storage);
 
-    for(int x = 0; x < rows; x++){
-      for(int y = 0; y < columns; y++){
-        bool _selected = !selectedTiles.indexWhere((Coordinates c) => c.x == x && c.y == y).isNegative;
+    canvas.drawRect(
+      Rect.fromPoints(
+        Offset(-cubeSize / 2, -cubeSize / 2),
+        Offset(cubeSize * rows + cubeSize / 2, cubeSize * columns + cubeSize / 2)
+      ),
+      Paint()..color = Colors.grey
+    );
 
-        canvas.drawRect(
-          Rect.fromCircle(
-            center: Offset(x * cubeSize, y * cubeSize),
-            radius: cubeSize / 2
-          ),
-          Paint()..color = _selected ? Colors.orange : Colors.grey
-        );
+    selectedTiles.forEach((Coordinates c){
+      canvas.drawRect(
+        Rect.fromCircle(
+          center: Offset(c.x * cubeSize, c.y * cubeSize),
+          radius: cubeSize / 2
+        ),
+        Paint()..color = Colors.orange
+      );
+    });
+
+    bloc.equipment.forEach((FactoryEquipment fe){
+      fe.drawTrack(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
+    });
+
+    bloc.equipment.forEach((FactoryEquipment fe){
+      fe.drawMaterial(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
+    });
+
+    bloc.equipment.forEach((FactoryEquipment fe){
+      fe.drawEquipment(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
+
+      if(bloc.showArrows){
+        _paintArrows(fe.coordinates.x, fe.coordinates.y, canvas, fe);
       }
-    }
+    });
 
-    for(int x = 0; x < rows; x++){
-      for(int y = 0; y < columns; y++){
-        final FactoryEquipment _equipment = bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
-
-        if(_equipment != null){
-          _equipment.drawTrack(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, bloc.progress);
-        }
+    bloc.getExcessMaterial.forEach((FactoryMaterial fm){
+      if(bloc.getLastExcessMaterial.contains(fm)){
+        fm.drawMaterial(Offset(fm.offsetX + fm.x * cubeSize, fm.offsetY + fm.y * cubeSize), canvas, bloc.progress, opacity: 1.0 - bloc.progress);
+      }else{
+        fm.drawMaterial(Offset(fm.offsetX + fm.x * cubeSize, fm.offsetY + fm.y * cubeSize), canvas, bloc.progress);
       }
-    }
-
-    for(int x = 0; x < rows; x++){
-      for(int y = 0; y < columns; y++){
-        final FactoryEquipment _equipment = bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
-
-        if(_equipment != null){
-          _equipment.drawMaterial(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, bloc.progress);
-        }
-      }
-    }
-
-    for(int x = 0; x < rows; x++){
-      for(int y = 0; y < columns; y++){
-        FactoryEquipment _equipment = bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == x && fe.coordinates.y == y, orElse: () => null);
-        List<FactoryMaterial> _material = bloc.getExcessMaterial.where((FactoryMaterial fe) => fe.x.round() == x && fe.y.round() == y).toList();
-
-        _material.forEach((FactoryMaterial fm){
-          if(bloc.getLastExcessMaterial.contains(fm)){
-            fm.drawMaterial(Offset(fm.offsetX + x * cubeSize, fm.offsetY + y * cubeSize), canvas, bloc.progress, opacity: 1.0 - bloc.progress);
-          }else{
-            fm.drawMaterial(Offset(fm.offsetX + x * cubeSize, fm.offsetY + y * cubeSize), canvas, bloc.progress);
-          }
-        });
-
-
-        if(_equipment != null){
-          _equipment.drawEquipment(Offset(x * cubeSize, y * cubeSize), canvas, cubeSize, bloc.progress);
-
-          if(bloc.showArrows){
-            _paintArrows(x, y, canvas, _equipment);
-          }
-        }
-      }
-    }
+    });
 
     canvas.restore();
   }

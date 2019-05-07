@@ -84,28 +84,28 @@ abstract class FactoryEquipment{
         canvas.drawRect(Rect.fromCircle(center: Offset(-size / 3, 0.0), radius: size / 3), Paint()..color = Colors.grey.shade800);
         for(int i = 0; i < 3; i++){
           double _xOffset = ((size / 6) * i + (entry ? progress : -progress) * size) % (size / 2);
-          canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 12, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 12, -size / 3), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 6, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 6, -size / 3), Paint()..color = Colors.white70);
         }
         break;
       case Direction.east:
         canvas.drawRect(Rect.fromCircle(center: Offset(size / 3, 0.0), radius: size / 3), Paint()..color = Colors.grey.shade800);
         for(int i = 0; i < 3; i++){
           double _xOffset = ((size / 6) * i + (entry ? -progress : progress) * size) % (size / 2);
-          canvas.drawLine(Offset(_xOffset - size / 3 + size / 3 + size / 12, size / 3), Offset(_xOffset - size / 3 + size / 3 + size / 12, -size / 3), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(_xOffset - size / 3 + size / 3 + size / 6, size / 3), Offset(_xOffset - size / 3 + size / 3 + size / 6, -size / 3), Paint()..color = Colors.white70);
         }
         break;
       case Direction.south:
         canvas.drawRect(Rect.fromCircle(center: Offset(0.0, -size / 3), radius: size / 3), Paint()..color = Colors.grey.shade800);
         for(int i = 0; i < 3; i++){
           double _yOffset = ((size / 6) * i + (entry ? progress : -progress) * size) % (size / 2);
-          canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 12), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 12), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 6), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 6), Paint()..color = Colors.white70);
         }
         break;
       case Direction.north:
         canvas.drawRect(Rect.fromCircle(center: Offset(0.0, size / 3), radius: size / 3), Paint()..color = Colors.grey.shade800);
         for(int i = 0; i < 3; i++){
           double _yOffset = ((size / 6) * i + (entry ? -progress : progress) * size) % (size / 2);
-          canvas.drawLine(Offset(size / 3, _yOffset + size / 3 - size / 3 + size / 12), Offset(-size / 3, _yOffset + size / 3 - size / 3 + size / 12), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(size / 3, _yOffset + size / 3 - size / 3 + size / 6), Offset(-size / 3, _yOffset + size / 3 - size / 3 + size / 6), Paint()..color = Colors.white70);
         }
         break;
     }
