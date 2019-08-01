@@ -134,6 +134,16 @@ abstract class FactoryEquipment{
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
   }
+
+  Map<String, dynamic> toMap(){
+    return <String, dynamic>{
+      'equipment_type': type.index,
+      'position_x': coordinates.x,
+      'position_y': coordinates.y,
+      'direction': direction.index,
+      'tick_duration': tickDuration
+    };
+  }
 }
 
 enum Direction{
@@ -141,5 +151,5 @@ enum Direction{
 }
 
 enum EquipmentType{
-  dispenser, roller, crafter, splitter, sorter, seller
+  dispenser, roller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter
 }

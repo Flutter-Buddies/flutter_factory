@@ -12,7 +12,7 @@ import 'package:flutter_factory/game/material/iron.dart';
 import 'factory_equipment.dart';
 
 abstract class FactoryMaterial{
-  FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0}) : offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
+  FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0, this.state = FactoryMaterialState.raw}) : offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
 
   double x;
   double y;
@@ -23,9 +23,9 @@ abstract class FactoryMaterial{
   final double value;
   final double offsetX;
   final double offsetY;
+  final FactoryMaterialType type;
 
-  FactoryMaterialType type;
-
+  FactoryMaterialState state;
 
   static FactoryMaterial getFromType(FactoryMaterialType type, {Offset offset = Offset.zero}){
     switch(type){
@@ -71,21 +71,29 @@ abstract class FactoryMaterial{
     }
   }
 
-  static Map<FactoryMaterialType, int> getRecipe(FactoryMaterialType type){
+  void changeState(FactoryMaterialState newState){
+    if(state == FactoryMaterialState.crafted){
+      return;
+    }
+
+    state = newState;
+  }
+
+  static Map<FactoryRecipeMaterialType, int> getRecipe(FactoryMaterialType type){
     switch(type){
       case FactoryMaterialType.computerChip:
-        return <FactoryMaterialType, int>{
-          FactoryMaterialType.iron: 2,
-          FactoryMaterialType.gold: 1
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.copper): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.gold): 1
         };
       case FactoryMaterialType.processor:
-        return <FactoryMaterialType, int>{
-          FactoryMaterialType.computerChip: 2,
-          FactoryMaterialType.aluminium: 2
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.computerChip): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.aluminium): 2
         };
       /// Raw materials don't have recipe
       default:
-        return <FactoryMaterialType, int>{};
+        return <FactoryRecipeMaterialType, int>{};
     }
   }
 
@@ -101,24 +109,106 @@ abstract class FactoryMaterial{
   }
 
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
+    if(isRawMaterial && state != FactoryMaterialState.raw){
+      switch(state){
+        case FactoryMaterialState.plate:
+          canvas.drawRect(
+            Rect.fromCircle(center: offset, radius: size * 1.2 + 0.2),
+            Paint()..color = Colors.black.withOpacity(opacity)
+          );
+
+          canvas.drawRect(
+            Rect.fromCircle(center: offset, radius: size * 1.2),
+            Paint()..color = getColor().withOpacity(opacity)
+          );
+          break;
+        case FactoryMaterialState.gear:
+          // TODO: Handle this case.
+          break;
+        case FactoryMaterialState.spring:
+          final Path _spring = Path();
+
+          double _size = size * 0.6;
+
+          _spring.addPolygon(<Offset>[
+            offset + Offset(-_size, -_size),
+            offset + Offset(_size, -_size),
+            offset + Offset(-_size, -_size * 0.8),
+            offset + Offset(_size, -_size * 0.6),
+            offset + Offset(-_size, -_size * 0.4),
+            offset + Offset(_size, -_size * 0.2),
+
+            offset + Offset(-_size, 0.0),
+
+            offset + Offset(_size, _size * 0.2),
+            offset + Offset(-_size, _size * 0.4),
+            offset + Offset(_size, _size * 0.6),
+            offset + Offset(-_size, _size * 0.8),
+
+            offset + Offset(_size, _size),
+            offset + Offset(-_size, _size),
+          ], false);
+
+          canvas.drawPath(_spring, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 0.6..style = PaintingStyle.stroke);
+          break;
+        case FactoryMaterialState.fluid:
+          // TODO: Handle this case.
+          break;
+        case FactoryMaterialState.raw:
+        case FactoryMaterialState.crafted:
+        default:
+          canvas.drawRect(
+            Rect.fromCircle(center: offset, radius: size * 0.6 + 0.2),
+            Paint()..color = Colors.black.withOpacity(opacity)
+          );
+
+          canvas.drawRect(
+            Rect.fromCircle(center: offset, radius: size * 0.6),
+            Paint()..color = getColor().withOpacity(opacity)
+          );
+          break;
+      }
+
+      return;
+    }
+
     canvas.drawRect(
-      Rect.fromCircle(center: offset, radius: size + 0.2),
+      Rect.fromCircle(center: offset, radius: size * 0.6 + 0.2),
       Paint()..color = Colors.black.withOpacity(opacity)
     );
 
     canvas.drawRect(
-      Rect.fromCircle(center: offset, radius: size),
+      Rect.fromCircle(center: offset, radius: size * 0.6),
       Paint()..color = getColor().withOpacity(opacity)
     );
   }
 }
 
+enum FactoryMaterialState{
+  raw, plate, gear, spring, fluid, crafted
+}
+
 enum FactoryMaterialType{
-  iron, copper, diamond, gold, aluminium, computerChip, processor
+  iron,
+  copper,
+  diamond,
+  gold,
+  aluminium,
+
+
+  computerChip,
+  processor
 }
 
 class FactoryRecipe{
   FactoryRecipe(this.recipe);
 
-  final Map<FactoryMaterialType, int> recipe;
+  final Map<FactoryRecipeMaterialType, int> recipe;
+}
+
+class FactoryRecipeMaterialType{
+  FactoryMaterialType materialType;
+  FactoryMaterialState state;
+
+  FactoryRecipeMaterialType(this.materialType, {this.state = FactoryMaterialState.raw});
 }

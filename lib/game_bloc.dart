@@ -14,6 +14,10 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'game/equipment/cutter.dart';
+import 'game/equipment/hydraulic_press.dart';
+import 'game/equipment/wire_bender.dart';
+
 enum GameWindows{
   buy, settings
 }
@@ -82,6 +86,15 @@ class GameBloc{
       case EquipmentType.seller:
         _addEquipment(Seller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
+      case EquipmentType.hydraulic_press:
+        _addEquipment(HydraulicPress(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
+      case EquipmentType.wire_bender:
+        _addEquipment(WireBender(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
+      case EquipmentType.cutter:
+        _addEquipment(Cutter(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
     }
   }
 
@@ -99,7 +112,12 @@ class GameBloc{
         return Sorter(selectedTiles.first, buildSelectedEquipmentDirection, <FactoryMaterialType, Direction>{});
       case EquipmentType.seller:
         return Seller(selectedTiles.first, buildSelectedEquipmentDirection);
-        break;
+      case EquipmentType.hydraulic_press:
+        return HydraulicPress(selectedTiles.first, buildSelectedEquipmentDirection);
+      case EquipmentType.wire_bender:
+        return WireBender(selectedTiles.first, buildSelectedEquipmentDirection);
+      case EquipmentType.cutter:
+        return Cutter(selectedTiles.first, buildSelectedEquipmentDirection);
     }
 
     return null;

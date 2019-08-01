@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Processor extends FactoryMaterial{
-  Processor.fromOffset(Offset o) : super(o.dx, o.dy, 200.0, FactoryMaterialType.processor);
+  Processor.fromOffset(Offset o) : super(o.dx, o.dy, 200.0, FactoryMaterialType.processor, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){

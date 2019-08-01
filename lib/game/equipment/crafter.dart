@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/craftables/computer_chip.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
@@ -9,7 +8,7 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 class Crafter extends FactoryEquipment{
   Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 3}) : _recipe = FactoryMaterial.getRecipe(craftMaterial), super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
 
-  final Map<FactoryMaterialType, int> _recipe;
+  final Map<FactoryRecipeMaterialType, int> _recipe;
   FactoryMaterialType craftMaterial;
 
   FactoryMaterial _crafted;
@@ -27,8 +26,8 @@ class Crafter extends FactoryEquipment{
     }
 
     bool canCraft = true;
-    _recipe.keys.forEach((FactoryMaterialType fmt){
-      canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterial fm) => fm.type == fmt).length;
+    _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
+      canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterial fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
     });
     return canCraft;
   }
@@ -67,9 +66,9 @@ class Crafter extends FactoryEquipment{
   void _craft(){
     if(canCraft){
       isCrafting = true;
-      _recipe.keys.forEach((FactoryMaterialType fmt){
+      _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
         for(int j = 0; j < _recipe[fmt]; j++){
-          objects.remove(objects.firstWhere((FactoryMaterial fm) => fm.type == fmt, orElse: () => null));
+          objects.remove(objects.firstWhere((FactoryMaterial fm) => fm.type == fmt.materialType && fm.state == fmt.state, orElse: () => null));
         }
       });
 

@@ -260,6 +260,12 @@ class InfoWindow extends StatelessWidget {
       case EquipmentType.seller:
         _options.add(_showSellerOptions());
         break;
+      case EquipmentType.hydraulic_press:
+        break;
+      case EquipmentType.wire_bender:
+        break;
+      case EquipmentType.cutter:
+        break;
     }
 
     _options.add(_showRotationOptions());

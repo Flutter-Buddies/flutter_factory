@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class ComputerChip extends FactoryMaterial{
-  ComputerChip.fromOffset(Offset o) : super(o.dx, o.dy, 120.0, FactoryMaterialType.computerChip);
+  ComputerChip.fromOffset(Offset o) : super(o.dx, o.dy, 120.0, FactoryMaterialType.computerChip, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){

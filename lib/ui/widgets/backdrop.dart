@@ -81,7 +81,7 @@ class Backdrop extends StatefulWidget {
     this.backTitle,
     this.backLayer,
     this.controller,
-    this.firstLayerHeight = 200
+    this.firstLayerHeight = 400
   });
 
   final AnimationController controller;
