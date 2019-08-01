@@ -123,7 +123,26 @@ abstract class FactoryMaterial{
           );
           break;
         case FactoryMaterialState.gear:
-          // TODO: Handle this case.
+          double _bigCircleSize = size * 0.8;
+          double _smallCircleSize = size * 0.6;
+
+          Path _gear = Path();
+
+          canvas.save();
+          canvas.translate(offset.dx, offset.dy);
+
+          _gear.moveTo(sin(pi * 2) * _smallCircleSize, cos(pi * 2) * _smallCircleSize);
+
+          for(int i = 0; i <= 32; i++){
+            double _size = i % 2 == 0 ? _smallCircleSize : _bigCircleSize;
+            _gear.lineTo(sin((i/32) * pi * 2) * _size, cos((i/32) * pi * 2) * _size);
+          }
+
+          canvas.drawCircle(Offset(0.0, 0.0), size / 2, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 4.0);
+          canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 1.6..style = PaintingStyle.stroke);
+
+          canvas.restore();
+
           break;
         case FactoryMaterialState.spring:
           final Path _spring = Path();

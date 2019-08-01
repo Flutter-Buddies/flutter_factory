@@ -31,7 +31,7 @@ class Cutter extends FactoryEquipment{
     if(_outputMaterial.isEmpty){
       _outputMaterial = objects.getRange(0, min(pressCapacity, objects.length)).toList();
       objects.removeRange(0, min(pressCapacity, objects.length));
-      _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.plate));
+      _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.gear));
 
       return <FactoryMaterial>[];
     }
@@ -77,24 +77,21 @@ class Cutter extends FactoryEquipment{
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Colors.white);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Colors.grey.shade700);
 
-    final double _change = Curves.elasticInOut.transform(_machineProgress) * 6.28;
-    final double _size = size / 4.2;
-    final Paint _linesPaint = Paint();
+    final double _change = Curves.easeInOut.transform(_machineProgress);
 
-    _linesPaint.strokeWidth = 0.6;
-    _linesPaint.strokeJoin = StrokeJoin.round;
-    _linesPaint.color = Colors.black54;
-    canvas.drawLine(Offset(0.0, 0.0), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    _linesPaint.color = Colors.black12;
-    canvas.drawLine(Offset(-size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    canvas.drawLine(Offset(size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    canvas.drawLine(Offset(size / 4, -size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    canvas.drawLine(Offset(-size / 4, -size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
+    if(direction == Direction.south || direction == Direction.north){
+      canvas.drawLine(Offset(size / 2.4, size / 2.4), Offset(size / 2.4, -size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
+      canvas.drawLine(Offset(-size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
 
-    //    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)).deflate(_change), Radius.circular(size / 2.5 / 2)).deflate(_change), Paint()..color = Colors.yellow);
-    //    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.7, size / 2.7), Offset(-size / 2.7, -size / 2.7)).deflate(_change), Radius.circular(size / 2.7 / 2)).deflate(_change), Paint()..color = Colors.grey.shade700);
+      canvas.drawLine(Offset(-size / 2.4, (size / 1.2) * _change - (size / 2.4)), Offset(size / 2.4, (size / 1.2) * _change - (size / 2.4)), Paint()..color = Colors.white54..strokeWidth = 0.4);
+    }else{
+      canvas.drawLine(Offset(size / 2.4, -size / 2.4), Offset(-size / 2.4, -size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
+      canvas.drawLine(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
+
+      canvas.drawLine(Offset((size / 1.2) * _change - (size / 2.4), -size / 2.4), Offset((size / 1.2) * _change - (size / 2.4), size / 2.4), Paint()..color = Colors.white54..strokeWidth = 0.4);
+    }
 
     canvas.restore();
   }
