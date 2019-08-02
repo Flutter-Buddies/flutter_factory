@@ -69,7 +69,7 @@ class _GameWidgetState extends State<GameWidget> {
             _bloc.selectedTiles = _selected;
           },
           child: CustomPaint(
-            painter: GamePainter(_bloc, 1000, 1000, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
+            painter: GamePainter(_bloc, 100, 100, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
             child: const SizedBox.expand(),
           ),
         );

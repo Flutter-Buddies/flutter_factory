@@ -20,40 +20,65 @@ class CrafterOptionsWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text('Craft recipe:'),
-              DropdownButton<FactoryMaterialType>(
-                value: crafter.craftMaterial,
-                onChanged: (FactoryMaterialType fmt){
-                  crafter.changeRecipe(fmt);
-                },
-                items: FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt)).map((FactoryMaterialType fmt){
-                  return DropdownMenuItem<FactoryMaterialType>(
-                    value: fmt,
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                child: CustomPaint(
-                                  painter: ObjectPainter(
-                                    progress,
-                                    material: FactoryMaterial.getFromType(fmt)
+              DropdownButtonHideUnderline(
+                child: DropdownButton<FactoryMaterialType>(
+                  value: crafter.craftMaterial,
+                  onChanged: (FactoryMaterialType fmt){
+                    crafter.changeRecipe(fmt);
+                  },
+                  items: FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt)).map((FactoryMaterialType fmt){
+                    Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterial.getRecipe(fmt);
+
+                    return DropdownMenuItem<FactoryMaterialType>(
+                      value: fmt,
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: CustomPaint(
+                                    painter: ObjectPainter(
+                                      progress,
+                                      material: FactoryMaterial.getFromType(fmt)
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(left: 12.0),
-                                child: Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    ),
-                  );
-                }).toList(),
+                                Container(
+                                  margin: const EdgeInsets.only(left: 12.0),
+                                  child: Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
+                                ),
+                              ],
+                            ),
+
+                            Row(
+                              children: _recepie.keys.map((FactoryRecipeMaterialType fmrt){
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: Row(
+                                    children: <Widget>[
+                                      CustomPaint(
+                                        painter: ObjectPainter(
+                                          progress,
+                                          material: FactoryMaterial.getFromType(fmrt.materialType)..state = fmrt.state
+                                        ),
+                                      ),
+
+                                      SizedBox(width: 12.0,),
+                                      Text('${_recepie[fmrt]}', style: Theme.of(context).textTheme.caption,)
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        )
+                      ),
+                    );
+                  }).toList(),
+                ),
               )
             ],
           ),

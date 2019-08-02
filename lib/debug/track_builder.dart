@@ -1,17 +1,20 @@
 import 'package:flutter_factory/game/equipment/crafter.dart';
+import 'package:flutter_factory/game/equipment/cutter.dart';
 import 'package:flutter_factory/game/equipment/dispenser.dart';
+import 'package:flutter_factory/game/equipment/hydraulic_press.dart';
 import 'package:flutter_factory/game/equipment/roller.dart';
 import 'package:flutter_factory/game/equipment/sorter.dart';
 import 'package:flutter_factory/game/equipment/splitter.dart';
+import 'package:flutter_factory/game/equipment/wire_bender.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 List<FactoryEquipment> buildDummy(){
   return <FactoryEquipment>[
-    Dispenser(Coordinates(1, 2), Direction.north, FactoryMaterialType.iron, dispenseAmount: 3),
+    Dispenser(Coordinates(1, 2), Direction.north, FactoryMaterialType.copper, dispenseAmount: 3),
     Dispenser(Coordinates(2, 2), Direction.north, FactoryMaterialType.gold, dispenseAmount: 2),
-    Dispenser(Coordinates(3, 2), Direction.north, FactoryMaterialType.copper),
+    Dispenser(Coordinates(3, 2), Direction.north, FactoryMaterialType.iron),
     Dispenser(Coordinates(5, 2), Direction.north, FactoryMaterialType.diamond),
 
     Splitter(Coordinates(1, 3), Direction.east, <Direction>[Direction.east, Direction.north]),
@@ -33,7 +36,7 @@ List<FactoryEquipment> buildDummy(){
     Roller(Coordinates(1, 5), Direction.north),
     Roller(Coordinates(1, 6), Direction.east),
 
-    Dispenser(Coordinates(1, 7), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2),
+    Dispenser(Coordinates(1, 7), Direction.east, FactoryMaterialType.copper, dispenseAmount: 2),
     Splitter(Coordinates(2, 7), Direction.east, <Direction>[Direction.south, Direction.north]),
     Roller(Coordinates(2, 6), Direction.east),
     Roller(Coordinates(2, 8), Direction.east),
@@ -52,12 +55,11 @@ List<FactoryEquipment> buildDummy(){
     Crafter(Coordinates(6, 8), Direction.east, FactoryMaterialType.computerChip),
     Crafter(Coordinates(6, 6), Direction.east, FactoryMaterialType.computerChip),
 
-    Dispenser(Coordinates(2, 10), Direction.north, FactoryMaterialType.iron, dispenseTickDuration: 1, dispenseAmount: 1),
+    Dispenser(Coordinates(2, 10), Direction.north, FactoryMaterialType.copper, dispenseTickDuration: 1, dispenseAmount: 1),
     Dispenser(Coordinates(3, 10), Direction.north, FactoryMaterialType.gold, dispenseTickDuration: 2, dispenseAmount: 2),
-    Dispenser(Coordinates(4, 10), Direction.north, FactoryMaterialType.iron, dispenseTickDuration: 3, dispenseAmount: 3),
+    Dispenser(Coordinates(4, 10), Direction.north, FactoryMaterialType.copper, dispenseTickDuration: 3, dispenseAmount: 3),
     Dispenser(Coordinates(5, 10), Direction.north, FactoryMaterialType.gold, dispenseTickDuration: 1, dispenseAmount: 2),
-    Dispenser(Coordinates(6, 10), Direction.north, FactoryMaterialType.iron, dispenseTickDuration: 1, dispenseAmount: 4),
-    Dispenser(Coordinates(7, 10), Direction.north, FactoryMaterialType.diamond, dispenseTickDuration: 10, dispenseAmount: 20),
+    Dispenser(Coordinates(6, 10), Direction.north, FactoryMaterialType.copper, dispenseTickDuration: 1, dispenseAmount: 4),
 
 
     Roller(Coordinates(2, 11), Direction.east),
@@ -72,6 +74,10 @@ List<FactoryEquipment> buildDummy(){
     Splitter(Coordinates(11, 11), Direction.east, <Direction>[Direction.east, Direction.east, Direction.east, Direction.east, Direction.east, Direction.east, Direction.south, Direction.north]),
     Splitter(Coordinates(12, 11), Direction.east, <Direction>[Direction.east, Direction.east, Direction.east, Direction.east, Direction.south, Direction.north]),
     Splitter(Coordinates(13, 11), Direction.east, <Direction>[Direction.east, Direction.south, Direction.north]),
+
+    WireBender(Coordinates(11, 12), Direction.north),
+    HydraulicPress(Coordinates(12, 12), Direction.north),
+    Cutter(Coordinates(13, 12), Direction.north),
   ];
 }
 
@@ -131,13 +137,13 @@ List<FactoryEquipment> buildStressTestChipProduction(){
 
 List<FactoryEquipment> buildChipProduction({int xOffset = 0, int yOffset = 0}){
   return <FactoryEquipment>[
-    Dispenser(Coordinates(xOffset + 1, yOffset + 2), Direction.north, FactoryMaterialType.iron, dispenseAmount: 3),
+    Dispenser(Coordinates(xOffset + 1, yOffset + 2), Direction.north, FactoryMaterialType.copper, dispenseAmount: 3),
     Splitter(Coordinates(xOffset + 1, yOffset + 3), Direction.north, <Direction>[Direction.north, Direction.north, Direction.east]),
     Splitter(Coordinates(xOffset + 1, yOffset + 4), Direction.north, <Direction>[Direction.north, Direction.east]),
 
-    Roller(Coordinates(xOffset + 2, yOffset + 3), Direction.east),
-    Roller(Coordinates(xOffset + 2, yOffset + 4), Direction.north),
-    Roller(Coordinates(xOffset + 1, yOffset + 5), Direction.east),
+    WireBender(Coordinates(xOffset + 2, yOffset + 3), Direction.east),
+    WireBender(Coordinates(xOffset + 2, yOffset + 4), Direction.north),
+    WireBender(Coordinates(xOffset + 1, yOffset + 5), Direction.east),
 
     Crafter(Coordinates(xOffset + 2, yOffset + 5), Direction.east, FactoryMaterialType.computerChip, craftingTickDuration: 1),
     Crafter(Coordinates(xOffset + 3, yOffset + 6), Direction.east, FactoryMaterialType.computerChip, craftingTickDuration: 1),
@@ -147,13 +153,13 @@ List<FactoryEquipment> buildChipProduction({int xOffset = 0, int yOffset = 0}){
     Splitter(Coordinates(xOffset + 2, yOffset + 6), Direction.east, <Direction>[Direction.north, Direction.east, Direction.south]),
 
 
-    Dispenser(Coordinates(xOffset + 1, yOffset + 10), Direction.south, FactoryMaterialType.iron, dispenseAmount: 3),
+    Dispenser(Coordinates(xOffset + 1, yOffset + 10), Direction.south, FactoryMaterialType.copper, dispenseAmount: 3),
     Splitter(Coordinates(xOffset + 1, yOffset + 9), Direction.south, <Direction>[Direction.south, Direction.south, Direction.east]),
     Splitter(Coordinates(xOffset + 1, yOffset + 8), Direction.south, <Direction>[Direction.south, Direction.east]),
 
-    Roller(Coordinates(xOffset + 2, yOffset + 9), Direction.east),
-    Roller(Coordinates(xOffset + 2, yOffset + 8), Direction.south),
-    Roller(Coordinates(xOffset + 1, yOffset + 7), Direction.east),
+    WireBender(Coordinates(xOffset + 2, yOffset + 9), Direction.east),
+    WireBender(Coordinates(xOffset + 2, yOffset + 8), Direction.south),
+    WireBender(Coordinates(xOffset + 1, yOffset + 7), Direction.east),
 
     Roller(Coordinates(xOffset + 3, yOffset + 3), Direction.north),
     Roller(Coordinates(xOffset + 3, yOffset + 4), Direction.north),
@@ -171,7 +177,7 @@ List<FactoryEquipment> buildChipProduction({int xOffset = 0, int yOffset = 0}){
     Roller(Coordinates(xOffset + 4, yOffset + 9), Direction.north),
     Roller(Coordinates(xOffset + 4, yOffset + 10), Direction.north),
 
-    Roller(Coordinates(xOffset + 5, yOffset + 4), Direction.north),
+    Cutter(Coordinates(xOffset + 5, yOffset + 4), Direction.north),
     Splitter(Coordinates(xOffset + 6, yOffset + 4), Direction.west, <Direction>[Direction.west, Direction.north]),
     Splitter(Coordinates(xOffset + 7, yOffset + 4), Direction.west, <Direction>[Direction.west, Direction.west, Direction.north]),
 
@@ -179,26 +185,26 @@ List<FactoryEquipment> buildChipProduction({int xOffset = 0, int yOffset = 0}){
     Dispenser(Coordinates(xOffset + 9, yOffset + 5), Direction.north, FactoryMaterialType.iron, dispenseAmount: 1, dispenseTickDuration: 1),
     Dispenser(Coordinates(xOffset + 5, yOffset + 8), Direction.south, FactoryMaterialType.gold, dispenseAmount: 1, dispenseTickDuration: 1),
 
-    Crafter(Coordinates(xOffset + 5, yOffset + 5), Direction.west, FactoryMaterialType.computerChip, craftingTickDuration: 1),
-    Crafter(Coordinates(xOffset + 7, yOffset + 6), Direction.north, FactoryMaterialType.computerChip, craftingTickDuration: 1),
-    Crafter(Coordinates(xOffset + 8, yOffset + 8), Direction.north, FactoryMaterialType.computerChip, craftingTickDuration: 1),
+    Crafter(Coordinates(xOffset + 5, yOffset + 5), Direction.west, FactoryMaterialType.engine, craftingTickDuration: 1),
+    Crafter(Coordinates(xOffset + 7, yOffset + 6), Direction.north, FactoryMaterialType.engine, craftingTickDuration: 1),
+    Crafter(Coordinates(xOffset + 8, yOffset + 8), Direction.north, FactoryMaterialType.engine, craftingTickDuration: 1),
 
-    Roller(Coordinates(xOffset + 6, yOffset + 5), Direction.west),
-    Roller(Coordinates(xOffset + 7, yOffset + 5), Direction.north),
+    Cutter(Coordinates(xOffset + 6, yOffset + 5), Direction.west),
+    Cutter(Coordinates(xOffset + 7, yOffset + 5), Direction.north),
+    Cutter(Coordinates(xOffset + 8, yOffset + 6), Direction.west),
+    Cutter(Coordinates(xOffset + 5, yOffset + 6), Direction.south),
+    Cutter(Coordinates(xOffset + 6, yOffset + 6), Direction.east),
 
-    Roller(Coordinates(xOffset + 5, yOffset + 6), Direction.south),
-    Roller(Coordinates(xOffset + 6, yOffset + 6), Direction.east),
-    Roller(Coordinates(xOffset + 8, yOffset + 6), Direction.west),
     Splitter(Coordinates(xOffset + 9, yOffset + 6), Direction.north, <Direction>[Direction.north, Direction.north, Direction.west]),
     Splitter(Coordinates(xOffset + 9, yOffset + 7), Direction.north, <Direction>[Direction.north, Direction.west]),
 
     Splitter(Coordinates(xOffset + 5, yOffset + 7), Direction.south, <Direction>[Direction.south, Direction.east, Direction.east]),
     Splitter(Coordinates(xOffset + 6, yOffset + 7), Direction.east, <Direction>[Direction.south, Direction.north]),
 
-    Roller(Coordinates(xOffset + 8, yOffset + 7), Direction.north),
-    Roller(Coordinates(xOffset + 9, yOffset + 8), Direction.west),
+    Cutter(Coordinates(xOffset + 8, yOffset + 7), Direction.north),
+    Cutter(Coordinates(xOffset + 9, yOffset + 8), Direction.west),
 
-    Roller(Coordinates(xOffset + 6, yOffset + 8), Direction.east),
+    Cutter(Coordinates(xOffset + 6, yOffset + 8), Direction.east),
     Roller(Coordinates(xOffset + 7, yOffset + 7), Direction.north),
 
     Sorter(Coordinates(xOffset + 7, yOffset + 8), Direction.north, <FactoryMaterialType, Direction>{FactoryMaterialType.gold: Direction.east}),

@@ -296,7 +296,7 @@ class InfoWindow extends StatelessWidget {
                 onPressed: _bloc.increaseGameSpeed,
                 child: Icon(Icons.remove),
               ),
-              Text('Game speed: ${_bloc.gameSpeed}'),
+              Text('Tick speed: ${_bloc.gameSpeed}'),
               FloatingActionButton(
                 onPressed: _bloc.decreaseGameSpeed,
                 child: Icon(Icons.add),

@@ -2,6 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/craftables/computer_chip.dart';
+import 'package:flutter_factory/game/craftables/cooler_plate.dart';
+import 'package:flutter_factory/game/craftables/engine.dart';
+import 'package:flutter_factory/game/craftables/heater_plate.dart';
 import 'package:flutter_factory/game/craftables/processor.dart';
 import 'package:flutter_factory/game/material/aluminium.dart';
 import 'package:flutter_factory/game/material/copper.dart';
@@ -12,7 +15,7 @@ import 'package:flutter_factory/game/material/iron.dart';
 import 'factory_equipment.dart';
 
 abstract class FactoryMaterial{
-  FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0, this.state = FactoryMaterialState.raw}) : offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
+  FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0, this.state = FactoryMaterialState.raw}) : rotation = Random().nextDouble() * pi, offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
 
   double x;
   double y;
@@ -23,6 +26,8 @@ abstract class FactoryMaterial{
   final double value;
   final double offsetX;
   final double offsetY;
+  final double rotation;
+
   final FactoryMaterialType type;
 
   FactoryMaterialState state;
@@ -43,9 +48,17 @@ abstract class FactoryMaterial{
         return ComputerChip.fromOffset(offset);
       case FactoryMaterialType.processor:
         return Processor.fromOffset(offset);
-      default:
-        return null;
+      case FactoryMaterialType.engine:
+        return Engine.fromOffset(offset);
+      case FactoryMaterialType.heaterPlate:
+        return HeaterPlate.fromOffset(offset);
+        break;
+      case FactoryMaterialType.coolerPlate:
+        return CoolerPlate.fromOffset(offset);
+        break;
     }
+
+    return null;
   }
 
   bool get isRawMaterial => type == FactoryMaterialType.iron
@@ -83,13 +96,30 @@ abstract class FactoryMaterial{
     switch(type){
       case FactoryMaterialType.computerChip:
         return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.copper): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 2,
           FactoryRecipeMaterialType(FactoryMaterialType.gold): 1
         };
       case FactoryMaterialType.processor:
         return <FactoryRecipeMaterialType, int>{
           FactoryRecipeMaterialType(FactoryMaterialType.computerChip): 2,
           FactoryRecipeMaterialType(FactoryMaterialType.aluminium): 2
+        };
+      case FactoryMaterialType.engine:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.iron, state: FactoryMaterialState.gear): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.gear): 1
+        };
+      case FactoryMaterialType.heaterPlate:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.diamond): 1,
+          FactoryRecipeMaterialType(FactoryMaterialType.copper): 1,
+          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 1,
+        };
+      case FactoryMaterialType.coolerPlate:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.diamond): 1,
+          FactoryRecipeMaterialType(FactoryMaterialType.gold): 1,
+          FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.spring): 1,
         };
       /// Raw materials don't have recipe
       default:
@@ -101,6 +131,9 @@ abstract class FactoryMaterial{
     switch(type){
       case FactoryMaterialType.computerChip:
       case FactoryMaterialType.processor:
+      case FactoryMaterialType.engine:
+      case FactoryMaterialType.heaterPlate:
+      case FactoryMaterialType.coolerPlate:
         return false;
       /// Raw materials don't have recipe
       default:
@@ -134,12 +167,12 @@ abstract class FactoryMaterial{
           _gear.moveTo(sin(pi * 2) * _smallCircleSize, cos(pi * 2) * _smallCircleSize);
 
           for(int i = 0; i <= 32; i++){
-            double _size = i % 2 == 0 ? _smallCircleSize : _bigCircleSize;
+            double _size = i % 4 >= 2 ? _smallCircleSize : _bigCircleSize;
             _gear.lineTo(sin((i/32) * pi * 2) * _size, cos((i/32) * pi * 2) * _size);
           }
 
-          canvas.drawCircle(Offset(0.0, 0.0), size / 2, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 4.0);
-          canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 1.6..style = PaintingStyle.stroke);
+          canvas.drawCircle(Offset.zero, size / 2, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 3.8);
+          canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 1.6..style = PaintingStyle.stroke..strokeJoin = StrokeJoin.round);
 
           canvas.restore();
 
@@ -216,7 +249,10 @@ enum FactoryMaterialType{
 
 
   computerChip,
-  processor
+  processor,
+  engine,
+  heaterPlate,
+  coolerPlate
 }
 
 class FactoryRecipe{

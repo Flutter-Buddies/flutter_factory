@@ -84,8 +84,6 @@ class BuildEquipmentWidget extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 48.0,),
-
           Container(
             width: MediaQuery.of(context).size.width,
             height: 80.0,
