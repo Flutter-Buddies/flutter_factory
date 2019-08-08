@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/craftables/battery.dart';
 import 'package:flutter_factory/game/craftables/clock.dart';
 import 'package:flutter_factory/game/craftables/computer_chip.dart';
 import 'package:flutter_factory/game/craftables/cooler_plate.dart';
@@ -65,7 +66,8 @@ abstract class FactoryMaterial{
         return Clock.fromOffset(offset);
       case FactoryMaterialType.railway:
         return Railway.fromOffset(offset);
-        break;
+      case FactoryMaterialType.battery:
+        return Battery.fromOffset(offset);
     }
 
     return null;
@@ -177,6 +179,12 @@ abstract class FactoryMaterial{
           FactoryRecipeMaterialType(FactoryMaterialType.iron): 10,
           FactoryRecipeMaterialType(FactoryMaterialType.iron, state: FactoryMaterialState.plate): 10,
         };
+      case FactoryMaterialType.battery:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.aluminium): 1,
+          FactoryRecipeMaterialType(FactoryMaterialType.aluminium, state: FactoryMaterialState.fluid): 1,
+          FactoryRecipeMaterialType(FactoryMaterialType.computerChip): 1,
+        };
       /// Raw materials don't have recipe
       default:
         return <FactoryRecipeMaterialType, int>{};
@@ -250,7 +258,47 @@ abstract class FactoryMaterial{
           canvas.drawPath(_spring, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 0.6..style = PaintingStyle.stroke);
           break;
         case FactoryMaterialState.fluid:
-          // TODO: Handle this case.
+          final double _size = size * 0.6;
+
+          final Path _fluidPath = Path();
+
+          canvas.save();
+          canvas.translate(offset.dx, offset.dy);
+
+          _fluidPath.moveTo(_size * 0.6, _size);
+          _fluidPath.lineTo(-_size * 0.6, _size);
+
+          _fluidPath.arcToPoint(Offset(-_size, _size * 0.5), radius: Radius.circular(_size * 0.4));
+
+          _fluidPath.lineTo(-_size * 0.3, -_size * 0.4);
+          _fluidPath.lineTo(_size * 0.3, -_size * 0.4);
+
+          _fluidPath.lineTo(_size, _size * 0.5);
+          _fluidPath.arcToPoint(Offset(_size * 0.6, _size), radius: Radius.circular(_size * 0.4));
+
+
+          final Path _flaskPath = Path();
+
+          _flaskPath.moveTo(_size * 0.7, _size);
+          _flaskPath.lineTo(-_size * 0.7, _size);
+
+          _flaskPath.arcToPoint(Offset(-_size, _size * 0.5), radius: Radius.circular(_size * 0.4));
+
+          _flaskPath.lineTo(-_size * 0.3, -_size * 0.4);
+          _flaskPath.lineTo(-_size * 0.3, -_size * 0.9);
+          _flaskPath.lineTo(_size * 0.3, -_size * 0.9);
+          _flaskPath.lineTo(_size * 0.3, -_size * 0.4);
+
+          _flaskPath.lineTo(_size, _size * 0.6);
+          _flaskPath.arcToPoint(Offset(_size * 0.7, _size), radius: Radius.circular(_size * 0.3));
+
+          _flaskPath.moveTo(_size * 0.5, -_size * 0.9);
+          _flaskPath.lineTo(-_size * 0.5, -_size * 0.9);
+
+          canvas.drawPath(_fluidPath, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.fill..strokeJoin = StrokeJoin.round);
+          canvas.drawPath(_flaskPath, Paint()..color = Colors.black.withOpacity(opacity)..strokeWidth = 0.6..style = PaintingStyle.stroke..strokeJoin = StrokeJoin.round..strokeCap = StrokeCap.round);
+
+          canvas.restore();
           break;
         case FactoryMaterialState.raw:
         case FactoryMaterialState.crafted:
@@ -312,7 +360,8 @@ enum FactoryMaterialType{
   coolerPlate,
   lightBulb,
   clock,
-  railway
+  railway,
+  battery
 }
 
 class FactoryRecipe{
