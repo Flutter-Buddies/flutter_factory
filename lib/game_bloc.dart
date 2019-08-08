@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/scheduler.dart';
@@ -12,10 +14,13 @@ import 'package:flutter_factory/game/equipment/dispenser.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:objectdb/objectdb.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'game/equipment/cutter.dart';
 import 'game/equipment/hydraulic_press.dart';
+import 'game/equipment/melter.dart';
 import 'game/equipment/wire_bender.dart';
 
 enum GameWindows{
@@ -25,7 +30,57 @@ enum GameWindows{
 class GameBloc{
   GameBloc(){
     _waitForTick();
-    _equipment.addAll(buildChipProduction());
+    _loadFactory();
+  }
+
+  ObjectDB _db;
+
+  Future<void> _openDatabase() async {
+    final Directory _path = await getApplicationDocumentsDirectory();
+    _db = ObjectDB(_path.path + '.ffactory.db');
+    _db.open();
+    return;
+  }
+
+  void _loadFactory() async {
+    await _openDatabase();
+
+    print('Loading factory from DB!');
+
+    final Map<String, dynamic> _result = await _db.first(<String, String>{'assembly_line_name': 'demo_name'});
+
+    if(_result == null){
+      _saveFactory();
+      return;
+    }
+
+    print('Got from DB!');
+
+
+    final List<dynamic> _equipmentList = _result['equipment'];
+
+    print('Loaded equipment: ${_equipmentList.length}');
+
+    _equipment.clear();
+    _equipment.addAll(_equipmentList.map((dynamic eq) => _equipmentFromMap(eq)));
+
+    print(_result);
+
+    _db.close();
+  }
+
+  void _saveFactory() async {
+    await _openDatabase();
+
+    final Map<String, dynamic> _result = await _db.first(<String, String>{'assembly_line_name': 'demo_name'});
+
+    if(_result == null){
+      await _db.insert(toMap());
+    }else{
+      await _db.update(<String, String>{'assembly_line_name': 'demo_name'}, toMap());
+    }
+
+    _db.close();
   }
 
   Duration _duration = Duration();
@@ -95,7 +150,12 @@ class GameBloc{
       case EquipmentType.cutter:
         _addEquipment(Cutter(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
+      case EquipmentType.melter:
+        _addEquipment(Melter(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
     }
+
+    _saveFactory();
   }
 
   FactoryEquipment previewEquipment(EquipmentType type){
@@ -118,6 +178,9 @@ class GameBloc{
         return WireBender(selectedTiles.first, buildSelectedEquipmentDirection);
       case EquipmentType.cutter:
         return Cutter(selectedTiles.first, buildSelectedEquipmentDirection);
+      case EquipmentType.melter:
+        return Melter(selectedTiles.first, buildSelectedEquipmentDirection);
+        break;
     }
 
     return null;
@@ -126,6 +189,27 @@ class GameBloc{
   List<FactoryMaterial> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterial>[], (List<FactoryMaterial> _folded, List<FactoryMaterial> _m) => _folded..addAll(_m)).toList();
   List<FactoryMaterial> get getLastExcessMaterial => _excessMaterial.first;
   List<FactoryEquipment> get equipment => _equipment;
+
+  void clearLine(){
+    _equipment.clear();
+
+    _saveFactory();
+  }
+
+  void removeEquipment(FactoryEquipment equipment){
+    if(_equipment.contains(equipment)){
+      _equipment.remove(equipment);
+
+      _saveFactory();
+    }
+  }
+
+  void loadLine(List<FactoryEquipment> newLine){
+    _equipment.clear();
+    _equipment.addAll(newLine);
+
+    _saveFactory();
+  }
 
   void _tick(){
     List<FactoryMaterial> _material;
@@ -172,7 +256,55 @@ class GameBloc{
   final PublishSubject<GameUpdate> _gameUpdate = PublishSubject<GameUpdate>();
 
   void dispose(){
+    _saveFactory();
     _gameUpdate.close();
+  }
+
+  Map<String, dynamic> toMap(){
+    final List<String> _equipmentMap = equipment.map((FactoryEquipment fe) => json.encode(fe.toMap())).toList();
+
+    return <String, dynamic>{
+      'assembly_line_name': 'demo_name',
+      'equipment': _equipmentMap
+    };
+  }
+
+
+  FactoryEquipment _equipmentFromMap(String jsonMap){
+    final Map<String, dynamic> map = json.decode(jsonMap);
+
+    switch(EquipmentType.values[map['equipment_type']]){
+      case EquipmentType.dispenser:
+        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount']);
+      case EquipmentType.roller:
+        return Roller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+      case EquipmentType.crafter:
+        return Crafter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['craft_material']]);
+      case EquipmentType.splitter:
+        return Splitter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], map['splitter_directions'].map<Direction>((dynamic direction) => Direction.values[direction]).toList());
+      case EquipmentType.sorter:
+        final Map<FactoryMaterialType, Direction> _sorterMap = <FactoryMaterialType, Direction>{};
+
+        map['sorter_directions'].forEach((dynamic item){
+          _sorterMap.addAll({
+            FactoryMaterialType.values[item['material_type']] : Direction.values[item['direction']]
+          });
+        });
+
+        return Sorter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], _sorterMap);
+      case EquipmentType.seller:
+        return Seller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+      case EquipmentType.hydraulic_press:
+        return HydraulicPress(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+      case EquipmentType.wire_bender:
+        return WireBender(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+      case EquipmentType.cutter:
+        return Cutter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+      case EquipmentType.melter:
+        return Melter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+    }
+
+    return null;
   }
 }
 

@@ -1,11 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/craftables/clock.dart';
 import 'package:flutter_factory/game/craftables/computer_chip.dart';
 import 'package:flutter_factory/game/craftables/cooler_plate.dart';
 import 'package:flutter_factory/game/craftables/engine.dart';
 import 'package:flutter_factory/game/craftables/heater_plate.dart';
+import 'package:flutter_factory/game/craftables/light_bulb.dart';
 import 'package:flutter_factory/game/craftables/processor.dart';
+import 'package:flutter_factory/game/craftables/railway.dart';
 import 'package:flutter_factory/game/material/aluminium.dart';
 import 'package:flutter_factory/game/material/copper.dart';
 import 'package:flutter_factory/game/material/diamond.dart';
@@ -32,6 +35,8 @@ abstract class FactoryMaterial{
 
   FactoryMaterialState state;
 
+  final Map<FactoryMaterialType, List<FactoryMaterialHistory>> _history = <FactoryMaterialType, List<FactoryMaterialHistory>>{};
+
   static FactoryMaterial getFromType(FactoryMaterialType type, {Offset offset = Offset.zero}){
     switch(type){
       case FactoryMaterialType.iron:
@@ -52,9 +57,14 @@ abstract class FactoryMaterial{
         return Engine.fromOffset(offset);
       case FactoryMaterialType.heaterPlate:
         return HeaterPlate.fromOffset(offset);
-        break;
       case FactoryMaterialType.coolerPlate:
         return CoolerPlate.fromOffset(offset);
+      case FactoryMaterialType.lightBulb:
+        return LightBulb.fromOffset(offset);
+      case FactoryMaterialType.clock:
+        return Clock.fromOffset(offset);
+      case FactoryMaterialType.railway:
+        return Railway.fromOffset(offset);
         break;
     }
 
@@ -92,6 +102,36 @@ abstract class FactoryMaterial{
     state = newState;
   }
 
+  // TODO: Add this to log history of the material travel
+  void logHistory(FactoryEquipment equipment){
+    if(_history.containsKey(type)){
+      _history[type].add(FactoryMaterialHistory(state: state, position: Offset(equipment.coordinates.x.toDouble(), equipment.coordinates.y.toDouble())));
+    }else{
+      _history.addAll(<FactoryMaterialType, List<FactoryMaterialHistory>>{
+        type: <FactoryMaterialHistory>[
+          FactoryMaterialHistory(state: state, position: Offset(x, y))
+        ]
+      });
+    }
+  }
+
+  void moveMaterial(){
+    switch(direction){
+      case Direction.west:
+        x -= 1.0;
+        break;
+      case Direction.east:
+        x += 1.0;
+        break;
+      case Direction.south:
+        y -= 1.0;
+        break;
+      case Direction.north:
+        y += 1.0;
+        break;
+    }
+  }
+
   static Map<FactoryRecipeMaterialType, int> getRecipe(FactoryMaterialType type){
     switch(type){
       case FactoryMaterialType.computerChip:
@@ -121,6 +161,22 @@ abstract class FactoryMaterial{
           FactoryRecipeMaterialType(FactoryMaterialType.gold): 1,
           FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.spring): 1,
         };
+      case FactoryMaterialType.lightBulb:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.iron): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 2,
+        };
+      case FactoryMaterialType.clock:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.iron): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.gold): 2,
+          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.gear): 1,
+        };
+      case FactoryMaterialType.railway:
+        return <FactoryRecipeMaterialType, int>{
+          FactoryRecipeMaterialType(FactoryMaterialType.iron): 10,
+          FactoryRecipeMaterialType(FactoryMaterialType.iron, state: FactoryMaterialState.plate): 10,
+        };
       /// Raw materials don't have recipe
       default:
         return <FactoryRecipeMaterialType, int>{};
@@ -128,17 +184,7 @@ abstract class FactoryMaterial{
   }
 
   static bool isRaw(FactoryMaterialType type){
-    switch(type){
-      case FactoryMaterialType.computerChip:
-      case FactoryMaterialType.processor:
-      case FactoryMaterialType.engine:
-      case FactoryMaterialType.heaterPlate:
-      case FactoryMaterialType.coolerPlate:
-        return false;
-      /// Raw materials don't have recipe
-      default:
-        return true;
-    }
+    return type.index <= FactoryMaterialType.aluminium.index;
   }
 
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
@@ -236,6 +282,18 @@ abstract class FactoryMaterial{
   }
 }
 
+class FactoryMaterialHistory{
+  FactoryMaterialHistory({
+    this.state,
+    this.position,
+  });
+
+  final FactoryMaterialState state;
+  final Offset position;
+
+  final Map<FactoryMaterialType, List<FactoryMaterialHistory>> craftedFrom = <FactoryMaterialType, List<FactoryMaterialHistory>>{};
+}
+
 enum FactoryMaterialState{
   raw, plate, gear, spring, fluid, crafted
 }
@@ -247,12 +305,14 @@ enum FactoryMaterialType{
   gold,
   aluminium,
 
-
   computerChip,
   processor,
   engine,
   heaterPlate,
-  coolerPlate
+  coolerPlate,
+  lightBulb,
+  clock,
+  railway
 }
 
 class FactoryRecipe{
@@ -262,8 +322,8 @@ class FactoryRecipe{
 }
 
 class FactoryRecipeMaterialType{
-  FactoryMaterialType materialType;
-  FactoryMaterialState state;
+  FactoryRecipeMaterialType(this.materialType, {FactoryMaterialState state}) : state = state ?? (FactoryMaterial.isRaw(materialType) ? FactoryMaterialState.raw : FactoryMaterialState.crafted);
 
-  FactoryRecipeMaterialType(this.materialType, {this.state = FactoryMaterialState.raw});
+  final FactoryMaterialType materialType;
+  final FactoryMaterialState state;
 }

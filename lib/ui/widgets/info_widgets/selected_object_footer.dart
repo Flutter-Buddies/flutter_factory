@@ -62,9 +62,7 @@ class SelectedObjectFooter extends StatelessWidget {
             child: RaisedButton(
               color: Colors.red,
               onPressed: (){
-                equipment.forEach((FactoryEquipment fe){
-                  _bloc.equipment.remove(fe);
-                });
+                equipment.forEach(_bloc.removeEquipment);
               },
               child: Text('DELETE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
             ),

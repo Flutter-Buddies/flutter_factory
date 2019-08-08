@@ -19,22 +19,7 @@ class Splitter extends FactoryEquipment{
 
     _fm.map((FactoryMaterial fm){
       fm.direction = directions[splitCounter % directions.length];
-
-      switch(directions[splitCounter % directions.length]){
-        case Direction.west:
-          fm.x -= 1.0;
-          break;
-        case Direction.east:
-          fm.x += 1.0;
-          break;
-        case Direction.south:
-          fm.y -= 1.0;
-          break;
-        case Direction.north:
-          fm.y += 1.0;
-          break;
-      }
-
+      fm.moveMaterial();
       splitCounter++;
     }).toList();
 
@@ -83,5 +68,14 @@ class Splitter extends FactoryEquipment{
       direction ?? this.direction,
       directions ?? this.directions,
     );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'splitter_directions': directions.map((Direction d) => d.index).toList()
+    });
+    return _map;
   }
 }

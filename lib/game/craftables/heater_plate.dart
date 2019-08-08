@@ -16,19 +16,10 @@ class HeaterPlate extends FactoryMaterial{
     canvas.translate(offset.dx, offset.dy);
     Path _frame = Path();
 
-    _frame.addPolygon(<Offset>[
+    _frame.addRRect(RRect.fromRectAndRadius(Rect.fromPoints(
       Offset(-_size * 0.9, -_size * 0.8),
-      Offset(-_size * 0.9, _size * 0.6),
-      Offset(_size * 0.9, _size * 0.6),
-      Offset(_size * 0.9, -_size * 0.8),
-    ], true);
-
-    _frame.addPolygon(<Offset>[
-      Offset(_size * 0.2, _size * 0.6),
-      Offset(_size * 0.5, _size),
-      Offset(-_size * 0.5, _size),
-      Offset(-_size * 0.2, _size * 0.6),
-    ], true);
+      Offset(_size * 0.9, _size * 0.6)
+    ), Radius.circular(_size * 0.2)));
 
     Path _element = Path();
 
@@ -67,14 +58,14 @@ class HeaterPlate extends FactoryMaterial{
     ], false);
 
     _p.color = Colors.grey.withOpacity(opacity);
-    _p.strokeWidth = 1.0;
+    _p.strokeWidth = 0.6;
     _p.strokeCap = StrokeCap.round;
     _p.style = PaintingStyle.fill;
     canvas.drawPath(_frame, _p);
     canvas.drawPath(_element, _p..color = Colors.red..style = PaintingStyle.stroke);
 
     _p.color = Colors.black.withOpacity(opacity);
-    _p.strokeWidth = 0.4;
+    _p.strokeWidth = 0.2;
     _p.style = PaintingStyle.stroke;
     canvas.drawPath(_frame, _p);
 

@@ -124,4 +124,15 @@ class Dispenser extends FactoryEquipment{
       dispenseAmount: dispenseAmount ?? this.dispenseAmount,
     );
   }
+
+
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'dispense_material': dispenseMaterial.index,
+      'dispense_amount': dispenseAmount
+    });
+    return _map;
+  }
 }

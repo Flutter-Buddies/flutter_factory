@@ -19,7 +19,6 @@ import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dar
 import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/sorter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
-import 'package:dropdown_menu/dropdown_menu.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({Key key}) : super(key: key);
@@ -202,6 +201,63 @@ class InfoWindow extends StatelessWidget {
       );
     }
 
+    final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
+    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
+
+    if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
+      return Container(
+        height: 300.0,
+        margin: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text('Multiple selected', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline.copyWith(color: Colors.black26, fontWeight: FontWeight.w900)),
+
+            SizedBox(height: 48.0,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FlatButton(
+                  onPressed: (){
+                    print('Copy');
+                  },
+                  child: Text('Copy'),
+                ),
+                FlatButton(
+                  onPressed: (){
+                    print('Cut');
+                  },
+                  child: Text('Cut'),
+                ),
+                FlatButton(
+                  onPressed: (){
+                    print('Delete');
+                  },
+                  child: Text('Delete'),
+                ),
+              ],
+            ),
+
+            RaisedButton(
+              onPressed: (){
+                print('Delete');
+
+                _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+
+                _bloc.changeWindow(GameWindows.buy);
+              },
+              color: Colors.red,
+              child: Container(
+                margin: const EdgeInsets.all(24.0),
+                child: Text('Delete', style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final FactoryEquipment _equipment = _bloc.equipment.firstWhere((FactoryEquipment fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
 
     Widget _buildNoEquipment(){
@@ -266,6 +322,8 @@ class InfoWindow extends StatelessWidget {
         break;
       case EquipmentType.cutter:
         break;
+      case EquipmentType.melter:
+        break;
     }
 
     _options.add(_showRotationOptions());
@@ -323,22 +381,22 @@ class InfoWindow extends StatelessWidget {
             children: <Widget>[
               FlatButton(
                 onPressed: (){
-                  _bloc.equipment.clear();
-                  _bloc.equipment.addAll(buildDummy());
+                  _bloc.clearLine();
+                  _bloc.loadLine(buildDummy());
                 },
                 child: Text('Dummy'),
               ),
               FlatButton(
                 onPressed: (){
-                  _bloc.equipment.clear();
-                  _bloc.equipment.addAll(buildChipProduction());
+                  _bloc.clearLine();
+                  _bloc.loadLine(buildChipProduction());
                 },
                 child: Text('Chip production'),
               ),
               FlatButton(
                 onPressed: (){
-                  _bloc.equipment.clear();
-                  _bloc.equipment.addAll(buildStressTestChipProduction());
+                  _bloc.clearLine();
+                  _bloc.loadLine(buildStressTestChipProduction());
                 },
                 child: Text('Stress test'),
               ),
@@ -351,9 +409,7 @@ class InfoWindow extends StatelessWidget {
             height: 80.0,
             child: RaisedButton(
               color: Colors.red,
-              onPressed: () {
-                _bloc.equipment.clear();
-              },
+              onPressed: _bloc.clearLine,
               child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
             ),
           ),

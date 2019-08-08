@@ -41,21 +41,7 @@ class HydraulicPress extends FactoryEquipment{
 
     _material.map((FactoryMaterial fm){
       fm.direction = direction;
-
-      switch(direction){
-        case Direction.west:
-          fm.x -= 1.0;
-          break;
-        case Direction.east:
-          fm.x += 1.0;
-          break;
-        case Direction.south:
-          fm.y -= 1.0;
-          break;
-        case Direction.north:
-          fm.y += 1.0;
-          break;
-      }
+      fm.moveMaterial();
     }).toList();
 
     return _material;
@@ -160,5 +146,15 @@ class HydraulicPress extends FactoryEquipment{
     }
 
     _outputMaterial.forEach((FactoryMaterial fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
+  }
+
+
+  @override
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'press_capacity': pressCapacity
+    });
+    return _map;
   }
 }

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/crafter.dart';
-import 'package:flutter_factory/game/equipment/splitter.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game_bloc.dart';
-import 'package:flutter_factory/ui/widgets/game_provider.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/crafter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
 
 class BuildEquipmentWidget extends StatelessWidget {
   BuildEquipmentWidget(this._bloc, {Key key}) : super(key: key);

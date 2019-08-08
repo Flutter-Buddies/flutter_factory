@@ -11,4 +11,11 @@ class Coordinates{
 
   @override
   int get hashCode => (x * y).hashCode;
+
+  Map<String, dynamic> toMap(){
+    return <String, dynamic>{
+      'x': x,
+      'y': y
+    };
+  }
 }

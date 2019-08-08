@@ -48,6 +48,21 @@ class _GameWidgetState extends State<GameWidget> {
 
             _gameCameraPosition.position = _offset;
           },
+          onLongPress: (){
+            _selected.clear();
+          },
+          onLongPressMoveUpdate: (LongPressMoveUpdateDetails lpmud){
+            final Offset _s = (lpmud.globalPosition - _gameCameraPosition.position) / _gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
+            final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
+
+            if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 1000 && _coordinate.y <= 1000){
+              if(!_selected.contains(_coordinate)){
+                _selected.add(_coordinate);
+              }
+            }
+
+            _bloc.selectedTiles = _selected;
+          },
           onTapUp: (TapUpDetails tud){
             final Offset _s = (tud.globalPosition - _gameCameraPosition.position) / _gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
             final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
@@ -55,14 +70,16 @@ class _GameWidgetState extends State<GameWidget> {
             if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
             }else{
-              if(_selected.isNotEmpty && (_bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null) != null || _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _selected.first, orElse: () => null) != null)){
+
+              final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _selected.contains(fe.coordinates)).toList();
+              final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _selected.length;
+
+              if(_selected.isNotEmpty && (!_isSameEquipment || _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null)?.type != _selectedEquipment.first.type)){
                 _selected.clear();
               }
 
-              if(_selected.isEmpty || _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null) == null){
-                if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 1000 && _coordinate.y <= 1000){
-                  _selected.add(_coordinate);
-                }
+              if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 1000 && _coordinate.y <= 1000){
+                _selected.add(_coordinate);
               }
             }
 

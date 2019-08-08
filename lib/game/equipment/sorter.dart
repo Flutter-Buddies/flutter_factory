@@ -16,22 +16,8 @@ class Sorter extends FactoryEquipment{
     objects.clear();
 
     _fm.map((FactoryMaterial fm){
-      fm.direction = directions.containsKey(fm.type) ? directions[fm.type] : direction;
-
-      switch(directions.containsKey(fm.type) ? directions[fm.type] : direction){
-        case Direction.west:
-          fm.x -= 1.0;
-          break;
-        case Direction.east:
-          fm.x += 1.0;
-          break;
-        case Direction.south:
-          fm.y -= 1.0;
-          break;
-        case Direction.north:
-          fm.y += 1.0;
-          break;
-      }
+      fm.direction = (directions.containsKey(fm.type) && fm.state == FactoryMaterialState.raw) ? directions[fm.type] : direction;
+      fm.moveMaterial();
     }).toList();
 
     return _fm;
@@ -41,8 +27,8 @@ class Sorter extends FactoryEquipment{
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    drawSplitter(Direction.values[(direction.index - 2) % Direction.values.length], canvas, size, progress, entry: true);
-    drawSplitter(direction, canvas, size, progress, );
+//    drawSplitter(Direction.values[(direction.index - 2) % Direction.values.length], canvas, size, progress, entry: true);
+    drawSplitter(direction, canvas, size, progress);
     directions.values.forEach((Direction d) => drawSplitter(d, canvas, size, progress));
 
     canvas.restore();
@@ -57,7 +43,7 @@ class Sorter extends FactoryEquipment{
     Paint _gatesPaint = Paint();
     _gatesPaint.color = Colors.grey.shade600;
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.south) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.south) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -73,7 +59,7 @@ class Sorter extends FactoryEquipment{
     ), _gatesPaint);
 
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.north) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.north) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -89,7 +75,7 @@ class Sorter extends FactoryEquipment{
     ), _gatesPaint);
 
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.east) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.east) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -105,7 +91,7 @@ class Sorter extends FactoryEquipment{
     ), _gatesPaint);
 
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west || objects.indexWhere((FactoryMaterial fm) => directions[fm.type] == Direction.west) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.west) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -129,7 +115,7 @@ class Sorter extends FactoryEquipment{
       double _moveX = 0.0;
       double _moveY = 0.0;
 
-      switch(directions.containsKey(fm.type) ? directions[fm.type] : direction){
+      switch(fm.state == FactoryMaterialState.raw && directions.containsKey(fm.type) ? directions[fm.type] : direction){
         case Direction.east:
           _moveX = progress * size;
           break;
@@ -155,5 +141,20 @@ class Sorter extends FactoryEquipment{
       direction ?? this.direction,
       directions ?? this.directions,
     );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'sorter_directions': directions.keys.map((FactoryMaterialType type) => <String, int>{
+        'material_type': type.index,
+        'direction': directions[type].index
+      }).toList(),
+    });
+
+    print('Map: $_map');
+
+    return _map;
   }
 }

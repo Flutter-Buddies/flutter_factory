@@ -6,18 +6,18 @@ import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Cutter extends FactoryEquipment{
-  Cutter(Coordinates coordinates, Direction direction, {this.pressCapacity = 3, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.cutter, tickDuration: tickDuration);
+  Cutter(Coordinates coordinates, Direction direction, {this.cutCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.cutter, tickDuration: tickDuration);
 
-  final int pressCapacity;
+  final int cutCapacity;
 
   List<FactoryMaterial> _outputMaterial = <FactoryMaterial>[];
 
   @override
-  Cutter copyWith({Coordinates coordinates, Direction direction, int pressCapacity}) {
+  Cutter copyWith({Coordinates coordinates, Direction direction, int cutCapacity}) {
     return Cutter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      pressCapacity: pressCapacity ?? this.pressCapacity
+      cutCapacity: cutCapacity ?? this.cutCapacity
     );
   }
 
@@ -29,8 +29,8 @@ class Cutter extends FactoryEquipment{
     }
 
     if(_outputMaterial.isEmpty){
-      _outputMaterial = objects.getRange(0, min(pressCapacity, objects.length)).toList();
-      objects.removeRange(0, min(pressCapacity, objects.length));
+      _outputMaterial = objects.getRange(0, min(cutCapacity, objects.length)).toList();
+      objects.removeRange(0, min(cutCapacity, objects.length));
       _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.gear));
 
       return <FactoryMaterial>[];
@@ -41,21 +41,7 @@ class Cutter extends FactoryEquipment{
 
     _material.map((FactoryMaterial fm){
       fm.direction = direction;
-
-      switch(direction){
-        case Direction.west:
-          fm.x -= 1.0;
-          break;
-        case Direction.east:
-          fm.x += 1.0;
-          break;
-        case Direction.south:
-          fm.y -= 1.0;
-          break;
-        case Direction.north:
-          fm.y += 1.0;
-          break;
-      }
+      fm.moveMaterial();
     }).toList();
 
     return _material;
@@ -85,12 +71,12 @@ class Cutter extends FactoryEquipment{
       canvas.drawLine(Offset(size / 2.4, size / 2.4), Offset(size / 2.4, -size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
       canvas.drawLine(Offset(-size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
 
-      canvas.drawLine(Offset(-size / 2.4, (size / 1.2) * _change - (size / 2.4)), Offset(size / 2.4, (size / 1.2) * _change - (size / 2.4)), Paint()..color = Colors.white54..strokeWidth = 0.4);
+      canvas.drawLine(Offset(-size / 2.4, (size / 1.2) * _change - (size / 2.4)), Offset(size / 2.4, (size / 1.2) * _change - (size / 2.4)), Paint()..color = Colors.red..strokeWidth = 0.8);
     }else{
       canvas.drawLine(Offset(size / 2.4, -size / 2.4), Offset(-size / 2.4, -size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
       canvas.drawLine(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, size / 2.4), Paint()..color = Colors.black..strokeWidth = 1.6);
 
-      canvas.drawLine(Offset((size / 1.2) * _change - (size / 2.4), -size / 2.4), Offset((size / 1.2) * _change - (size / 2.4), size / 2.4), Paint()..color = Colors.white54..strokeWidth = 0.4);
+      canvas.drawLine(Offset((size / 1.2) * _change - (size / 2.4), -size / 2.4), Offset((size / 1.2) * _change - (size / 2.4), size / 2.4), Paint()..color = Colors.red..strokeWidth = 0.8);
     }
 
     canvas.restore();
@@ -147,5 +133,15 @@ class Cutter extends FactoryEquipment{
     }
 
     _outputMaterial.forEach((FactoryMaterial fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
+  }
+
+
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'press_capacity': cutCapacity
+    });
+    return _map;
   }
 }

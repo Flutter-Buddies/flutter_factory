@@ -114,33 +114,56 @@ class CrafterOptionsWidget extends StatelessWidget {
               Column(
                 children: FactoryMaterialType.values.map((FactoryMaterialType fmt){
                   return Chip(
-                    label: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    label: Column(
                       children: <Widget>[
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: CustomPaint(
-                                painter: ObjectPainter(
-                                  progress,
-                                  material: FactoryMaterial.getFromType(fmt)
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                                  child: CustomPaint(
+                                    painter: ObjectPainter(
+                                      progress,
+                                      material: FactoryMaterial.getFromType(fmt)
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
+                              ],
                             ),
-                            Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
+                            Container(
+                              margin: const EdgeInsets.only(left: 4.0),
+                              height: 26.0,
+                              width: 96.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.grey.shade800
+                              ),
+                              child: Center(child: Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
+                            ),
                           ],
                         ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 4.0),
-                          height: 26.0,
-                          width: 96.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20.0),
-                            color: Colors.grey.shade800
-                          ),
-                          child: Center(child: Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
-                        ),
+
+                        FactoryMaterial.isRaw(fmt) ? Row(
+                          children: FactoryMaterialState.values.where((FactoryMaterialState fms) => fms.index < 4).map((FactoryMaterialState states){
+                            return Row(
+                              children: <Widget>[
+                                Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                                  child: CustomPaint(
+                                    painter: ObjectPainter(
+                                      progress,
+                                      material: FactoryMaterial.getFromType(fmt)..state = states
+                                    ),
+                                  ),
+                                ),
+                                Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt && _fm.state == states).length}'),
+                              ],
+                            );
+                          }).toList(),
+                        ) : SizedBox.shrink()
                       ],
                     ),
                   );

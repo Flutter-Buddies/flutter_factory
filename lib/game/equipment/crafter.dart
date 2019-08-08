@@ -133,4 +133,13 @@ class Crafter extends FactoryEquipment{
       craftingTickDuration: tickDuration ?? this.tickDuration
     );
   }
+
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'craft_material': craftMaterial.index
+    });
+    return _map;
+  }
 }

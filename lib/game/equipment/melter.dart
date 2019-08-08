@@ -5,19 +5,19 @@ import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
-class WireBender extends FactoryEquipment{
-  WireBender(Coordinates coordinates, Direction direction, {this.wireCapacity = 3, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.wire_bender, tickDuration: tickDuration);
+class Melter extends FactoryEquipment{
+  Melter(Coordinates coordinates, Direction direction, {this.pressCapacity = 3, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.melter, tickDuration: tickDuration);
 
-  final int wireCapacity;
+  final int pressCapacity;
 
   List<FactoryMaterial> _outputMaterial = <FactoryMaterial>[];
 
   @override
-  WireBender copyWith({Coordinates coordinates, Direction direction, int wireCapacity}) {
-    return WireBender(
+  Melter copyWith({Coordinates coordinates, Direction direction, int pressCapacity}) {
+    return Melter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      wireCapacity: wireCapacity ?? this.wireCapacity
+      pressCapacity: pressCapacity ?? this.pressCapacity
     );
   }
 
@@ -29,9 +29,9 @@ class WireBender extends FactoryEquipment{
     }
 
     if(_outputMaterial.isEmpty){
-      _outputMaterial = objects.getRange(0, min(wireCapacity, objects.length)).toList();
-      objects.removeRange(0, min(wireCapacity, objects.length));
-      _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.spring));
+      _outputMaterial = objects.getRange(0, min(pressCapacity, objects.length)).toList();
+      objects.removeRange(0, min(pressCapacity, objects.length));
+      _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.fluid));
 
       return <FactoryMaterial>[];
     }
@@ -49,7 +49,12 @@ class WireBender extends FactoryEquipment{
 
   @override
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
-    double _machineProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
+
+    if(tickDuration == 1){
+      _machineProgress = _outputMaterial.isEmpty ? progress : (1 - progress);
+    }
 
     if(objects.isEmpty && _outputMaterial.isEmpty){
       _machineProgress = 0.0;
@@ -59,23 +64,7 @@ class WireBender extends FactoryEquipment{
     canvas.translate(offset.dx, offset.dy);
 
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Colors.white);
-
-    final double _change = Curves.elasticInOut.transform(_machineProgress) * 6.28;
-    final double _size = size / 4.2;
-    final Paint _linesPaint = Paint();
-
-    _linesPaint.strokeWidth = 0.6;
-    _linesPaint.strokeJoin = StrokeJoin.round;
-    _linesPaint.color = Colors.black54;
-    canvas.drawLine(Offset(0.0, 0.0), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    _linesPaint.color = Colors.black12;
-    canvas.drawLine(Offset(-size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    canvas.drawLine(Offset(size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    canvas.drawLine(Offset(size / 4, -size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    canvas.drawLine(Offset(-size / 4, -size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-
-//    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)).deflate(_change), Radius.circular(size / 2.5 / 2)).deflate(_change), Paint()..color = Colors.yellow);
-//    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.7, size / 2.7), Offset(-size / 2.7, -size / 2.7)).deflate(_change), Radius.circular(size / 2.7 / 2)).deflate(_change), Paint()..color = Colors.grey.shade700);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.6, size / 2.6), Offset(-size / 2.6, -size / 2.6)), Radius.circular(size / 2.6 / 2)), Paint()..color = Color.lerp(Colors.white, Colors.red, _machineProgress));
 
     canvas.restore();
   }
@@ -131,15 +120,5 @@ class WireBender extends FactoryEquipment{
     }
 
     _outputMaterial.forEach((FactoryMaterial fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
-  }
-
-
-  @override
-  Map<String, dynamic> toMap() {
-    final Map<String, dynamic> _map = super.toMap();
-    _map.addAll(<String, dynamic>{
-      'wire_capacity': wireCapacity
-    });
-    return _map;
   }
 }
