@@ -23,7 +23,7 @@ List<FactoryEquipment> buildDummy(){
     Roller(Coordinates(4, 3), Direction.east),
     Roller(Coordinates(5, 3), Direction.east),
 
-    Sorter(Coordinates(6, 3), Direction.east, <FactoryMaterialType, Direction>{FactoryMaterialType.gold: Direction.north}),
+    Sorter(Coordinates(6, 3), Direction.east, <FactoryRecipeMaterialType, Direction>{FactoryRecipeMaterialType(FactoryMaterialType.gold): Direction.north}),
     Roller(Coordinates(6, 4), Direction.north),
     Roller(Coordinates(6, 5), Direction.north),
 
@@ -163,10 +163,10 @@ List<FactoryEquipment> buildChipProduction({int xOffset = 0, int yOffset = 0}){
 
     Roller(Coordinates(xOffset + 3, yOffset + 3), Direction.north),
     Roller(Coordinates(xOffset + 3, yOffset + 4), Direction.north),
-    Sorter(Coordinates(xOffset + 3, yOffset + 5), Direction.north, <FactoryMaterialType, Direction>{FactoryMaterialType.computerChip: Direction.east}),
+    Sorter(Coordinates(xOffset + 3, yOffset + 5), Direction.north, <FactoryRecipeMaterialType, Direction>{FactoryRecipeMaterialType(FactoryMaterialType.computerChip): Direction.east}),
 
 
-    Sorter(Coordinates(xOffset + 3, yOffset + 7), Direction.south, <FactoryMaterialType, Direction>{FactoryMaterialType.computerChip: Direction.east}),
+    Sorter(Coordinates(xOffset + 3, yOffset + 7), Direction.south, <FactoryRecipeMaterialType, Direction>{FactoryRecipeMaterialType(FactoryMaterialType.computerChip): Direction.east}),
     Roller(Coordinates(xOffset + 3, yOffset + 8), Direction.south),
     Roller(Coordinates(xOffset + 3, yOffset + 9), Direction.south),
 
@@ -207,7 +207,7 @@ List<FactoryEquipment> buildChipProduction({int xOffset = 0, int yOffset = 0}){
     Cutter(Coordinates(xOffset + 6, yOffset + 8), Direction.east),
     Roller(Coordinates(xOffset + 7, yOffset + 7), Direction.north),
 
-    Sorter(Coordinates(xOffset + 7, yOffset + 8), Direction.north, <FactoryMaterialType, Direction>{FactoryMaterialType.gold: Direction.east}),
+    Sorter(Coordinates(xOffset + 7, yOffset + 8), Direction.north, <FactoryRecipeMaterialType, Direction>{FactoryRecipeMaterialType(FactoryMaterialType.gold): Direction.east}),
 
     Roller(Coordinates(xOffset + 5, yOffset + 9), Direction.west),
     Roller(Coordinates(xOffset + 6, yOffset + 9), Direction.west),

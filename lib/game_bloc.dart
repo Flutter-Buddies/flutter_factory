@@ -136,7 +136,7 @@ class GameBloc{
         _addEquipment(Splitter(Coordinates(0, 0), buildSelectedEquipmentDirection, <Direction>[buildSelectedEquipmentDirection]));
         break;
       case EquipmentType.sorter:
-        _addEquipment(Sorter(Coordinates(0, 0), buildSelectedEquipmentDirection, <FactoryMaterialType, Direction>{}));
+        _addEquipment(Sorter(Coordinates(0, 0), buildSelectedEquipmentDirection, <FactoryRecipeMaterialType, Direction>{}));
         break;
       case EquipmentType.seller:
         _addEquipment(Seller(Coordinates(0, 0), buildSelectedEquipmentDirection));
@@ -169,7 +169,7 @@ class GameBloc{
       case EquipmentType.splitter:
         return Splitter(selectedTiles.first, buildSelectedEquipmentDirection, <Direction>[buildSelectedEquipmentDirection]);
       case EquipmentType.sorter:
-        return Sorter(selectedTiles.first, buildSelectedEquipmentDirection, <FactoryMaterialType, Direction>{});
+        return Sorter(selectedTiles.first, buildSelectedEquipmentDirection, <FactoryRecipeMaterialType, Direction>{});
       case EquipmentType.seller:
         return Seller(selectedTiles.first, buildSelectedEquipmentDirection);
       case EquipmentType.hydraulic_press:
@@ -283,11 +283,11 @@ class GameBloc{
       case EquipmentType.splitter:
         return Splitter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], map['splitter_directions'].map<Direction>((dynamic direction) => Direction.values[direction]).toList());
       case EquipmentType.sorter:
-        final Map<FactoryMaterialType, Direction> _sorterMap = <FactoryMaterialType, Direction>{};
+        final Map<FactoryRecipeMaterialType, Direction> _sorterMap = <FactoryRecipeMaterialType, Direction>{};
 
         map['sorter_directions'].forEach((dynamic item){
           _sorterMap.addAll({
-            FactoryMaterialType.values[item['material_type']] : Direction.values[item['direction']]
+            FactoryRecipeMaterialType(FactoryMaterialType.values[item['material_type']]): Direction.values[item['direction']]
           });
         });
 

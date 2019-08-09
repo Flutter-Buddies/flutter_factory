@@ -6,7 +6,7 @@ import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class HydraulicPress extends FactoryEquipment{
-  HydraulicPress(Coordinates coordinates, Direction direction, {this.pressCapacity = 3, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.hydraulic_press, tickDuration: tickDuration);
+  HydraulicPress(Coordinates coordinates, Direction direction, {this.pressCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.hydraulic_press, tickDuration: tickDuration);
 
   final int pressCapacity;
 

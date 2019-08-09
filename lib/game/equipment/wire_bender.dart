@@ -6,7 +6,7 @@ import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class WireBender extends FactoryEquipment{
-  WireBender(Coordinates coordinates, Direction direction, {this.wireCapacity = 3, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.wire_bender, tickDuration: tickDuration);
+  WireBender(Coordinates coordinates, Direction direction, {this.wireCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.wire_bender, tickDuration: tickDuration);
 
   final int wireCapacity;
 

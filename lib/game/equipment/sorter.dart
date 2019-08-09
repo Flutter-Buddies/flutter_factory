@@ -8,7 +8,7 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 class Sorter extends FactoryEquipment{
   Sorter(Coordinates coordinates, Direction equipmentDirection, this.directions) : super(coordinates, equipmentDirection, EquipmentType.sorter);
 
-  final Map<FactoryMaterialType, Direction> directions;
+  final Map<FactoryRecipeMaterialType, Direction> directions;
 
   @override
   List<FactoryMaterial> tick() {
@@ -16,11 +16,21 @@ class Sorter extends FactoryEquipment{
     objects.clear();
 
     _fm.map((FactoryMaterial fm){
-      fm.direction = (directions.containsKey(fm.type) && fm.state == FactoryMaterialState.raw) ? directions[fm.type] : direction;
+      final FactoryRecipeMaterialType _frmt = directions.keys.firstWhere((FactoryRecipeMaterialType frmt) => frmt.materialType == fm.type && frmt.state == fm.state, orElse: () => null);
+      fm.direction = directions.containsKey(_frmt) ? directions[_frmt] : direction;
       fm.moveMaterial();
     }).toList();
 
     return _fm;
+  }
+
+  bool _materialToDirection(FactoryMaterial fm, Direction direction){
+    final FactoryRecipeMaterialType _frmt = directions.keys.firstWhere((FactoryRecipeMaterialType frmt) => frmt.materialType == fm.type && frmt.state == fm.state, orElse: () => null);
+    if(_frmt == null){
+      return false;
+    }
+
+    return fm.state == _frmt.state && directions[_frmt] == direction;
   }
 
   @override
@@ -43,7 +53,7 @@ class Sorter extends FactoryEquipment{
     Paint _gatesPaint = Paint();
     _gatesPaint.color = Colors.grey.shade600;
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.south) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south || objects.indexWhere((FactoryMaterial fm) => _materialToDirection(fm, Direction.south)) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -59,7 +69,7 @@ class Sorter extends FactoryEquipment{
     ), _gatesPaint);
 
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.north) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north || objects.indexWhere((FactoryMaterial fm) => _materialToDirection(fm, Direction.north)) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -75,7 +85,7 @@ class Sorter extends FactoryEquipment{
     ), _gatesPaint);
 
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.east) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east || objects.indexWhere((FactoryMaterial fm) => _materialToDirection(fm, Direction.east)) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -91,7 +101,7 @@ class Sorter extends FactoryEquipment{
     ), _gatesPaint);
 
 
-    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west || objects.indexWhere((FactoryMaterial fm) => fm.state == FactoryMaterialState.raw && directions[fm.type] == Direction.west) != -1){
+    if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west || objects.indexWhere((FactoryMaterial fm) => _materialToDirection(fm, Direction.west)) != -1){
       _gatesPaint.color = Colors.green;
     }else{
       _gatesPaint.color = Colors.grey.shade600;
@@ -115,7 +125,8 @@ class Sorter extends FactoryEquipment{
       double _moveX = 0.0;
       double _moveY = 0.0;
 
-      switch(fm.state == FactoryMaterialState.raw && directions.containsKey(fm.type) ? directions[fm.type] : direction){
+      final FactoryRecipeMaterialType _frmt = directions.keys.firstWhere((FactoryRecipeMaterialType frmt) => frmt.materialType == fm.type && frmt.state == fm.state, orElse: () => null);
+      switch(directions.containsKey(_frmt) ? directions[_frmt] : direction){
         case Direction.east:
           _moveX = progress * size;
           break;
@@ -147,8 +158,9 @@ class Sorter extends FactoryEquipment{
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
     _map.addAll(<String, dynamic>{
-      'sorter_directions': directions.keys.map((FactoryMaterialType type) => <String, int>{
-        'material_type': type.index,
+      'sorter_directions': directions.keys.map((FactoryRecipeMaterialType type) => <String, int>{
+        'material_type': type.materialType.index,
+        'material_state': type.state.index,
         'direction': directions[type].index
       }).toList(),
     });

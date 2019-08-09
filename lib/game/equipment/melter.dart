@@ -6,18 +6,18 @@ import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Melter extends FactoryEquipment{
-  Melter(Coordinates coordinates, Direction direction, {this.pressCapacity = 3, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.melter, tickDuration: tickDuration);
+  Melter(Coordinates coordinates, Direction direction, {this.meltCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.melter, tickDuration: tickDuration);
 
-  final int pressCapacity;
+  final int meltCapacity;
 
   List<FactoryMaterial> _outputMaterial = <FactoryMaterial>[];
 
   @override
-  Melter copyWith({Coordinates coordinates, Direction direction, int pressCapacity}) {
+  Melter copyWith({Coordinates coordinates, Direction direction, int meltCapacity}) {
     return Melter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      pressCapacity: pressCapacity ?? this.pressCapacity
+      meltCapacity: meltCapacity ?? this.meltCapacity
     );
   }
 
@@ -29,8 +29,8 @@ class Melter extends FactoryEquipment{
     }
 
     if(_outputMaterial.isEmpty){
-      _outputMaterial = objects.getRange(0, min(pressCapacity, objects.length)).toList();
-      objects.removeRange(0, min(pressCapacity, objects.length));
+      _outputMaterial = objects.getRange(0, min(meltCapacity, objects.length)).toList();
+      objects.removeRange(0, min(meltCapacity, objects.length));
       _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.fluid));
 
       return <FactoryMaterial>[];
