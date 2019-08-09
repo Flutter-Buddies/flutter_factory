@@ -27,7 +27,7 @@ class CrafterOptionsWidget extends StatelessWidget {
                     crafter.changeRecipe(fmt);
                   },
                   items: FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt)).map((FactoryMaterialType fmt){
-                    Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterial.getRecipe(fmt);
+                    Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterial.getRecipeFromType(fmt);
 
                     return DropdownMenuItem<FactoryMaterialType>(
                       value: fmt,

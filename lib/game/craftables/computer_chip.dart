@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class ComputerChip extends FactoryMaterial{
-  ComputerChip.fromOffset(Offset o) : super(o.dx, o.dy, 120.0, FactoryMaterialType.computerChip, state: FactoryMaterialState.crafted);
+  ComputerChip.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.computerChip, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
@@ -28,5 +28,13 @@ class ComputerChip extends FactoryMaterial{
     canvas.drawRect(Rect.fromPoints(Offset(_size * 0.75, _size * 0.5), Offset(-_size * 0.75, -_size * 0.5)), _p);
 
     canvas.restore();
+  }
+
+  @override
+  Map<FactoryRecipeMaterialType, int> getRecipe() {
+    return <FactoryRecipeMaterialType, int>{
+      FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 2,
+      FactoryRecipeMaterialType(FactoryMaterialType.gold): 1
+    };
   }
 }

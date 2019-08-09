@@ -121,4 +121,14 @@ class Melter extends FactoryEquipment{
 
     _outputMaterial.forEach((FactoryMaterial fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
   }
+
+
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    _map.addAll(<String, dynamic>{
+      'melt_capacity': meltCapacity
+    });
+    return _map;
+  }
 }

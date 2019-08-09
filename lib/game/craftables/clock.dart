@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Clock extends FactoryMaterial{
-  Clock.fromOffset(Offset o) : super(o.dx, o.dy, 200.0, FactoryMaterialType.clock, state: FactoryMaterialState.crafted);
+  Clock.fromOffset(Offset o) : super(o.dx, o.dy, 540.0, FactoryMaterialType.clock, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
@@ -38,5 +38,14 @@ class Clock extends FactoryMaterial{
     canvas.drawPath(_clockHands, _p..strokeWidth = .4);
 
     canvas.restore();
+  }
+
+  @override
+  Map<FactoryRecipeMaterialType, int> getRecipe() {
+    return <FactoryRecipeMaterialType, int>{
+      FactoryRecipeMaterialType(FactoryMaterialType.iron): 2,
+      FactoryRecipeMaterialType(FactoryMaterialType.gold): 2,
+      FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.gear): 1,
+    };
   }
 }

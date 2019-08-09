@@ -50,6 +50,7 @@ abstract class FactoryMaterial{
         return Gold.fromOffset(offset);
       case FactoryMaterialType.aluminium:
         return Aluminium.fromOffset(offset);
+
       case FactoryMaterialType.computerChip:
         return ComputerChip.fromOffset(offset);
       case FactoryMaterialType.processor:
@@ -133,62 +134,13 @@ abstract class FactoryMaterial{
         break;
     }
   }
+  
+  Map<FactoryRecipeMaterialType, int> getRecipe(){
+    return <FactoryRecipeMaterialType, int>{};
+  }
 
-  static Map<FactoryRecipeMaterialType, int> getRecipe(FactoryMaterialType type){
-    switch(type){
-      case FactoryMaterialType.computerChip:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 2,
-          FactoryRecipeMaterialType(FactoryMaterialType.gold): 1
-        };
-      case FactoryMaterialType.processor:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.computerChip): 2,
-          FactoryRecipeMaterialType(FactoryMaterialType.aluminium): 2
-        };
-      case FactoryMaterialType.engine:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.iron, state: FactoryMaterialState.gear): 2,
-          FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.gear): 1
-        };
-      case FactoryMaterialType.heaterPlate:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.diamond): 1,
-          FactoryRecipeMaterialType(FactoryMaterialType.copper): 1,
-          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 1,
-        };
-      case FactoryMaterialType.coolerPlate:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.diamond): 1,
-          FactoryRecipeMaterialType(FactoryMaterialType.gold): 1,
-          FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.spring): 1,
-        };
-      case FactoryMaterialType.lightBulb:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.iron): 2,
-          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 2,
-        };
-      case FactoryMaterialType.clock:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.iron): 2,
-          FactoryRecipeMaterialType(FactoryMaterialType.gold): 2,
-          FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.gear): 1,
-        };
-      case FactoryMaterialType.railway:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.iron): 10,
-          FactoryRecipeMaterialType(FactoryMaterialType.iron, state: FactoryMaterialState.plate): 10,
-        };
-      case FactoryMaterialType.battery:
-        return <FactoryRecipeMaterialType, int>{
-          FactoryRecipeMaterialType(FactoryMaterialType.aluminium): 1,
-          FactoryRecipeMaterialType(FactoryMaterialType.aluminium, state: FactoryMaterialState.fluid): 1,
-          FactoryRecipeMaterialType(FactoryMaterialType.computerChip): 1,
-        };
-      /// Raw materials don't have recipe
-      default:
-        return <FactoryRecipeMaterialType, int>{};
-    }
+  static Map<FactoryRecipeMaterialType, int> getRecipeFromType(FactoryMaterialType type){
+    return FactoryMaterial.getFromType(type).getRecipe();
   }
 
   static bool isRaw(FactoryMaterialType type){
@@ -199,13 +151,19 @@ abstract class FactoryMaterial{
     if(isRawMaterial && state != FactoryMaterialState.raw){
       switch(state){
         case FactoryMaterialState.plate:
-          canvas.drawRect(
-            Rect.fromCircle(center: offset, radius: size * 1.2 + 0.2),
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(
+              Rect.fromCircle(center: offset, radius: size * 1.2 + 0.2),
+              Radius.circular(size * 0.3)
+            ),
             Paint()..color = Colors.black.withOpacity(opacity)
           );
 
-          canvas.drawRect(
-            Rect.fromCircle(center: offset, radius: size * 1.2),
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(
+              Rect.fromCircle(center: offset, radius: size * 1.2),
+              Radius.circular(size * 0.3)
+            ),
             Paint()..color = getColor().withOpacity(opacity)
           );
           break;
@@ -304,12 +262,12 @@ abstract class FactoryMaterial{
         case FactoryMaterialState.crafted:
         default:
           canvas.drawRect(
-            Rect.fromCircle(center: offset, radius: size * 0.6 + 0.2),
+            Rect.fromCircle(center: offset, radius: size * 0.5 + 0.2),
             Paint()..color = Colors.black.withOpacity(opacity)
           );
 
           canvas.drawRect(
-            Rect.fromCircle(center: offset, radius: size * 0.6),
+            Rect.fromCircle(center: offset, radius: size * 0.5),
             Paint()..color = getColor().withOpacity(opacity)
           );
           break;
@@ -319,12 +277,12 @@ abstract class FactoryMaterial{
     }
 
     canvas.drawRect(
-      Rect.fromCircle(center: offset, radius: size * 0.6 + 0.2),
+      Rect.fromCircle(center: offset, radius: size * 0.5 + 0.2),
       Paint()..color = Colors.black.withOpacity(opacity)
     );
 
     canvas.drawRect(
-      Rect.fromCircle(center: offset, radius: size * 0.6),
+      Rect.fromCircle(center: offset, radius: size * 0.5),
       Paint()..color = getColor().withOpacity(opacity)
     );
   }

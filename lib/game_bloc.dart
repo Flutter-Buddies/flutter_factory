@@ -275,11 +275,11 @@ class GameBloc{
 
     switch(EquipmentType.values[map['equipment_type']]){
       case EquipmentType.dispenser:
-        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount']);
+        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount'], dispenseTickDuration: map['tick_duration']);
       case EquipmentType.roller:
-        return Roller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        return Roller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], rollerTickDuration: map['tick_duration']);
       case EquipmentType.crafter:
-        return Crafter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['craft_material']]);
+        return Crafter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['craft_material']], craftingTickDuration: map['tick_duration']);
       case EquipmentType.splitter:
         return Splitter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], map['splitter_directions'].map<Direction>((dynamic direction) => Direction.values[direction]).toList());
       case EquipmentType.sorter:
@@ -287,7 +287,7 @@ class GameBloc{
 
         map['sorter_directions'].forEach((dynamic item){
           _sorterMap.addAll({
-            FactoryRecipeMaterialType(FactoryMaterialType.values[item['material_type']]): Direction.values[item['direction']]
+            FactoryRecipeMaterialType(FactoryMaterialType.values[item['material_type']], state: FactoryMaterialState.values[item['material_state']]): Direction.values[item['direction']]
           });
         });
 
@@ -295,13 +295,13 @@ class GameBloc{
       case EquipmentType.seller:
         return Seller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
       case EquipmentType.hydraulic_press:
-        return HydraulicPress(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        return HydraulicPress(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], pressCapacity: map['press_capacity']);
       case EquipmentType.wire_bender:
-        return WireBender(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        return WireBender(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], wireCapacity: map['wire_capacity']);
       case EquipmentType.cutter:
-        return Cutter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        return Cutter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], cutCapacity: map['cut_capacity']);
       case EquipmentType.melter:
-        return Melter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        return Melter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], meltCapacity: map['melt_capacity']);
     }
 
     return null;

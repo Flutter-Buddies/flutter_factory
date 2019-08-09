@@ -38,7 +38,7 @@ class Splitter extends FactoryEquipment{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress) {
-    objects.reversed.forEach((FactoryMaterial fm){
+    objects.forEach((FactoryMaterial fm){
       double _moveX = 0.0;
       double _moveY = 0.0;
 

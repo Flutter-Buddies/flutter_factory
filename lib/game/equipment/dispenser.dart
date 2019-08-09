@@ -12,7 +12,7 @@ import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Dispenser extends FactoryEquipment{
-  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 1, int dispenseTickDuration = 3}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration);
+  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 1, int dispenseTickDuration = 2}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration);
 
   FactoryMaterialType dispenseMaterial;
 

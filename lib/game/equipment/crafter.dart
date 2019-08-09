@@ -6,7 +6,7 @@ import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Crafter extends FactoryEquipment{
-  Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 3}) : _recipe = FactoryMaterial.getRecipe(craftMaterial), super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
+  Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 3}) : _recipe = FactoryMaterial.getRecipeFromType(craftMaterial), super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
 
   final Map<FactoryRecipeMaterialType, int> _recipe;
   FactoryMaterialType craftMaterial;
@@ -60,7 +60,7 @@ class Crafter extends FactoryEquipment{
   void changeRecipe(FactoryMaterialType fmt){
     craftMaterial = fmt;
     _recipe.clear();
-    _recipe.addAll(FactoryMaterial.getRecipe(craftMaterial));
+    _recipe.addAll(FactoryMaterial.getRecipeFromType(craftMaterial));
   }
 
   void _craft(){

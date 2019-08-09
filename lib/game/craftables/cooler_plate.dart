@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class CoolerPlate extends FactoryMaterial{
-  CoolerPlate.fromOffset(Offset o) : super(o.dx, o.dy, 200.0, FactoryMaterialType.coolerPlate, state: FactoryMaterialState.crafted);
+  CoolerPlate.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.coolerPlate, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
@@ -70,5 +70,14 @@ class CoolerPlate extends FactoryMaterial{
     canvas.drawPath(_frame, _p);
 
     canvas.restore();
+  }
+
+  @override
+  Map<FactoryRecipeMaterialType, int> getRecipe() {
+    return <FactoryRecipeMaterialType, int>{
+      FactoryRecipeMaterialType(FactoryMaterialType.diamond): 1,
+      FactoryRecipeMaterialType(FactoryMaterialType.gold): 1,
+      FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.spring): 1,
+    };
   }
 }

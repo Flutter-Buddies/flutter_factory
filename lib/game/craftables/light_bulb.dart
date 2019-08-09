@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class LightBulb extends FactoryMaterial{
-  LightBulb.fromOffset(Offset o) : super(o.dx, o.dy, 200.0, FactoryMaterialType.lightBulb, state: FactoryMaterialState.crafted);
+  LightBulb.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.lightBulb, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
@@ -59,5 +59,13 @@ class LightBulb extends FactoryMaterial{
     canvas.drawPath(_frame, _p);
 
     canvas.restore();
+  }
+
+  @override
+  Map<FactoryRecipeMaterialType, int> getRecipe() {
+    return <FactoryRecipeMaterialType, int>{
+      FactoryRecipeMaterialType(FactoryMaterialType.iron): 2,
+      FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.spring): 2,
+    };
   }
 }

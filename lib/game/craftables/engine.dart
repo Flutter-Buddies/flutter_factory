@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
 
 class Engine extends FactoryMaterial{
-  Engine.fromOffset(Offset o) : super(o.dx, o.dy, 200.0, FactoryMaterialType.engine, state: FactoryMaterialState.crafted);
+  Engine.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.engine, state: FactoryMaterialState.crafted);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
@@ -64,5 +64,13 @@ class Engine extends FactoryMaterial{
     canvas.drawPath(_engine, _p..style = PaintingStyle.fill);
 
     canvas.restore();
+  }
+
+  @override
+  Map<FactoryRecipeMaterialType, int> getRecipe() {
+    return <FactoryRecipeMaterialType, int>{
+      FactoryRecipeMaterialType(FactoryMaterialType.iron, state: FactoryMaterialState.gear): 2,
+      FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.gear): 1
+    };
   }
 }

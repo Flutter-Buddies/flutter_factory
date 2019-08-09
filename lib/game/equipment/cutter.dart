@@ -140,7 +140,7 @@ class Cutter extends FactoryEquipment{
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
     _map.addAll(<String, dynamic>{
-      'press_capacity': cutCapacity
+      'cut_capacity': cutCapacity
     });
     return _map;
   }

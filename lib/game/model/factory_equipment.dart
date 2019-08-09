@@ -130,7 +130,7 @@ abstract class FactoryEquipment{
         break;
     }
 
-    objects.reversed.forEach((FactoryMaterial fm){
+    objects.forEach((FactoryMaterial fm){
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
   }
