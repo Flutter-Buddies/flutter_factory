@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_factory/game/equipment/crafter.dart';
+import 'package:flutter_factory/game/equipment/free_roller.dart';
 import 'package:flutter_factory/game/equipment/roller.dart';
 import 'package:flutter_factory/game/equipment/seller.dart';
 import 'package:flutter_factory/game/equipment/sorter.dart';
@@ -166,6 +167,9 @@ class GameBloc{
       case EquipmentType.melter:
         _addEquipment(Melter(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
+      case EquipmentType.freeRoller:
+        _addEquipment(FreeRoller(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
     }
 
     _saveFactory();
@@ -193,7 +197,8 @@ class GameBloc{
         return Cutter(selectedTiles.first, buildSelectedEquipmentDirection);
       case EquipmentType.melter:
         return Melter(selectedTiles.first, buildSelectedEquipmentDirection);
-        break;
+      case EquipmentType.freeRoller:
+        return FreeRoller(selectedTiles.first, buildSelectedEquipmentDirection);
     }
 
     return null;
@@ -315,6 +320,8 @@ class GameBloc{
         return Cutter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], cutCapacity: map['cut_capacity']);
       case EquipmentType.melter:
         return Melter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], meltCapacity: map['melt_capacity']);
+      case EquipmentType.freeRoller:
+        return FreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
     }
 
     return null;

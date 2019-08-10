@@ -150,5 +150,5 @@ enum Direction{
 }
 
 enum EquipmentType{
-  dispenser, roller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter
+  dispenser, roller, freeRoller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter
 }

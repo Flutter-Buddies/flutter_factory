@@ -318,6 +318,8 @@ class InfoWindow extends StatelessWidget {
         break;
       case EquipmentType.melter:
         break;
+      case EquipmentType.freeRoller:
+        break;
     }
 
     _options.add(_showRotationOptions());
