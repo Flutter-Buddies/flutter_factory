@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/debug/track_builder.dart';
-import 'package:flutter_factory/game/equipment/crafter.dart';
-import 'package:flutter_factory/game/equipment/dispenser.dart';
-import 'package:flutter_factory/game/equipment/sorter.dart';
-import 'package:flutter_factory/game/equipment/splitter.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/widgets/backdrop.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
@@ -289,7 +283,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showRotationOptions(){
-      return SelectedObjectFooter(_bloc, equipment: _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList());
+      return SelectedObjectFooter(_bloc, equipment: _selectedEquipment);
     }
 
     if(_equipment == null){
@@ -380,25 +374,16 @@ class InfoWindow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton(
-                onPressed: (){
-                  _bloc.clearLine();
-                  _bloc.loadLine(buildDummy());
-                },
-                child: Text('Dummy'),
+                onPressed: null,
+                child: Text('Ground floor'),
               ),
               FlatButton(
-                onPressed: (){
-                  _bloc.clearLine();
-                  _bloc.loadLine(buildChipProduction());
-                },
-                child: Text('Chip production'),
+                onPressed: null,
+                child: Text('First floor'),
               ),
               FlatButton(
-                onPressed: (){
-                  _bloc.clearLine();
-                  _bloc.loadLine(buildStressTestChipProduction());
-                },
-                child: Text('Stress test'),
+                onPressed: null,
+                child: Text('Second floor'),
               ),
             ],
           ),

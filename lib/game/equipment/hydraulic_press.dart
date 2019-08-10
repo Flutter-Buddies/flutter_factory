@@ -28,11 +28,21 @@ class HydraulicPress extends FactoryEquipment{
       return <FactoryMaterial>[];
     }
 
-    if(_outputMaterial.isEmpty){
-      _outputMaterial = objects.getRange(0, min(pressCapacity, objects.length)).toList();
-      objects.removeRange(0, min(pressCapacity, objects.length));
-      _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.plate));
+    if(tickDuration == 1){
+      final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(_outputMaterial);
+      _outputMaterial.clear();
+      _processMaterial();
 
+      _fm.map((FactoryMaterial fm){
+        fm.direction = direction;
+        fm.moveMaterial();
+      }).toList();
+
+      return _fm;
+    }
+
+    if(_outputMaterial.isEmpty){
+      _processMaterial();
       return <FactoryMaterial>[];
     }
 
@@ -45,6 +55,12 @@ class HydraulicPress extends FactoryEquipment{
     }).toList();
 
     return _material;
+  }
+
+  void _processMaterial(){
+    _outputMaterial = objects.getRange(0, min(pressCapacity, objects.length)).toList();
+    objects.removeRange(0, min(pressCapacity, objects.length));
+    _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.plate));
   }
 
   @override
@@ -81,7 +97,7 @@ class HydraulicPress extends FactoryEquipment{
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)).deflate(_change), Radius.circular(size / 2.5 / 2)).deflate(_change), Paint()..color = Colors.yellow);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.7, size / 2.7), Offset(-size / 2.7, -size / 2.7)).deflate(_change), Radius.circular(size / 2.7 / 2)).deflate(_change), Paint()..color = Colors.grey.shade700);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Colors.white24);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.0, size / 2.0), Offset(-size / 2.0, -size / 2.0)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.white24);
 
     Path _machineTop = Path();
     if(direction == Direction.east || direction == Direction.west){

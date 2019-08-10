@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_factory/debug/track_builder.dart';
 import 'package:flutter_factory/game/equipment/crafter.dart';
 import 'package:flutter_factory/game/equipment/roller.dart';
 import 'package:flutter_factory/game/equipment/seller.dart';
@@ -33,21 +32,40 @@ class GameBloc{
     _loadFactory();
   }
 
+  int _factoryFloor = 0;
+
   ObjectDB _db;
+
+  Future<ObjectDB> get db async {
+    if(_db == null){
+      await _openDatabase();
+    }
+
+    return _db;
+  }
+
+  // TODO: Add better database management in order to add factory floors!
+  void changeFloor(int factoryFloor) async {
+    if(factoryFloor == _factoryFloor){
+      return;
+    }
+    await _saveFactory();
+    _factoryFloor = factoryFloor;
+    _loadFactory();
+  }
 
   Future<void> _openDatabase() async {
     final Directory _path = await getApplicationDocumentsDirectory();
-    _db = ObjectDB(_path.path + '.ffactory.db');
+    _db = ObjectDB(_path.path + '._factory.db');
     _db.open();
     return;
   }
 
   void _loadFactory() async {
-    await _openDatabase();
-
     print('Loading factory from DB!');
 
-    final Map<String, dynamic> _result = await _db.first(<String, String>{'assembly_line_name': 'demo_name'});
+    ObjectDB _dbObject = await db;
+    final Map<String, dynamic> _result = await _dbObject.first(<String, int>{'factory_floor': _factoryFloor});
 
     if(_result == null){
       _saveFactory();
@@ -65,22 +83,17 @@ class GameBloc{
     _equipment.addAll(_equipmentList.map((dynamic eq) => _equipmentFromMap(eq)));
 
     print(_result);
-
-    _db.close();
   }
 
-  void _saveFactory() async {
-    await _openDatabase();
-
-    final Map<String, dynamic> _result = await _db.first(<String, String>{'assembly_line_name': 'demo_name'});
+  Future<void> _saveFactory() async {
+    ObjectDB _dbObject = await db;
+    final Map<String, dynamic> _result = await _dbObject.first(<String, int>{'factory_floor': _factoryFloor});
 
     if(_result == null){
-      await _db.insert(toMap());
+      await _dbObject.insert(toMap());
     }else{
-      await _db.update(<String, String>{'assembly_line_name': 'demo_name'}, toMap());
+      await _dbObject.update(<String, int>{'factory_floor': _factoryFloor}, toMap());
     }
-
-    _db.close();
   }
 
   Duration _duration = Duration();
@@ -264,7 +277,7 @@ class GameBloc{
     final List<String> _equipmentMap = equipment.map((FactoryEquipment fe) => json.encode(fe.toMap())).toList();
 
     return <String, dynamic>{
-      'assembly_line_name': 'demo_name',
+      'factory_floor': _factoryFloor,
       'equipment': _equipmentMap
     };
   }

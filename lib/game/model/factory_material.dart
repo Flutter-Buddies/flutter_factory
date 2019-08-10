@@ -5,6 +5,7 @@ import 'package:flutter_factory/game/craftables/battery.dart';
 import 'package:flutter_factory/game/craftables/clock.dart';
 import 'package:flutter_factory/game/craftables/computer_chip.dart';
 import 'package:flutter_factory/game/craftables/cooler_plate.dart';
+import 'package:flutter_factory/game/craftables/drone.dart';
 import 'package:flutter_factory/game/craftables/engine.dart';
 import 'package:flutter_factory/game/craftables/heater_plate.dart';
 import 'package:flutter_factory/game/craftables/light_bulb.dart';
@@ -69,6 +70,8 @@ abstract class FactoryMaterial{
         return Railway.fromOffset(offset);
       case FactoryMaterialType.battery:
         return Battery.fromOffset(offset);
+      case FactoryMaterialType.drone:
+        return Drone.fromOffset(offset);
     }
 
     return null;
@@ -319,7 +322,8 @@ enum FactoryMaterialType{
   lightBulb,
   clock,
   railway,
-  battery
+  battery,
+  drone
 }
 
 class FactoryRecipe{

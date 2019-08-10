@@ -81,6 +81,9 @@ class Crafter extends FactoryEquipment{
 
   @override
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
+
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 //    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.grey.shade900);

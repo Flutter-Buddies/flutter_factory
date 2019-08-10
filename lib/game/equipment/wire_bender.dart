@@ -28,11 +28,21 @@ class WireBender extends FactoryEquipment{
       return <FactoryMaterial>[];
     }
 
-    if(_outputMaterial.isEmpty){
-      _outputMaterial = objects.getRange(0, min(wireCapacity, objects.length)).toList();
-      objects.removeRange(0, min(wireCapacity, objects.length));
-      _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.spring));
+    if(tickDuration == 1){
+      final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(_outputMaterial);
+      _outputMaterial.clear();
+      _processMaterial();
 
+      _fm.map((FactoryMaterial fm){
+        fm.direction = direction;
+        fm.moveMaterial();
+      }).toList();
+
+      return _fm;
+    }
+
+    if(_outputMaterial.isEmpty){
+      _processMaterial();
       return <FactoryMaterial>[];
     }
 
@@ -45,6 +55,12 @@ class WireBender extends FactoryEquipment{
     }).toList();
 
     return _material;
+  }
+
+  void _processMaterial(){
+    _outputMaterial = objects.getRange(0, min(wireCapacity, objects.length)).toList();
+    objects.removeRange(0, min(wireCapacity, objects.length));
+    _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.spring));
   }
 
   @override
