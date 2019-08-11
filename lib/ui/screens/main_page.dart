@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/equipment/crafter.dart';
+import 'package:flutter_factory/game/equipment/dispenser.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/widgets/backdrop.dart';
@@ -267,7 +269,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showDispenserOptions(){
-      return DispenserOptionsWidget(dispenser: _equipment, progress: _bloc.progress);
+      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipment fe) => fe is Dispenser).map<Dispenser>((FactoryEquipment fe) => fe).toList(), progress: _bloc.progress);
     }
 
     Widget _showSplitterOptions(){
@@ -279,7 +281,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showCrafterOptions(){
-      return CrafterOptionsWidget(crafter: _equipment, progress: _bloc.progress);
+      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipment fe) => fe is Crafter).map<Crafter>((FactoryEquipment fe) => fe).toList(), progress: _bloc.progress);
     }
 
     Widget _showRotationOptions(){

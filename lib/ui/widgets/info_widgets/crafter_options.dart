@@ -6,11 +6,13 @@ import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 class CrafterOptionsWidget extends StatelessWidget {
   CrafterOptionsWidget({@required this.crafter, this.progress = 0.0, Key key}) : super(key: key);
 
-  final Crafter crafter;
+  final List<Crafter> crafter;
   final double progress;
 
   @override
   Widget build(BuildContext context) {
+    Crafter _showFirst = crafter.first;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -22,9 +24,9 @@ class CrafterOptionsWidget extends StatelessWidget {
               Text('Craft recipe:'),
               DropdownButtonHideUnderline(
                 child: DropdownButton<FactoryMaterialType>(
-                  value: crafter.craftMaterial,
+                  value: _showFirst.craftMaterial,
                   onChanged: (FactoryMaterialType fmt){
-                    crafter.changeRecipe(fmt);
+                    crafter.forEach((Crafter c) => c.changeRecipe(fmt));
                   },
                   items: FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt)).map((FactoryMaterialType fmt){
                     Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterial.getRecipeFromType(fmt);
@@ -89,9 +91,9 @@ class CrafterOptionsWidget extends StatelessWidget {
             children: <Widget>[
               Text('Craft speed:'),
               DropdownButton<int>(
-                value: crafter.tickDuration,
+                value: _showFirst.tickDuration,
                 onChanged: (int fmt){
-                  crafter.tickDuration = fmt;
+                  crafter.forEach((Crafter c) => c.tickDuration = fmt);
                 },
                 items: List<int>.generate(8, (int i) => i + 1).map((int fmt){
                   return DropdownMenuItem<int>(
@@ -141,7 +143,7 @@ class CrafterOptionsWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20.0),
                                 color: Colors.grey.shade800
                               ),
-                              child: Center(child: Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
+                              child: Center(child: Text('${_showFirst.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
                             ),
                           ],
                         ),
@@ -159,7 +161,7 @@ class CrafterOptionsWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Text('${crafter.objects.where((FactoryMaterial _fm) => _fm.type == fmt && _fm.state == states).length}'),
+                                Text('${_showFirst.objects.where((FactoryMaterial _fm) => _fm.type == fmt && _fm.state == states).length}'),
                               ],
                             );
                           }).toList(),

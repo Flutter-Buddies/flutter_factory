@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/craftables/antenna.dart';
 import 'package:flutter_factory/game/craftables/battery.dart';
 import 'package:flutter_factory/game/craftables/clock.dart';
 import 'package:flutter_factory/game/craftables/computer_chip.dart';
 import 'package:flutter_factory/game/craftables/cooler_plate.dart';
 import 'package:flutter_factory/game/craftables/drone.dart';
 import 'package:flutter_factory/game/craftables/engine.dart';
+import 'package:flutter_factory/game/craftables/grill.dart';
 import 'package:flutter_factory/game/craftables/heater_plate.dart';
 import 'package:flutter_factory/game/craftables/light_bulb.dart';
 import 'package:flutter_factory/game/craftables/processor.dart';
@@ -72,6 +74,10 @@ abstract class FactoryMaterial{
         return Battery.fromOffset(offset);
       case FactoryMaterialType.drone:
         return Drone.fromOffset(offset);
+      case FactoryMaterialType.antenna:
+        return Antenna.fromOffset(offset);
+      case FactoryMaterialType.grill:
+        return Grill.fromOffset(offset);
     }
 
     return null;
@@ -323,7 +329,9 @@ enum FactoryMaterialType{
   clock,
   railway,
   battery,
-  drone
+  drone,
+  antenna,
+  grill
 }
 
 class FactoryRecipe{

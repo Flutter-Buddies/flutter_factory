@@ -8,12 +8,15 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 class FreeRoller extends FactoryEquipment{
   FreeRoller(Coordinates coordinates, Direction equipmentDirection, {int tickDuration}) : super(coordinates, equipmentDirection, EquipmentType.freeRoller, tickDuration: tickDuration);
 
+//  final int rotation;
+
   @override
   List<FactoryMaterial> tick() {
     final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(objects);
     objects.clear();
 
     _fm.map((FactoryMaterial fm){
+//      fm.direction = Direction.values[(fm.direction.index + rotation) % Direction.values.length];
       fm.moveMaterial();
     }).toList();
 
@@ -31,11 +34,11 @@ class FreeRoller extends FactoryEquipment{
     drawSplitter(Direction.east, canvas, size, progress, entry: true);
     drawSplitter(Direction.west, canvas, size, progress, entry: true);
 
-    canvas.drawRect(Rect.fromPoints(Offset(_size * 0.4, _size * 0.4), Offset(-_size * 0.4, -_size * 0.4)), Paint()..color = Colors.grey);
+    canvas.drawRect(Rect.fromPoints(Offset(_size * 0.4, _size * 0.4), Offset(-_size * 0.4, -_size * 0.4)), Paint()..color = Colors.grey.shade600);
 
-    for(int i = 0; i < 4; i++){
-      for(int j = 0; j < 4; j++){
-        canvas.drawCircle(Offset(_size * 0.3 + (i * (-_size * 0.2)), _size * 0.3 + (j * (-_size * 0.2))), 2, Paint()..color = Colors.black54);
+    for(int i = 0; i < 8; i++){
+      for(int j = 0; j < 8; j++){
+        canvas.drawCircle(Offset(_size * 0.35 + (i * (-_size * 0.1)), _size * 0.35 + (j * (-_size * 0.1))), _size * 0.045, Paint()..color = Colors.black54);
       }
     }
 

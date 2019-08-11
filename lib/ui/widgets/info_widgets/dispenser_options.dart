@@ -7,10 +7,12 @@ class DispenserOptionsWidget extends StatelessWidget {
   DispenserOptionsWidget({@required this.dispenser, this.progress = 0.0, Key key}) : super(key: key);
 
   final double progress;
-  final Dispenser dispenser;
+  final List<Dispenser> dispenser;
 
   @override
   Widget build(BuildContext context) {
+    Dispenser _showFirst = dispenser.first;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -21,9 +23,9 @@ class DispenserOptionsWidget extends StatelessWidget {
             children: <Widget>[
               Text('Produce material:'),
               DropdownButton<FactoryMaterialType>(
-                value: dispenser.dispenseMaterial,
+                value: _showFirst.dispenseMaterial,
                 onChanged: (FactoryMaterialType fmt){
-                  dispenser.dispenseMaterial = fmt;
+                  dispenser.forEach((Dispenser d) => d.dispenseMaterial = fmt);
                 },
                 items: FactoryMaterialType.values.where(FactoryMaterial.isRaw).map((FactoryMaterialType fmt){
                   return DropdownMenuItem<FactoryMaterialType>(
@@ -57,9 +59,9 @@ class DispenserOptionsWidget extends StatelessWidget {
             children: <Widget>[
               Text('Produce time:'),
               DropdownButton<int>(
-                value: dispenser.tickDuration,
+                value: _showFirst.tickDuration,
                 onChanged: (int fmt){
-                  dispenser.tickDuration = fmt;
+                  dispenser.forEach((Dispenser d) => d.tickDuration = fmt);
                 },
                 items: List<int>.generate(8, (int i) => i + 1).map((int fmt){
                   return DropdownMenuItem<int>(
@@ -77,9 +79,9 @@ class DispenserOptionsWidget extends StatelessWidget {
             children: <Widget>[
               Text('Produce amount:'),
               DropdownButton<int>(
-                value: dispenser.dispenseAmount,
+                value: _showFirst.dispenseAmount,
                 onChanged: (int fmt){
-                  dispenser.dispenseAmount = fmt;
+                  dispenser.forEach((Dispenser d) => d.dispenseAmount = fmt);
                 },
                 items: List<int>.generate(8, (int i) => i + 1).map((int fmt){
                   return DropdownMenuItem<int>(
