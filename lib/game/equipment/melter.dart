@@ -69,7 +69,7 @@ class Melter extends FactoryEquipment{
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
     if(tickDuration == 1){
-      _machineProgress = _outputMaterial.isEmpty ? progress : (1 - progress);
+      _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
     }
 
     if(objects.isEmpty && _outputMaterial.isEmpty){

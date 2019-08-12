@@ -65,7 +65,12 @@ class WireBender extends FactoryEquipment{
 
   @override
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
-    double _machineProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
+
+    if(tickDuration == 1){
+      _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
+    }
 
     if(objects.isEmpty && _outputMaterial.isEmpty){
       _machineProgress = 0.0;

@@ -150,7 +150,7 @@ class Sorter extends FactoryEquipment{
     return Sorter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      directions ?? this.directions,
+      directions ?? this.directions
     );
   }
 

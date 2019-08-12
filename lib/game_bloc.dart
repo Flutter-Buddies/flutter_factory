@@ -114,13 +114,27 @@ class GameBloc{
 
   String get gameSpeed => '$_tickSpeed ms';
 
+  int _frameRate = 0;
+  int _tickStart = 0;
+
+  List<int> _averageFrameRate = <int>[];
+
+  int get frameRate => _averageFrameRate.fold(0, (int _rate, int _value) => _rate += _value) ~/ _averageFrameRate.length;
+
   double get progress => _duration.inMilliseconds ~/ _tickSpeed == _lastTrigger ~/ _tickSpeed ? (_duration.inMilliseconds / _tickSpeed) % 1 : 1.0;
 
   void _waitForTick() async {
-    final int _start = DateTime.now().millisecondsSinceEpoch;
+    _frameRate = _tickSpeed ~/ (DateTime.now().millisecondsSinceEpoch - _tickStart);
+    _averageFrameRate.add(_frameRate);
+
+    if(_averageFrameRate.length > 40){
+      _averageFrameRate.removeAt(0);
+    }
+
+    _tickStart = DateTime.now().millisecondsSinceEpoch;
     await SchedulerBinding.instance.endOfFrame;
     _tick();
-    _duration += Duration(milliseconds: DateTime.now().millisecondsSinceEpoch - _start);
+    _duration += Duration(milliseconds: DateTime.now().millisecondsSinceEpoch - _tickStart);
     _waitForTick();
   }
 
@@ -207,6 +221,7 @@ class GameBloc{
   List<FactoryMaterial> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterial>[], (List<FactoryMaterial> _folded, List<FactoryMaterial> _m) => _folded..addAll(_m)).toList();
   List<FactoryMaterial> get getLastExcessMaterial => _excessMaterial.first;
   List<FactoryEquipment> get equipment => _equipment;
+  List<FactoryMaterial> get material => _equipment.map((FactoryEquipment fe) => fe.objects).fold(<FactoryMaterial>[], (List<FactoryMaterial> _fm, List<FactoryMaterial> _em) => _fm..addAll(_em)).toList();
 
   void clearLine(){
     _equipment.clear();

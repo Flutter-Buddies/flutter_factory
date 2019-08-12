@@ -162,7 +162,7 @@ abstract class FactoryMaterial{
         case FactoryMaterialState.plate:
           canvas.drawRRect(
             RRect.fromRectAndRadius(
-              Rect.fromCircle(center: offset, radius: size * 1.2 + 0.2),
+              Rect.fromCircle(center: offset, radius: size * 0.8 + 0.2),
               Radius.circular(size * 0.3)
             ),
             Paint()..color = Colors.black.withOpacity(opacity)
@@ -170,15 +170,15 @@ abstract class FactoryMaterial{
 
           canvas.drawRRect(
             RRect.fromRectAndRadius(
-              Rect.fromCircle(center: offset, radius: size * 1.2),
+              Rect.fromCircle(center: offset, radius: size * 0.8),
               Radius.circular(size * 0.3)
             ),
             Paint()..color = getColor().withOpacity(opacity)
           );
           break;
         case FactoryMaterialState.gear:
-          double _bigCircleSize = size * 0.8;
-          double _smallCircleSize = size * 0.6;
+          double _bigCircleSize = size * 0.5;
+          double _smallCircleSize = size * 0.3;
 
           Path _gear = Path();
 
@@ -187,12 +187,12 @@ abstract class FactoryMaterial{
 
           _gear.moveTo(sin(pi * 2) * _smallCircleSize, cos(pi * 2) * _smallCircleSize);
 
-          for(int i = 0; i <= 32; i++){
-            double _size = i % 4 >= 2 ? _smallCircleSize : _bigCircleSize;
-            _gear.lineTo(sin((i/32) * pi * 2) * _size, cos((i/32) * pi * 2) * _size);
+          for(int i = 0; i <= 35; i++){
+            double _size = i % 5 >= 2 ? _smallCircleSize : _bigCircleSize;
+            _gear.lineTo(sin((i/35) * pi * 2) * _size, cos((i/35) * pi * 2) * _size);
           }
 
-          canvas.drawCircle(Offset.zero, size / 2, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 3.8);
+          canvas.drawCircle(Offset.zero, _bigCircleSize * 0.6, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 2.4);
           canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 1.6..style = PaintingStyle.stroke..strokeJoin = StrokeJoin.round);
 
           canvas.restore();
@@ -201,7 +201,7 @@ abstract class FactoryMaterial{
         case FactoryMaterialState.spring:
           final Path _spring = Path();
 
-          double _size = size * 0.6;
+          double _size = size * 0.3;
 
           _spring.addPolygon(<Offset>[
             offset + Offset(-_size, -_size),
@@ -222,10 +222,10 @@ abstract class FactoryMaterial{
             offset + Offset(-_size, _size),
           ], false);
 
-          canvas.drawPath(_spring, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 0.6..style = PaintingStyle.stroke);
+          canvas.drawPath(_spring, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 0.3..style = PaintingStyle.stroke);
           break;
         case FactoryMaterialState.fluid:
-          final double _size = size * 0.6;
+          final double _size = size * 0.3;
 
           final Path _fluidPath = Path();
 
@@ -271,12 +271,12 @@ abstract class FactoryMaterial{
         case FactoryMaterialState.crafted:
         default:
           canvas.drawRect(
-            Rect.fromCircle(center: offset, radius: size * 0.5 + 0.2),
+            Rect.fromCircle(center: offset, radius: size * 0.3 + 0.2),
             Paint()..color = Colors.black.withOpacity(opacity)
           );
 
           canvas.drawRect(
-            Rect.fromCircle(center: offset, radius: size * 0.5),
+            Rect.fromCircle(center: offset, radius: size * 0.3),
             Paint()..color = getColor().withOpacity(opacity)
           );
           break;
@@ -286,12 +286,12 @@ abstract class FactoryMaterial{
     }
 
     canvas.drawRect(
-      Rect.fromCircle(center: offset, radius: size * 0.5 + 0.2),
+      Rect.fromCircle(center: offset, radius: size * 0.3 + 0.2),
       Paint()..color = Colors.black.withOpacity(opacity)
     );
 
     canvas.drawRect(
-      Rect.fromCircle(center: offset, radius: size * 0.5),
+      Rect.fromCircle(center: offset, radius: size * 0.3),
       Paint()..color = getColor().withOpacity(opacity)
     );
   }

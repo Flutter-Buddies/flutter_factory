@@ -76,6 +76,29 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
           children: <Widget>[
             GameWidget(),
             GameTicker(),
+
+            StreamBuilder(
+              stream: _bloc.gameUpdate,
+              builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
+                return Positioned(
+                  top: 120.0,
+                  right: 0.0,
+                  child: Container(
+                    color: Colors.black26,
+                    padding: const EdgeInsets.all(4.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
+                        Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
+                        Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
+                        Text('FPS: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
+                      ],
+                    ),
+                  )
+                );
+              },
+            ),
           ],
         ),
       ),
