@@ -13,18 +13,11 @@ class Crafter extends FactoryEquipment{
 
   FactoryMaterial _crafted;
 
-  bool isCrafting = false;
-  bool _didToggle = false;
-
   int getRecipeAmount(FactoryMaterialType fmt){
     return _recipe[fmt] ?? 0;
   }
 
   bool get canCraft{
-    if(isCrafting){
-      return false;
-    }
-
     bool canCraft = true;
     _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
       canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterial fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
@@ -32,29 +25,36 @@ class Crafter extends FactoryEquipment{
     return canCraft;
   }
 
-  bool _temp;
-
   @override
   List<FactoryMaterial> tick() {
-    _temp = isCrafting && counter % tickDuration == tickDuration - 1;
-
-    isCrafting = isCrafting && counter % tickDuration != 0;
-    _didToggle = _temp == isCrafting;
-
-    if(isCrafting){
+    if(tickDuration > 1 && counter % tickDuration != 1 && _crafted == null){
+      print('Not ticking!');
       return <FactoryMaterial>[];
     }
 
-    if(_crafted != null){
-      final FactoryMaterial _fm = _crafted;
+    if((canCraft && _crafted != null) && tickDuration == 1){
+      final FactoryMaterial _craftedMaterial = _crafted.copyWith();
       _crafted = null;
       _craft();
-      return <FactoryMaterial>[_fm];
+
+      _craftedMaterial.direction = direction;
+
+      return <FactoryMaterial>[_craftedMaterial];
     }
 
-    _craft();
+    if(_crafted == null){
+      _craft();
+      return <FactoryMaterial>[];
+    }
 
-    return <FactoryMaterial>[];
+    final List<FactoryMaterial> _material = <FactoryMaterial>[]..add(_crafted);
+    _crafted = null;
+
+    _material.map((FactoryMaterial fm){
+      fm.direction = direction;
+    }).toList();
+
+    return _material;
   }
 
   void changeRecipe(FactoryMaterialType fmt){
@@ -65,7 +65,6 @@ class Crafter extends FactoryEquipment{
 
   void _craft(){
     if(canCraft){
-      isCrafting = true;
       _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
         for(int j = 0; j < _recipe[fmt]; j++){
           objects.remove(objects.firstWhere((FactoryMaterial fm) => fm.type == fmt.materialType && fm.state == fmt.state, orElse: () => null));
@@ -74,8 +73,6 @@ class Crafter extends FactoryEquipment{
 
       _crafted = FactoryMaterial.getFromType(craftMaterial, offset: pointingOffset);
       _crafted.direction = direction;
-    }else{
-      _didToggle = false;
     }
   }
 
@@ -84,18 +81,23 @@ class Crafter extends FactoryEquipment{
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
+    if(tickDuration == 1){
+      _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
+    }
+
+    if(!canCraft && _crafted == null){
+      _machineProgress = 0.0;
+    }
+
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 //    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.grey.shade900);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade900);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(Colors.red, Colors.green, _didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(Colors.red, Colors.green, _machineProgress));//_didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.grey.shade900);
 
-
-    canvas.save();
     canvas.scale(0.6);
     FactoryMaterial.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
-    canvas.restore();
 //    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
     canvas.restore();
   }
@@ -105,7 +107,7 @@ class Crafter extends FactoryEquipment{
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if((counter + 1) % tickDuration != 0 || _crafted == null){
+    if(_crafted == null){
       return;
     }
 

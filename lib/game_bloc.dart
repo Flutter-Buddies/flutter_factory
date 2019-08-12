@@ -45,11 +45,11 @@ class GameBloc{
     return _db;
   }
 
-  // TODO: Add better database management in order to add factory floors!
   void changeFloor(int factoryFloor) async {
     if(factoryFloor == _factoryFloor){
       return;
     }
+
     await _saveFactory();
     _factoryFloor = factoryFloor;
     _loadFactory();
@@ -68,13 +68,7 @@ class GameBloc{
     ObjectDB _dbObject = await db;
     final Map<String, dynamic> _result = await _dbObject.first(<String, int>{'factory_floor': _factoryFloor});
 
-    if(_result == null){
-      _saveFactory();
-      return;
-    }
-
     print('Got from DB!');
-
 
     final List<dynamic> _equipmentList = _result['equipment'];
 

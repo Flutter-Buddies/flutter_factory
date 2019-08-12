@@ -401,16 +401,28 @@ class InfoWindow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton(
-                onPressed: null,
+                onPressed: (){
+                  _bloc.changeFloor(0);
+                },
                 child: Text('Ground floor'),
               ),
               FlatButton(
-                onPressed: null,
+                onPressed: (){
+                  _bloc.changeFloor(1);
+                },
                 child: Text('First floor'),
               ),
               FlatButton(
-                onPressed: null,
+                onPressed: (){
+                  _bloc.changeFloor(2);
+                },
                 child: Text('Second floor'),
+              ),
+              FlatButton(
+                onPressed: (){
+                  _bloc.changeFloor(3);
+                },
+                child: Text('Secret floor'),
               ),
             ],
           ),

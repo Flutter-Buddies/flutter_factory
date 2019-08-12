@@ -6,6 +6,9 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 class CoolerPlate extends FactoryMaterial{
   CoolerPlate.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.coolerPlate, state: FactoryMaterialState.crafted);
 
+  CoolerPlate.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.coolerPlate, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
@@ -79,5 +82,19 @@ class CoolerPlate extends FactoryMaterial{
       FactoryRecipeMaterialType(FactoryMaterialType.gold): 1,
       FactoryRecipeMaterialType(FactoryMaterialType.gold, state: FactoryMaterialState.spring): 1,
     };
+  }
+
+  @override
+  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+    return CoolerPlate.custom(
+      x: x ?? this.x,
+      y: y ?? this.y,
+      size: size ?? this.size,
+      value: value ?? this.value,
+      state: this.state,
+      rotation: this.rotation,
+      offsetX: this.offsetX,
+      offsetY: this.offsetY,
+    );
   }
 }

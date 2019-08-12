@@ -24,6 +24,8 @@ import 'factory_equipment.dart';
 abstract class FactoryMaterial{
   FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0, this.state = FactoryMaterialState.raw}) : rotation = Random().nextDouble() * pi, offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
 
+  FactoryMaterial.custom({this.x, this.y, this.value, this.type, this.size = 8.0, this.state = FactoryMaterialState.raw, this.rotation, this.offsetX, this.offsetY});
+
   double x;
   double y;
 
@@ -38,6 +40,13 @@ abstract class FactoryMaterial{
   final FactoryMaterialType type;
 
   FactoryMaterialState state;
+
+  FactoryMaterial copyWith({
+    double x,
+    double y,
+    double size,
+    double value
+  });
 
   final Map<FactoryMaterialType, List<FactoryMaterialHistory>> _history = <FactoryMaterialType, List<FactoryMaterialHistory>>{};
 

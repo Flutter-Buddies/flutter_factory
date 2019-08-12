@@ -4,6 +4,9 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 class Battery extends FactoryMaterial{
   Battery.fromOffset(Offset o) : super(o.dx, o.dy, 900.0, FactoryMaterialType.battery, state: FactoryMaterialState.crafted);
 
+  Battery.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.battery, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
@@ -26,5 +29,19 @@ class Battery extends FactoryMaterial{
       FactoryRecipeMaterialType(FactoryMaterialType.aluminium, state: FactoryMaterialState.fluid): 1,
       FactoryRecipeMaterialType(FactoryMaterialType.computerChip): 1,
     };
+  }
+
+  @override
+  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+    return Battery.custom(
+      x: x ?? this.x,
+      y: y ?? this.y,
+      size: size ?? this.size,
+      value: value ?? this.value,
+      state: this.state,
+      rotation: this.rotation,
+      offsetX: this.offsetX,
+      offsetY: this.offsetY,
+    );
   }
 }

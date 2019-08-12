@@ -6,6 +6,9 @@ import 'package:flutter_factory/game/model/factory_material.dart';
 class Clock extends FactoryMaterial{
   Clock.fromOffset(Offset o) : super(o.dx, o.dy, 540.0, FactoryMaterialType.clock, state: FactoryMaterialState.crafted);
 
+  Clock.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.clock, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
@@ -47,5 +50,19 @@ class Clock extends FactoryMaterial{
       FactoryRecipeMaterialType(FactoryMaterialType.gold): 2,
       FactoryRecipeMaterialType(FactoryMaterialType.copper, state: FactoryMaterialState.gear): 1,
     };
+  }
+
+  @override
+  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+    return Clock.custom(
+      x: x ?? this.x,
+      y: y ?? this.y,
+      size: size ?? this.size,
+      value: value ?? this.value,
+      state: this.state,
+      rotation: this.rotation,
+      offsetX: this.offsetX,
+      offsetY: this.offsetY,
+    );
   }
 }
