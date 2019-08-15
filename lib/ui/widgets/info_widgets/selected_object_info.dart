@@ -18,19 +18,21 @@ class SelectedObjectInfoWidget extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 36.0),
-                child: CustomPaint(
-                  painter: ObjectPainter(
-                    progress,
-                    equipment: equipment
-                  ),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
                 child: Text('${equipment.type.toString().replaceAll('EquipmentType.', '').toUpperCase()}',
                   style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 36.0),
+                transform: Matrix4.diagonal3Values(2.4, 2.4, 2.4),
+                child: CustomPaint(
+                  painter: ObjectPainter(
+                    progress,
+                    objectSize: 32.0,
+                    equipment: equipment
+                  ),
                 ),
               ),
             ],

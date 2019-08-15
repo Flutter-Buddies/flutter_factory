@@ -21,9 +21,7 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BackdropHolder(),
-    );
+    return BackdropHolder();
   }
 }
 
@@ -35,52 +33,162 @@ class BackdropHolder extends StatefulWidget {
 }
 
 class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProviderStateMixin{
-  double _openValue = 0.0;
   GameBloc _bloc;
-  AnimationController _animationController;
-  final GlobalKey _key = GlobalKey();
 
-  @override
-  void initState() {
-    super.initState();
+  Widget _showSettings(){
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.75,
+      color: Colors.white,
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          SizedBox(height: 40.0,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FloatingActionButton(
+                onPressed: _bloc.increaseGameSpeed,
+                child: Icon(Icons.remove),
+              ),
+              Text('Tick speed: ${_bloc.gameSpeed}'),
+              FloatingActionButton(
+                onPressed: _bloc.decreaseGameSpeed,
+                child: Icon(Icons.add),
+              ),
+            ],
+          ),
+          SwitchListTile(
+            title: Text('Show arrows'),
+            subtitle: Text('Visual representation on equipment'),
+            onChanged: (bool value){
+              setState(() {
+                _bloc.showArrows = value;
+              });
+            },
+            value: _bloc.showArrows,
 
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
+          ),
+
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton(
+                onPressed: (){
+                  _bloc.changeFloor(0);
+                },
+                child: Text('Ground floor'),
+              ),
+              FlatButton(
+                onPressed: (){
+                  _bloc.changeFloor(1);
+                },
+                child: Text('First floor'),
+              ),
+              FlatButton(
+                onPressed: (){
+                  _bloc.changeFloor(2);
+                },
+                child: Text('Second floor'),
+              ),
+              FlatButton(
+                onPressed: (){
+                  _bloc.changeFloor(3);
+                },
+                child: Text('Secret floor'),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 28.0),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80.0,
+            child: RaisedButton(
+              color: Colors.red,
+              onPressed: _bloc.clearLine,
+              child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+            ),
+          ),
+        ],
+      ),
     );
-
-    _animationController.addListener((){
-      setState(() {
-        _openValue = _animationController.value;
-      });
-    });
   }
 
-  void _toggleFrontLayer() {
-    final AnimationStatus status = _animationController.status;
-    final bool isOpen = status == AnimationStatus.completed || status == AnimationStatus.forward;
-    _animationController.fling(velocity: isOpen ? -2.0 : 2.0);
+  Widget _showFab(){
+    if(_bloc.selectedTiles.isEmpty){
+      return null;
+    }
+
+
+    final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
+    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
+
+    if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
+      return FloatingActionButton(
+        backgroundColor: Colors.red,
+        onPressed: (){
+          _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+        },
+        child: Icon(Icons.clear),
+      );
+    }
+
+    final FactoryEquipment _equipment = _bloc.equipment.firstWhere((FactoryEquipment fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
+
+    if(_equipment == null){
+      return FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: (){
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context){
+              return BuildEquipmentWidget(_bloc);
+            }
+          );
+        },
+        child: Icon(Icons.build),
+      );
+    }else{
+      return FloatingActionButton(
+        backgroundColor: Colors.yellow.shade700,
+        onPressed: (){
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context){
+              return StreamBuilder<GameUpdate>(
+                stream: _bloc.gameUpdate,
+                builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
+                  return InfoWindow(_bloc);
+                }
+              );
+            }
+          );
+        },
+        child: Icon(Icons.developer_mode),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context){
     _bloc ??= GameBloc();
 
-    return Backdrop(
-      controller: _animationController,
-      backTitle: Text('Customize', style: Theme.of(context).textTheme.title),
-      frontTitle: Text('Game', style: Theme.of(context).textTheme.title),
-      backLayer: GameProvider(
-        bloc: _bloc,
-        child: Stack(
-          children: <Widget>[
-            GameWidget(),
-            GameTicker(),
+    return StreamBuilder<GameUpdate>(
+      stream: _bloc.gameUpdate,
+      builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
+        return Scaffold(
+          drawer: _showSettings(),
+          floatingActionButton: _showFab(),
+          body: GameProvider(
+            bloc: _bloc,
+            child: Stack(
+              children: <Widget>[
+                GameWidget(),
+                GameTicker(),
 
-            StreamBuilder(
-              stream: _bloc.gameUpdate,
-              builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
-                return Positioned(
+                Positioned(
                   top: 120.0,
                   right: 0.0,
                   child: Container(
@@ -96,130 +204,24 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                       ],
                     ),
                   )
-                );
-              },
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      frontLayer: InfoWindow(_bloc, _openValue, _toggleFrontLayer, key: _key,),
+          ),
+        );
+      }
     );
   }
 }
 
 class InfoWindow extends StatelessWidget {
-  InfoWindow(this._bloc, this.open, this.toggleDrawer, {Key key}) : super(key: key);
+  InfoWindow(this._bloc, {Key key}) : super(key: key);
 
   final GameBloc _bloc;
-  final double open;
-  final VoidCallback toggleDrawer;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.topCenter,
-      child: StreamBuilder<GameUpdate>(
-        stream: _bloc.gameUpdate,
-        builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
-          return Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              Positioned(
-                top: 0.0,
-                height: 80.0,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Flexible(
-                      child: InkWell(
-                        onTap: (){
-                          if(_bloc.currentWindow == GameWindows.buy){
-                            toggleDrawer();
-                          }else{
-                            if(open == 0){
-                              toggleDrawer();
-                            }
-
-                            _bloc.changeWindow(GameWindows.buy);
-                          }
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          child: SizedBox.expand(child: Icon(Icons.edit, color: _bloc.currentWindow == GameWindows.buy ? Colors.blue : Colors.grey)),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Colors.blue, width: _bloc.currentWindow == GameWindows.buy ? 4.0 : 0.0)
-                            )
-                          ),
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: InkWell(
-                        onTap: (){
-                          if(_bloc.currentWindow == GameWindows.settings){
-                            toggleDrawer();
-                          }else{
-                            if(open == 0){
-                              toggleDrawer();
-                            }
-
-                            _bloc.changeWindow(GameWindows.settings);
-                          }
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          child: SizedBox.expand(child: Icon(Icons.more_horiz, color: _bloc.currentWindow == GameWindows.settings ? Colors.blue : Colors.grey)),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Colors.blue, width: _bloc.currentWindow == GameWindows.settings ? 4.0 : 0.0)
-                            )
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              _getSelectedWindow(context)
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _getSelectedWindow(BuildContext context){
-    Widget _child;
-
-    if(_bloc.currentWindow == GameWindows.settings){
-      _child = _showSettings(context);
-    }else{
-      _child = _showModify(context);
-    }
-
-    return Positioned(
-      top: 80.0,
-      width: MediaQuery.of(context).size.width,
-      child: Container(
-        child: _child,
-      ),
-    );
-  }
-
-  Widget _showModify(BuildContext context){
     final List<Widget> _options = <Widget>[];
-
-    if(_bloc.selectedTiles.isEmpty){
-      return Container(
-        height: 300.0,
-        child: Center(
-          child: Text('Nothing selected.', style: Theme.of(context).textTheme.headline.copyWith(color: Colors.black26, fontWeight: FontWeight.w900)),
-        ),
-      );
-    }
-
     final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
     final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
 
@@ -268,7 +270,7 @@ class InfoWindow extends StatelessWidget {
               },
               color: Colors.red,
               child: Container(
-                margin: const EdgeInsets.all(24.0),
+                margin: const EdgeInsets.all(12.0),
                 child: Text('Delete', style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),),
               ),
             ),
@@ -350,94 +352,12 @@ class InfoWindow extends StatelessWidget {
     _options.add(_showRotationOptions());
 
     return Container(
-      height: MediaQuery.of(context).size.height / 2 - 80.0,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: _options,
         ),
-      ),
-    );
-  }
-
-  Widget _showSettings(BuildContext context){
-    return Container(
-      margin: const EdgeInsets.all(36.0),
-      height: 300.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FloatingActionButton(
-                onPressed: _bloc.increaseGameSpeed,
-                child: Icon(Icons.remove),
-              ),
-              Text('Tick speed: ${_bloc.gameSpeed}'),
-              FloatingActionButton(
-                onPressed: _bloc.decreaseGameSpeed,
-                child: Icon(Icons.add),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text('Show arrows'),
-              FloatingActionButton(
-                onPressed: (){
-                  _bloc.showArrows = !_bloc.showArrows;
-                },
-                mini: true,
-                child: Icon(_bloc.showArrows ? Icons.visibility : Icons.visibility_off),
-              ),
-            ],
-          ),
-
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(0);
-                },
-                child: Text('Ground floor'),
-              ),
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(1);
-                },
-                child: Text('First floor'),
-              ),
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(2);
-                },
-                child: Text('Second floor'),
-              ),
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(3);
-                },
-                child: Text('Secret floor'),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 28.0),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 80.0,
-            child: RaisedButton(
-              color: Colors.red,
-              onPressed: _bloc.clearLine,
-              child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -20,37 +20,46 @@ class SelectedObjectFooter extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text('Rotate:'),
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: FloatingActionButton(
-                          child: Icon(Icons.rotate_left),
-                          onPressed: (){
-                            equipment.forEach((FactoryEquipment fe){
-                              fe.direction = Direction.values[(fe.direction.index - 1) % Direction.values.length];
-                            });
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: FloatingActionButton(
-                          child: Icon(Icons.rotate_right),
-                          onPressed: (){
-                            equipment.forEach((FactoryEquipment fe){
-                              fe.direction = Direction.values[(fe.direction.index + 1) % Direction.values.length];
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                Text('Direction:'),
+                Row(
+                  children: <Widget>[
+                    FlatButton(
+                      padding: EdgeInsets.zero,
+                      child: Text('←', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 24.0),),
+                      onPressed: (){
+                        equipment.forEach((FactoryEquipment fe){
+                          fe.direction = Direction.west;
+                        });
+                      },
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.zero,
+                      child: Text('↑', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 24.0),),
+                      onPressed: (){
+                        equipment.forEach((FactoryEquipment fe){
+                          fe.direction = Direction.south;
+                        });
+                      },
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.zero,
+                      child: Text('↓', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 24.0),),
+                      onPressed: (){
+                        equipment.forEach((FactoryEquipment fe){
+                          fe.direction = Direction.north;
+                        });
+                      },
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.zero,
+                      child: Text('→', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 24.0),),
+                      onPressed: (){
+                        equipment.forEach((FactoryEquipment fe){
+                          fe.direction = Direction.east;
+                        });
+                      },
+                    ),
+                  ],
                 )
               ],
             ),

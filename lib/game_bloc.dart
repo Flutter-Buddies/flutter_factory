@@ -106,6 +106,8 @@ class GameBloc{
   void increaseGameSpeed() => _tickSpeed = (_tickSpeed * 0.5).round();
   void decreaseGameSpeed() => _tickSpeed *= 2;
 
+  void changeTickSpeed(int newSpeed) => _tickSpeed = newSpeed;
+
   String get gameSpeed => '$_tickSpeed ms';
 
   int _frameRate = 0;
