@@ -53,7 +53,7 @@ class _GameWidgetState extends State<GameWidget> {
             final Offset _s = (lpmud.globalPosition - _gameCameraPosition.position) / _gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
             final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
 
-            if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 30 && _coordinate.y <= 30){
+            if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 32 && _coordinate.y <= 32){
               if(!_selected.contains(_coordinate)){
                 _selected.add(_coordinate);
               }
@@ -76,7 +76,7 @@ class _GameWidgetState extends State<GameWidget> {
                 _selected.clear();
               }
 
-              if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 30 && _coordinate.y <= 30){
+              if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 32 && _coordinate.y <= 32){
                 _selected.add(_coordinate);
               }
             }
@@ -84,7 +84,7 @@ class _GameWidgetState extends State<GameWidget> {
             _bloc.selectedTiles = _selected;
           },
           child: CustomPaint(
-            painter: GamePainter(_bloc, 30, 30, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
+            painter: GamePainter(_bloc, 32, 32, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
             child: const SizedBox.expand(),
           ),
         );
