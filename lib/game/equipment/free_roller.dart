@@ -29,10 +29,10 @@ class FreeRoller extends FactoryEquipment{
     canvas.translate(offset.dx, offset.dy);
     double _size = size * 0.8;
 
-    drawSplitter(Direction.south, canvas, size, progress, entry: true);
-    drawSplitter(Direction.north, canvas, size, progress, entry: true);
-    drawSplitter(Direction.east, canvas, size, progress, entry: true);
-    drawSplitter(Direction.west, canvas, size, progress, entry: true);
+    drawRoller(Direction.north, canvas, size, progress);
+    drawRoller(Direction.west, canvas, size, progress);
+    drawRoller(Direction.east, canvas, size, progress);
+    drawRoller(Direction.south, canvas, size, progress);
 
     canvas.drawRect(Rect.fromPoints(Offset(_size * 0.4, _size * 0.4), Offset(-_size * 0.4, -_size * 0.4)), Paint()..color = Colors.grey.shade600);
 

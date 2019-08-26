@@ -19,20 +19,7 @@ class SorterOptionsWidget extends StatelessWidget {
           Text('Sort:'),
           Column(
             children: Direction.values.map((Direction d){
-              if(d == Direction.values[(sorter.direction.index + 2) % Direction.values.length]){
-                return Container(
-                  height: 80.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text('${d.toString().replaceAll('Direction.', '').toUpperCase()}'),
-                      Text('Entry point')
-                    ],
-                  ),
-                );
-              }
-
-              List<FactoryRecipeMaterialType> _filteredForDirection = sorter.directions.keys.where((FactoryRecipeMaterialType fmt) => sorter.directions[fmt] == d).toList();
+              final List<FactoryRecipeMaterialType> _filteredForDirection = sorter.directions.keys.where((FactoryRecipeMaterialType fmt) => sorter.directions[fmt] == d).toList();
 
               return Container(
                 height: 120.0,

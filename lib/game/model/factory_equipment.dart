@@ -111,6 +111,51 @@ abstract class FactoryEquipment{
     }
   }
 
+  void drawRoller(Direction d, Canvas canvas, double size, double progress){
+    switch(d){
+      case Direction.west:
+        canvas.drawRect(Rect.fromPoints(
+          Offset(size / 1.7, -size / 3),
+          Offset(size / 3, size / 3)
+        ), Paint()..color = Colors.grey);
+        for(int i = 0; i < 3; i++){
+          final double _xOffset = i * (size / 8);
+          canvas.drawLine(Offset(size / 1.7 - _xOffset, size / 3), Offset(size / 1.7 - _xOffset, -size / 3), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+        }
+        break;
+      case Direction.east:
+        canvas.drawRect(Rect.fromPoints(
+          Offset(-size / 1.7, -size / 3),
+          Offset(-size / 3, size / 3)
+        ), Paint()..color = Colors.grey);
+        for(int i = 0; i < 3; i++){
+          double _xOffset = i * (size / 8);
+          canvas.drawLine(Offset(_xOffset - size / 1.7, size / 3), Offset(_xOffset - size / 1.7, -size / 3), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+        }
+        break;
+      case Direction.south:
+        canvas.drawRect(Rect.fromPoints(
+          Offset(size / 3, -size / 3),
+          Offset(-size / 3, -size / 1.7)
+        ), Paint()..color = Colors.grey);
+        for(int i = 0; i < 3; i++){
+          double _yOffset = i * (size / 8);
+          canvas.drawLine(Offset(size / 3, _yOffset - size / 1.7), Offset(-size / 3, _yOffset - size / 1.7), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+        }
+        break;
+      case Direction.north:
+        canvas.drawRect(Rect.fromPoints(
+          Offset(size / 3, size / 3),
+          Offset(-size / 3, size / 1.7)
+        ), Paint()..color = Colors.grey);
+        for(int i = 0; i < 3; i++){
+          double _yOffset = i * (size / 8);
+          canvas.drawLine(Offset(size / 3, size / 1.7 - _yOffset), Offset(-size / 3, size / 1.7 - _yOffset), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+        }
+        break;
+    }
+  }
+
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;

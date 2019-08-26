@@ -37,9 +37,9 @@ class Sorter extends FactoryEquipment{
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-//    drawSplitter(Direction.values[(direction.index - 2) % Direction.values.length], canvas, size, progress, entry: true);
-    drawSplitter(direction, canvas, size, progress);
-    directions.values.forEach((Direction d) => drawSplitter(d, canvas, size, progress));
+    drawRoller(Direction.values[(direction.index - 2) % Direction.values.length], canvas, size, progress);
+    drawRoller(direction, canvas, size, progress);
+    directions.values.forEach((Direction d) => drawRoller(d, canvas, size, progress));
 
     canvas.restore();
   }
