@@ -71,6 +71,18 @@ class FreeRoller extends FactoryEquipment{
   }
 
   @override
+  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(0.6);
+
+    Paint _p = Paint()..color = Colors.red..style = PaintingStyle.stroke..strokeWidth = 2.0;
+    canvas.drawCircle(Offset.zero, size * 0.6, _p);
+
+    canvas.restore();
+  }
+
+  @override
   FactoryEquipment copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
     return FreeRoller(
       coordinates ?? this.coordinates,

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TextStyle;
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
@@ -40,6 +40,50 @@ class Sorter extends FactoryEquipment{
     drawRoller(Direction.values[(direction.index - 2) % Direction.values.length], canvas, size, progress);
     drawRoller(direction, canvas, size, progress);
     directions.values.forEach((Direction d) => drawRoller(d, canvas, size, progress));
+
+    canvas.restore();
+  }
+
+  @override
+  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(offset, canvas, size, progress);
+
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(0.6);
+
+    canvas.drawRect(Rect.fromPoints(
+      Offset(-size * 0.8, 0.0),
+      Offset(size * 0.8, size * 0.8),
+    ), Paint()..color = Colors.black54);
+
+    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.start));
+    _paragraphBuilder.pushStyle(TextStyle(color: Colors.white, fontSize: 6.0, fontWeight: FontWeight.w500));
+
+    Direction.values.forEach((Direction d){
+      _paragraphBuilder.addText('${directionToString(d)}\n');
+    });
+
+    Paragraph _paragraph = _paragraphBuilder.build();
+    _paragraph.layout(ParagraphConstraints(width: size * 1.6));
+
+    canvas.drawParagraph(_paragraph, Offset(-size * 0.8, size / 6));
+
+    Direction.values.forEach((Direction d){
+      List<FactoryRecipeMaterialType> _materials = directions.keys.where((FactoryRecipeMaterialType fmrt){
+        return directions[fmrt] == d;
+      }).toList();
+
+      _materials.forEach((FactoryRecipeMaterialType fmt){
+        canvas.save();
+        canvas.translate(-size * 0.45 + (size * 0.5 * (_materials.indexOf(fmt) / _materials.length)), size * 0.24 * (d.index + 1));
+        canvas.scale(0.5);
+
+        FactoryMaterial.getFromType(fmt.materialType)..state = fmt.state..drawMaterial(Offset.zero, canvas, 0.0);
+
+        canvas.restore();
+      });
+    });
 
     canvas.restore();
   }

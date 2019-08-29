@@ -355,3 +355,38 @@ class FactoryRecipeMaterialType{
   final FactoryMaterialType materialType;
   final FactoryMaterialState state;
 }
+
+String factoryMaterialToString(FactoryMaterialType fmt){
+  switch(fmt){
+    case FactoryMaterialType.iron: return 'Iron';
+    case FactoryMaterialType.copper: return 'Copper';
+    case FactoryMaterialType.diamond: return 'Diamond';
+    case FactoryMaterialType.gold: return 'Gold';
+    case FactoryMaterialType.aluminium: return 'Aluminium';
+    case FactoryMaterialType.computerChip: return 'Computer Chip';
+    case FactoryMaterialType.processor: return 'Processor';
+    case FactoryMaterialType.engine: return 'Engine';
+    case FactoryMaterialType.heaterPlate: return 'Heater Plate';
+    case FactoryMaterialType.coolerPlate: return 'Cooler Plate';
+    case FactoryMaterialType.lightBulb: return 'Light Bulb';
+    case FactoryMaterialType.clock: return 'Clock';
+    case FactoryMaterialType.railway: return 'Railway';
+    case FactoryMaterialType.battery: return 'Battery';
+    case FactoryMaterialType.drone: return 'Drone';
+    case FactoryMaterialType.antenna: return 'Antenna';
+    case FactoryMaterialType.grill: return 'Grill';
+    default: return '';
+  }
+}
+
+String factoryMaterialStateToString(FactoryMaterialState state){
+  switch(state){
+    case FactoryMaterialState.raw: return 'Raw';
+    case FactoryMaterialState.plate: return 'Plate';
+    case FactoryMaterialState.gear: return 'Gear';
+    case FactoryMaterialState.spring: return 'Spring';
+    case FactoryMaterialState.fluid: return 'Fluid';
+    case FactoryMaterialState.crafted: return 'Crafted';
+    default: return '';
+  }
+}

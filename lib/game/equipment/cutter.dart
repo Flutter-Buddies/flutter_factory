@@ -100,11 +100,10 @@ class Cutter extends FactoryEquipment{
 
   @override
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
-    super.drawTrack(offset, canvas, size, progress);
-
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
+    drawRoller(direction, canvas, size, progress);
     if(direction == Direction.east || direction == Direction.west){
       canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
       for(int i = 0; i < 3; i++){

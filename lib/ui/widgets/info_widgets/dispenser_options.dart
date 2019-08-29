@@ -43,7 +43,7 @@ class DispenserOptionsWidget extends StatelessWidget {
                         ),
                         Container(
                           margin: const EdgeInsets.only(left: 12.0),
-                          child: Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
+                          child: Text('${factoryMaterialToString(fmt)}'),
                         ),
                       ],
                     ),

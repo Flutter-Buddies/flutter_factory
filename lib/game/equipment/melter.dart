@@ -91,6 +91,7 @@ class Melter extends FactoryEquipment{
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
+    drawRoller(direction, canvas, size, progress);
 
     if(direction == Direction.east || direction == Direction.west){
       canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);

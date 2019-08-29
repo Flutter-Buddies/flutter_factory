@@ -180,6 +180,92 @@ abstract class FactoryEquipment{
     });
   }
 
+  void paintInfo(Offset offset, Canvas canvas, double size, double progress){
+    double x = offset.dx;
+    double y = offset.dy;
+
+    Paint _p = Paint()
+      ..color = Colors.red
+      ..strokeWidth = 1.0;
+
+    switch(direction){
+      case Direction.east:{
+        canvas.drawLine(
+          Offset(x - size / 2.2, y),
+          Offset(x + size / 2.2, y),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x + size / 2.2, y),
+          Offset(x, y + size / 2.5),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x + size / 2.2, y),
+          Offset(x, y - size / 2.5),
+          _p
+        );
+        break;
+      }
+      case Direction.west:{
+        canvas.drawLine(
+          Offset(x - size / 2.2, y),
+          Offset(x + size / 2.2, y),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x - size / 2.2, y),
+          Offset(x, y + size / 2.5),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x - size / 2.2, y),
+          Offset(x, y - size / 2.5),
+          _p
+        );
+        break;
+      }
+      case Direction.south:{
+        canvas.drawLine(
+          Offset(x, y - size / 2.2),
+          Offset(x, y + size / 2.2),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x - size / 2.5, y),
+          Offset(x, y - size / 2.2),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x + size / 2.5, y),
+          Offset(x, y - size / 2.2),
+          _p
+        );
+        break;
+      }
+      case Direction.north:{
+        canvas.drawLine(
+          Offset(x, y - size / 2.2),
+          Offset(x, y + size / 2.2),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x - size / 2.5, y),
+          Offset(x, y + size / 2.2),
+          _p
+        );
+        canvas.drawLine(
+          Offset(x + size / 2.5, y),
+          Offset(x, y + size / 2.2),
+          _p
+        );
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   Map<String, dynamic> toMap(){
     return <String, dynamic>{
       'equipment_type': type.index,
@@ -196,4 +282,19 @@ enum Direction{
 
 enum EquipmentType{
   dispenser, roller, freeRoller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter
+}
+
+String directionToString(Direction d){
+  switch(d){
+    case Direction.south:
+      return '↑';
+    case Direction.east:
+      return '→';
+    case Direction.north:
+      return '↓';
+    case Direction.west:
+      return '←';
+    default:
+      return '';
+  }
 }

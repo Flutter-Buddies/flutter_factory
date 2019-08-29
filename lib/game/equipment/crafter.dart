@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TextStyle;
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
@@ -99,6 +99,43 @@ class Crafter extends FactoryEquipment{
     canvas.scale(0.6);
     FactoryMaterial.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
 //    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
+    canvas.restore();
+  }
+
+  @override
+  void drawTrack(Offset offset, Canvas canvas, double size, double progress){
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+
+    drawRoller(direction, canvas, size, progress);
+    //    inputDirections.keys.forEach((Direction d) => drawSplitter(d, canvas, size, progress));
+
+    canvas.restore();
+  }
+
+  @override
+  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(offset, canvas, size, progress);
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(0.6);
+
+    canvas.drawRect(Rect.fromPoints(
+      Offset(-size * 0.8, 0.0),
+      Offset(size * 0.8, size * 0.8),
+    ), Paint()..color = Colors.black54);
+
+    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
+    _paragraphBuilder.pushStyle(TextStyle(color: Colors.white, fontSize: 6.0, fontWeight: FontWeight.w500));
+    _paragraphBuilder.addText('${factoryMaterialToString(craftMaterial)}\n');
+    _paragraphBuilder.addText('Queue: ${objects.length}');
+
+    Paragraph _paragraph = _paragraphBuilder.build();
+    _paragraph.layout(ParagraphConstraints(width: size * 2));
+
+    canvas.drawParagraph(_paragraph, Offset(-size, size / 6));
+
+
     canvas.restore();
   }
 

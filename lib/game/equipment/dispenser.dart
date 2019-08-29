@@ -73,7 +73,7 @@ class Dispenser extends FactoryEquipment{
     FactoryMaterial.getFromType(dispenseMaterial).drawMaterial(Offset.zero, canvas, progress);
 //    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
 //    _paragraphBuilder.pushStyle(TextStyle(color: Colors.black87));
-//    _paragraphBuilder.addText(dispenseMaterial.toString().replaceAll('FactoryMaterialType.', ''));
+//    _paragraphBuilder.addText(factoryMaterialToString(dispenseMaterial));
 //
 //    Paragraph _paragraph = _paragraphBuilder.build();
 //    _paragraph.layout(ParagraphConstraints(width: size));
@@ -112,6 +112,31 @@ class Dispenser extends FactoryEquipment{
     _materials.forEach((FactoryMaterial fm){
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
+  }
+
+  @override
+  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(offset, canvas, size, progress);
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(0.6);
+
+    canvas.drawRect(Rect.fromPoints(
+      Offset(-size * 0.8, 0.0),
+      Offset(size * 0.8, size * 0.8),
+    ), Paint()..color = Colors.black54);
+
+    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
+    _paragraphBuilder.pushStyle(TextStyle(color: Colors.white, fontSize: 6.0, fontWeight: FontWeight.w500));
+    _paragraphBuilder.addText('${factoryMaterialToString(dispenseMaterial)} x ${dispenseAmount}');
+
+    Paragraph _paragraph = _paragraphBuilder.build();
+    _paragraph.layout(ParagraphConstraints(width: size * 2));
+
+    canvas.drawParagraph(_paragraph, Offset(-size, size / 6));
+
+
+    canvas.restore();
   }
 
   @override

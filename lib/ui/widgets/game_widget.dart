@@ -144,7 +144,7 @@ class GamePainter extends CustomPainter{
       fe.drawEquipment(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
 
       if(bloc.showArrows){
-        _paintArrows(fe.coordinates.x, fe.coordinates.y, canvas, fe);
+        fe.paintInfo(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
       }
     });
 
@@ -157,89 +157,6 @@ class GamePainter extends CustomPainter{
     });
 
     canvas.restore();
-  }
-
-  void _paintArrows(int x, int y, Canvas canvas, FactoryEquipment equipment){
-    Paint _p = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 1.0;
-
-    switch(equipment.direction){
-      case Direction.east:{
-        canvas.drawLine(
-          Offset(x * cubeSize - cubeSize / 2.2, y * cubeSize),
-          Offset(x * cubeSize + cubeSize / 2.2, y * cubeSize),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize + cubeSize / 2.2, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize + cubeSize / 2.5),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize + cubeSize / 2.2, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize - cubeSize / 2.5),
-          _p
-        );
-        break;
-      }
-      case Direction.west:{
-        canvas.drawLine(
-          Offset(x * cubeSize - cubeSize / 2.2, y * cubeSize),
-          Offset(x * cubeSize + cubeSize / 2.2, y * cubeSize),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize - cubeSize / 2.2, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize + cubeSize / 2.5),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize - cubeSize / 2.2, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize - cubeSize / 2.5),
-          _p
-        );
-        break;
-      }
-      case Direction.south:{
-        canvas.drawLine(
-          Offset(x * cubeSize, y * cubeSize - cubeSize / 2.2),
-          Offset(x * cubeSize, y * cubeSize + cubeSize / 2.2),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize - cubeSize / 2.5, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize - cubeSize / 2.2),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize + cubeSize / 2.5, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize - cubeSize / 2.2),
-          _p
-        );
-        break;
-      }
-      case Direction.north:{
-        canvas.drawLine(
-          Offset(x * cubeSize, y * cubeSize - cubeSize / 2.2),
-          Offset(x * cubeSize, y * cubeSize + cubeSize / 2.2),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize - cubeSize / 2.5, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize + cubeSize / 2.2),
-          _p
-        );
-        canvas.drawLine(
-          Offset(x * cubeSize + cubeSize / 2.5, y * cubeSize),
-          Offset(x * cubeSize, y * cubeSize + cubeSize / 2.2),
-          _p
-        );
-        break;
-      }
-      default:
-        break;
-    }
   }
 
   @override

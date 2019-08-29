@@ -71,7 +71,7 @@ class BuildEquipmentWidget extends StatelessWidget {
                             value: et,
                             child: Container(
                               margin: const EdgeInsets.all(12.0),
-                              child: Text('${_directionToString(et)}')
+                              child: Text('${directionToString(et)}')
                             ),
                           );
                         }).toList()
@@ -100,20 +100,5 @@ class BuildEquipmentWidget extends StatelessWidget {
         );
       }
     );
-  }
-
-  String _directionToString(Direction d){
-    switch(d){
-      case Direction.south:
-        return '↑';
-      case Direction.east:
-        return '→';
-      case Direction.north:
-        return '↓';
-      case Direction.west:
-        return '←';
-      default:
-        return '';
-    }
   }
 }

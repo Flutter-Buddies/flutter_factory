@@ -26,7 +26,7 @@ class SorterOptionsWidget extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('${d.toString().replaceAll('Direction.', '').toUpperCase()} - (${sorter.directions.values.where((Direction _d) => _d == d).length})'),
+                    Text('${d == sorter.direction ? 'MAIN EXIT - ' : ''}${directionToString(d)} - (${sorter.directions.values.where((Direction _d) => _d == d).length})'),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,7 +45,7 @@ class SorterOptionsWidget extends StatelessWidget {
                               ),
                               Container(
                                 margin: const EdgeInsets.only(left: 12.0),
-                                child: Text('${fmt.materialType.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()} ${fmt.state.toString().replaceAll('FactoryMaterialState.', '').toUpperCase()}'),
+                                child: Text('${factoryMaterialToString(fmt.materialType)} ${factoryMaterialStateToString(fmt.state)}'),
                               ),
                             ],
                           ),
@@ -69,7 +69,7 @@ class SorterOptionsWidget extends StatelessWidget {
                           FactoryMaterialState.values.where((FactoryMaterialState fms) => fms.index < FactoryMaterialState.crafted.index).forEach((FactoryMaterialState fms){
                             _itemsList.add(PopupMenuItem<FactoryRecipeMaterialType>(
                               value: FactoryRecipeMaterialType(fmt, state: fms),
-                              child: Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()} ${fms == FactoryMaterialState.raw ? '' : fms.toString().replaceAll('FactoryMaterialState.', '').toUpperCase()}'),
+                              child: Text('${factoryMaterialToString(fmt)} ${fms == FactoryMaterialState.raw ? '' : factoryMaterialStateToString(fms)}'),
                             ));
                           });
                         });
@@ -77,7 +77,7 @@ class SorterOptionsWidget extends StatelessWidget {
                         _itemsList.addAll(FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt) && (!sorter.directions.containsKey(fmt) || sorter.directions[fmt] != d)).map((FactoryMaterialType fmt){
                           return PopupMenuItem<FactoryRecipeMaterialType>(
                             value: FactoryRecipeMaterialType(fmt),
-                            child: Text('${fmt.toString().replaceAll('FactoryMaterialType.', '').toUpperCase()}'),
+                            child: Text('${factoryMaterialToString(fmt)}'),
                           );
                         }));
 

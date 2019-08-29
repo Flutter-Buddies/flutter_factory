@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TextStyle;
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material.dart';
@@ -30,8 +30,22 @@ class Splitter extends FactoryEquipment{
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    drawSplitter(Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress, entry: true);
-    directions.forEach((Direction d) => drawSplitter(d, canvas, size, progress));
+    directions.forEach((Direction d){
+      if(d == Direction.values[(direction.index + 2) % Direction.values.length]){
+        drawRoller(d, canvas, size, progress);
+      }else{
+        drawSplitter(d, canvas, size, progress);
+      }
+    });
+
+    if(directions.contains(Direction.values[(direction.index + 2) % Direction.values.length])){
+      canvas.save();
+      canvas.translate(0.0, -size / 4);
+      drawRoller(Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress);
+      canvas.restore();
+    }else{
+      drawSplitter(Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress, entry: true);
+    }
 
     canvas.restore();
   }
@@ -59,6 +73,35 @@ class Splitter extends FactoryEquipment{
 
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
+  }
+
+  @override
+  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(offset, canvas, size, progress);
+
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(0.6);
+
+    canvas.drawRect(Rect.fromPoints(
+      Offset(-size * 0.8, 0.0),
+      Offset(size * 0.8, size * 0.8),
+    ), Paint()..color = Colors.black54);
+
+    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
+    _paragraphBuilder.pushStyle(TextStyle(color: Colors.white, fontSize: 6.0, fontWeight: FontWeight.w500));
+
+    Direction.values.forEach((Direction d){
+      _paragraphBuilder.addText('${directionToString(d)} x ${directions.where((Direction dd) => dd == d).length ?? 0}${d.index == 1 ? '\n' : '  '}');
+    });
+
+    Paragraph _paragraph = _paragraphBuilder.build();
+    _paragraph.layout(ParagraphConstraints(width: size * 2));
+
+    canvas.drawParagraph(_paragraph, Offset(-size, size / 6));
+
+
+    canvas.restore();
   }
 
   @override
