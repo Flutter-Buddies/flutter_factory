@@ -202,7 +202,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                         Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
                         Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
                         Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
-                        Text('FPS: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
+                        Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
                       ],
                     ),
                   )
@@ -214,18 +214,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   child: Row(
                     children: <Widget>[
                       FloatingActionButton(
-                        key: Key('rotate_+'),
-                        backgroundColor: Colors.blue.shade700,
-                        onPressed: (){
-                          _selectedEquipment.forEach((FactoryEquipmentModel fem){
-                            fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
-                          });
-                        },
-                        child: Icon(Icons.rotate_left),
-                      ),
-                      SizedBox(width: 12.0,),
-                      FloatingActionButton(
-                        key: Key('rotate_-'),
+                        key: Key('rotate_ccw'),
                         backgroundColor: Colors.blue.shade700,
                         onPressed: (){
                           _selectedEquipment.forEach((FactoryEquipmentModel fem){
@@ -233,6 +222,17 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                           });
                         },
                         child: Icon(Icons.rotate_right),
+                      ),
+                      SizedBox(width: 12.0,),
+                      FloatingActionButton(
+                        key: Key('rotate_cw'),
+                        backgroundColor: Colors.blue.shade700,
+                        onPressed: (){
+                          _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                            fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
+                          });
+                        },
+                        child: Icon(Icons.rotate_left),
                       ),
                     ],
                   ),

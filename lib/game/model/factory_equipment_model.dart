@@ -35,8 +35,8 @@ abstract class FactoryEquipmentModel{
       inputDirections.remove(d);
     }
 
-    if(objects.length > 10){
-      objects.removeAt(0);
+    if(objects.length > 1000){
+      objects.removeRange(0, objects.length - 900);
     }
 
     objects.add(m);
