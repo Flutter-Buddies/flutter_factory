@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/splitter.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 
 class SplitterOptionsWidget extends StatelessWidget {
   SplitterOptionsWidget({@required this.splitter, Key key}) : super(key: key);

@@ -1,11 +1,6 @@
-import 'dart:ui';
+part of factory_equipment;
 
-import 'package:flutter/material.dart' hide TextStyle;
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Splitter extends FactoryEquipment{
+class Splitter extends FactoryEquipmentModel{
   Splitter(Coordinates coordinates, Direction equipmentDirection, this.directions) : super(coordinates, equipmentDirection, EquipmentType.splitter);
 
   final List<Direction> directions;
@@ -13,11 +8,11 @@ class Splitter extends FactoryEquipment{
   int splitCounter = 0;
 
   @override
-  List<FactoryMaterial> tick() {
-    final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(objects);
+  List<FactoryMaterialModel> tick() {
+    final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(objects);
     objects.clear();
 
-    _fm.map((FactoryMaterial fm){
+    _fm.map((FactoryMaterialModel fm){
       fm.direction = directions[splitCounter % directions.length];
       fm.moveMaterial();
       splitCounter++;
@@ -52,7 +47,7 @@ class Splitter extends FactoryEquipment{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress) {
-    objects.forEach((FactoryMaterial fm){
+    objects.forEach((FactoryMaterialModel fm){
       double _moveX = 0.0;
       double _moveY = 0.0;
 
@@ -105,7 +100,7 @@ class Splitter extends FactoryEquipment{
   }
 
   @override
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
     return Splitter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,

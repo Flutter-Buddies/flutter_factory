@@ -2,12 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 
-abstract class FactoryEquipment{
-  FactoryEquipment(this.coordinates, this.direction, this.type, {this.tickDuration = 1});
+abstract class FactoryEquipmentModel{
+  FactoryEquipmentModel(this.coordinates, this.direction, this.type, {this.tickDuration = 1});
 
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction});
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction});
 
   Coordinates coordinates;
   Direction direction;
@@ -18,9 +18,9 @@ abstract class FactoryEquipment{
   int tickDuration;
   int counter = 0;
 
-  final List<FactoryMaterial> objects = <FactoryMaterial>[];
+  final List<FactoryMaterialModel> objects = <FactoryMaterialModel>[];
 
-  void input(FactoryMaterial m){
+  void input(FactoryMaterialModel m){
     final Direction d = Direction.values[(m.direction.index + 2) % Direction.values.length];
 
     if(!inputDirections.containsKey(d)){
@@ -59,9 +59,9 @@ abstract class FactoryEquipment{
     return o;
   }
 
-  List<FactoryMaterial> tick();
+  List<FactoryMaterialModel> tick();
 
-  List<FactoryMaterial> equipmentTick(){
+  List<FactoryMaterialModel> equipmentTick(){
     counter++;
     return tick();
   }
@@ -113,7 +113,7 @@ abstract class FactoryEquipment{
 
   void drawRoller(Direction d, Canvas canvas, double size, double progress){
     switch(d){
-      case Direction.west:
+      case Direction.east:
         canvas.drawRect(Rect.fromPoints(
           Offset(size / 1.7, -size / 3),
           Offset(size / 3, size / 3)
@@ -123,7 +123,7 @@ abstract class FactoryEquipment{
           canvas.drawLine(Offset(size / 1.7 - _xOffset, size / 3), Offset(size / 1.7 - _xOffset, -size / 3), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
         }
         break;
-      case Direction.east:
+      case Direction.west:
         canvas.drawRect(Rect.fromPoints(
           Offset(-size / 1.7, -size / 3),
           Offset(-size / 3, size / 3)
@@ -175,7 +175,7 @@ abstract class FactoryEquipment{
         break;
     }
 
-    objects.forEach((FactoryMaterial fm){
+    objects.forEach((FactoryMaterialModel fm){
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
   }

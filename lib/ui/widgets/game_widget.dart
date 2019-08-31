@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 
@@ -68,9 +68,9 @@ class _GameWidgetState extends State<GameWidget> {
             if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
             }else{
-              final FactoryEquipment _se = _bloc.equipment.firstWhere((FactoryEquipment fe) => fe.coordinates == _coordinate, orElse: () => null);
-              final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _selected.contains(fe.coordinates)).toList();
-              final bool _isSameEquipment = _selectedEquipment.isEmpty || (_selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _selected.length && (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first?.type));
+              final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+              final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _selected.contains(fe.coordinates)).toList();
+              final bool _isSameEquipment = _selectedEquipment.isEmpty || (_selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _selected.length && (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first?.type));
 
               if(_selected.isNotEmpty && ((_selectedEquipment.isEmpty && _se != null) || (_selectedEquipment.isNotEmpty && _se == null) || !(_isSameEquipment || (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first.type)))){
                 _selected.clear();
@@ -132,15 +132,15 @@ class GamePainter extends CustomPainter{
       );
     });
 
-    bloc.equipment.forEach((FactoryEquipment fe){
+    bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawTrack(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
     });
 
-    bloc.equipment.forEach((FactoryEquipment fe){
+    bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawMaterial(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
     });
 
-    bloc.equipment.forEach((FactoryEquipment fe){
+    bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawEquipment(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
 
       if(bloc.showArrows){
@@ -148,7 +148,7 @@ class GamePainter extends CustomPainter{
       }
     });
 
-    bloc.getExcessMaterial.forEach((FactoryMaterial fm){
+    bloc.getExcessMaterial.forEach((FactoryMaterialModel fm){
       if(bloc.getLastExcessMaterial.contains(fm)){
         fm.drawMaterial(Offset(fm.offsetX + fm.x * cubeSize, fm.offsetY + fm.y * cubeSize), canvas, bloc.progress, opacity: 1.0 - bloc.progress);
       }else{

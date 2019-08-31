@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/crafter.dart';
-import 'package:flutter_factory/game/equipment/dispenser.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
-import 'package:flutter_factory/ui/widgets/backdrop.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_ticker.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
@@ -121,24 +119,25 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
       return null;
     }
 
-
-    final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
-    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
+    final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
+    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
 
     if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
       return FloatingActionButton(
+        key: Key('delete_fab'),
         backgroundColor: Colors.red,
         onPressed: (){
-          _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+          _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
         },
         child: Icon(Icons.clear),
       );
     }
 
-    final FactoryEquipment _equipment = _bloc.equipment.firstWhere((FactoryEquipment fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
+    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
 
     if(_equipment == null){
       return FloatingActionButton(
+        key: Key('build_fab'),
         backgroundColor: Colors.green,
         onPressed: (){
           showModalBottomSheet<void>(
@@ -152,6 +151,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
       );
     }else{
       return FloatingActionButton(
+        key: Key('info_fab'),
         backgroundColor: Colors.yellow.shade700,
         onPressed: (){
           showModalBottomSheet<void>(
@@ -178,6 +178,8 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
     return StreamBuilder<GameUpdate>(
       stream: _bloc.gameUpdate,
       builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
+        final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
+
         return Scaffold(
           drawer: _showSettings(),
           floatingActionButton: _showFab(),
@@ -205,6 +207,36 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                     ),
                   )
                 ),
+
+                _selectedEquipment.isEmpty ? SizedBox.shrink() : Positioned(
+                  bottom: 12,
+                  left: 12,
+                  child: Row(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        key: Key('rotate_+'),
+                        backgroundColor: Colors.blue.shade700,
+                        onPressed: (){
+                          _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                            fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
+                          });
+                        },
+                        child: Icon(Icons.rotate_left),
+                      ),
+                      SizedBox(width: 12.0,),
+                      FloatingActionButton(
+                        key: Key('rotate_-'),
+                        backgroundColor: Colors.blue.shade700,
+                        onPressed: (){
+                          _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                            fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
+                          });
+                        },
+                        child: Icon(Icons.rotate_right),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -222,8 +254,8 @@ class InfoWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _options = <Widget>[];
-    final List<FactoryEquipment> _selectedEquipment = _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
-    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipment fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
+    final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
+    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
 
     if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
       return Container(
@@ -264,7 +296,7 @@ class InfoWindow extends StatelessWidget {
               onPressed: (){
                 print('Delete');
 
-                _bloc.equipment.where((FactoryEquipment fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+                _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
 
                 _bloc.changeWindow(GameWindows.buy);
               },
@@ -279,7 +311,7 @@ class InfoWindow extends StatelessWidget {
       );
     }
 
-    final FactoryEquipment _equipment = _bloc.equipment.firstWhere((FactoryEquipment fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
+    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
 
     Widget _buildNoEquipment(){
       return BuildEquipmentWidget(_bloc);
@@ -294,7 +326,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showDispenserOptions(){
-      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipment fe) => fe is Dispenser).map<Dispenser>((FactoryEquipment fe) => fe).toList(), progress: _bloc.progress);
+      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Dispenser).map<Dispenser>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
     }
 
     Widget _showSplitterOptions(){
@@ -306,7 +338,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showCrafterOptions(){
-      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipment fe) => fe is Crafter).map<Crafter>((FactoryEquipment fe) => fe).toList(), progress: _bloc.progress);
+      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Crafter).map<Crafter>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
     }
 
     Widget _showRotationOptions(){

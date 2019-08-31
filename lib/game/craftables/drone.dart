@@ -1,9 +1,6 @@
-import 'dart:math';
+part of factory_material;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Drone extends FactoryMaterial{
+class Drone extends FactoryMaterialModel{
   Drone.fromOffset(Offset o) : super(o.dx, o.dy, 13000.0, FactoryMaterialType.drone, state: FactoryMaterialState.crafted);
 
   Drone.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
@@ -13,7 +10,7 @@ class Drone extends FactoryMaterial{
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
 
-    double _size = size * 0.8;
+    double _size = size * 0.6;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -48,10 +45,10 @@ class Drone extends FactoryMaterial{
     _p.strokeCap = StrokeCap.round;
     _p.strokeWidth = 0.2;
 
-    canvas.drawCircle(Offset(-_size * 0.9, -_size * 0.9), 4.2, _p);
-    canvas.drawCircle(Offset(-_size * 0.9, _size * 0.9), 4.2, _p);
-    canvas.drawCircle(Offset(_size * 0.9, -_size * 0.9), 4.2, _p);
-    canvas.drawCircle(Offset(_size * 0.9, _size * 0.9), 4.2, _p);
+    canvas.drawCircle(Offset(-_size * 0.9, -_size * 0.9), _size * 0.8, _p);
+    canvas.drawCircle(Offset(-_size * 0.9, _size * 0.9), _size * 0.8, _p);
+    canvas.drawCircle(Offset(_size * 0.9, -_size * 0.9), _size * 0.8, _p);
+    canvas.drawCircle(Offset(_size * 0.9, _size * 0.9), _size * 0.8, _p);
 
     canvas.restore();
   }
@@ -66,7 +63,7 @@ class Drone extends FactoryMaterial{
   }
 
   @override
-  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+  FactoryMaterialModel copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
     return Drone.custom(
       x: x ?? this.x,
       y: y ?? this.y,

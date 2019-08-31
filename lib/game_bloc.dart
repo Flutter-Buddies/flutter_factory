@@ -3,25 +3,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_factory/game/equipment/crafter.dart';
-import 'package:flutter_factory/game/equipment/free_roller.dart';
-import 'package:flutter_factory/game/equipment/roller.dart';
-import 'package:flutter_factory/game/equipment/seller.dart';
-import 'package:flutter_factory/game/equipment/sorter.dart';
-import 'package:flutter_factory/game/equipment/splitter.dart';
-import 'package:flutter_factory/game/equipment/dispenser.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:objectdb/objectdb.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'game/equipment/cutter.dart';
-import 'game/equipment/hydraulic_press.dart';
-import 'game/equipment/melter.dart';
-import 'game/equipment/wire_bender.dart';
+import 'game/factory_material.dart';
 
 enum GameWindows{
   buy, settings
@@ -134,13 +126,13 @@ class GameBloc{
     _waitForTick();
   }
 
-  void addEquipment(FactoryEquipment equipment){
+  void addEquipment(FactoryEquipmentModel equipment){
     _equipment.add(equipment);
     _gameUpdate.add(GameUpdate.addEquipment);
   }
 
   void buildSelected(){
-    void _addEquipment(FactoryEquipment e){
+    void _addEquipment(FactoryEquipmentModel e){
       selectedTiles.forEach((Coordinates c){
         _equipment.add(e.copyWith(coordinates: c));
       });
@@ -185,7 +177,7 @@ class GameBloc{
     _saveFactory();
   }
 
-  FactoryEquipment previewEquipment(EquipmentType type){
+  FactoryEquipmentModel previewEquipment(EquipmentType type){
     switch(type){
       case EquipmentType.dispenser:
         return Dispenser(selectedTiles.first, buildSelectedEquipmentDirection, FactoryMaterialType.iron);
@@ -214,10 +206,10 @@ class GameBloc{
     return null;
   }
 
-  List<FactoryMaterial> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterial>[], (List<FactoryMaterial> _folded, List<FactoryMaterial> _m) => _folded..addAll(_m)).toList();
-  List<FactoryMaterial> get getLastExcessMaterial => _excessMaterial.first;
-  List<FactoryEquipment> get equipment => _equipment;
-  List<FactoryMaterial> get material => _equipment.map((FactoryEquipment fe) => fe.objects).fold(<FactoryMaterial>[], (List<FactoryMaterial> _fm, List<FactoryMaterial> _em) => _fm..addAll(_em)).toList();
+  List<FactoryMaterialModel> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _folded, List<FactoryMaterialModel> _m) => _folded..addAll(_m)).toList();
+  List<FactoryMaterialModel> get getLastExcessMaterial => _excessMaterial.first;
+  List<FactoryEquipmentModel> get equipment => _equipment;
+  List<FactoryMaterialModel> get material => _equipment.map((FactoryEquipmentModel fe) => fe.objects).fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _fm, List<FactoryMaterialModel> _em) => _fm..addAll(_em)).toList();
 
   void clearLine(){
     _equipment.clear();
@@ -225,7 +217,7 @@ class GameBloc{
     _saveFactory();
   }
 
-  void removeEquipment(FactoryEquipment equipment){
+  void removeEquipment(FactoryEquipmentModel equipment){
     if(_equipment.contains(equipment)){
       _equipment.remove(equipment);
 
@@ -233,7 +225,7 @@ class GameBloc{
     }
   }
 
-  void loadLine(List<FactoryEquipment> newLine){
+  void loadLine(List<FactoryEquipmentModel> newLine){
     _equipment.clear();
     _equipment.addAll(newLine);
 
@@ -241,22 +233,22 @@ class GameBloc{
   }
 
   void _tick(){
-    List<FactoryMaterial> _material;
+    List<FactoryMaterialModel> _material;
 
     if(_duration.inMilliseconds ~/ _tickSpeed == _lastTrigger ~/ _tickSpeed){
-      _material = _equipment.fold(<FactoryMaterial>[], (List<FactoryMaterial> _material, FactoryEquipment e) => _material..addAll(e.objects));
+      _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.objects));
     }else{
-      _material = _equipment.fold(<FactoryMaterial>[], (List<FactoryMaterial> _material, FactoryEquipment e) => _material..addAll(e.equipmentTick()));
+      _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
       _lastTrigger = _duration.inMilliseconds;
 
       if(_excessMaterial.length > _excessMaterialCleanup){
         _excessMaterial.removeAt(0);
       }
 
-      final List<FactoryMaterial> _excess = <FactoryMaterial>[];
+      final List<FactoryMaterialModel> _excess = <FactoryMaterialModel>[];
 
-      _material.forEach((FactoryMaterial fm){
-        FactoryEquipment _e = _equipment.firstWhere((FactoryEquipment fe) => fe.coordinates.x == fm.x.floor() && fe.coordinates.y == fm.y.floor(), orElse: () => null);
+      _material.forEach((FactoryMaterialModel fm){
+        FactoryEquipmentModel _e = _equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates.x == fm.x.floor() && fe.coordinates.y == fm.y.floor(), orElse: () => null);
         if(_e != null){
           _e.input(fm);
         }else{
@@ -275,8 +267,8 @@ class GameBloc{
     _gameUpdate.add(GameUpdate.windowChange);
   }
 
-  final List<FactoryEquipment> _equipment = <FactoryEquipment>[];
-  final List<List<FactoryMaterial>> _excessMaterial = <List<FactoryMaterial>>[];
+  final List<FactoryEquipmentModel> _equipment = <FactoryEquipmentModel>[];
+  final List<List<FactoryMaterialModel>> _excessMaterial = <List<FactoryMaterialModel>>[];
 
   final int _excessMaterialCleanup = 2;
 
@@ -290,16 +282,16 @@ class GameBloc{
   }
 
   Map<String, dynamic> toMap(){
-    final List<String> _equipmentMap = equipment.map((FactoryEquipment fe) => json.encode(fe.toMap())).toList();
+    final List<String> _equipmentMap = equipment.map((FactoryEquipmentModel fe) => json.encode(fe.toMap())).toList();
 
     return <String, dynamic>{
       'factory_floor': _factoryFloor,
-      'equipment': _equipmentMap
+      'equipment': _equipmentMap,
     };
   }
 
 
-  FactoryEquipment _equipmentFromMap(String jsonMap){
+  FactoryEquipmentModel _equipmentFromMap(String jsonMap){
     final Map<String, dynamic> map = json.decode(jsonMap);
 
     switch(EquipmentType.values[map['equipment_type']]){
@@ -333,6 +325,53 @@ class GameBloc{
         return Melter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], meltCapacity: map['melt_capacity']);
       case EquipmentType.freeRoller:
         return FreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
+    }
+
+    return null;
+  }
+
+  FactoryMaterialModel _materialFromMap(String jsonMap){
+    final Map<String, dynamic> map = json.decode(jsonMap);
+
+    switch(FactoryMaterialType.values[map['material_type']]){
+      case FactoryMaterialType.iron:
+        return Iron.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.copper:
+        return Copper.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.diamond:
+        return Diamond.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.gold:
+        return Gold.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.aluminium:
+        return Aluminium.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.computerChip:
+        return ComputerChip.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.processor:
+        return Processor.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.engine:
+        return Engine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.heaterPlate:
+        return HeaterPlate.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.coolerPlate:
+        return CoolerPlate.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.lightBulb:
+        return LightBulb.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.clock:
+        return Clock.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.railway:
+        return Railway.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.battery:
+        return Battery.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.drone:
+        return Drone.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.antenna:
+        return Antenna.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.grill:
+        return Grill.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.airCondition:
+        return AirConditioner.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+      case FactoryMaterialType.washingMachine:
+        return WashingMachine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
     }
 
     return null;

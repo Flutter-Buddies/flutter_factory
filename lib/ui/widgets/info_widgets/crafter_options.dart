@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/crafter.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class CrafterOptionsWidget extends StatefulWidget {
@@ -19,7 +19,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
   @override
   Widget build(BuildContext context) {
     Crafter _showFirst = widget.crafter.first;
-    Map<FactoryRecipeMaterialType, int> _craftMaterial = FactoryMaterial.getRecipeFromType(_showFirst.craftMaterial);
+    Map<FactoryRecipeMaterialType, int> _craftMaterial = FactoryMaterialModel.getRecipeFromType(_showFirst.craftMaterial);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -52,7 +52,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                               child: CustomPaint(
                                 painter: ObjectPainter(
                                   widget.progress,
-                                  material: FactoryMaterial.getFromType(_showFirst.craftMaterial),
+                                  material: FactoryMaterialModel.getFromType(_showFirst.craftMaterial),
                                 ),
                               ),
                             ),
@@ -69,7 +69,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                     child: CustomPaint(
                                       painter: ObjectPainter(
                                         widget.progress,
-                                        material: FactoryMaterial.getFromType(fmrt.materialType)..state = fmrt.state,
+                                        material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
                                       ),
                                     ),
                                   ),
@@ -86,8 +86,8 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                   );
                 },
                 body: Column(
-                  children: FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt)).map((FactoryMaterialType fmt){
-                    Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterial.getRecipeFromType(fmt);
+                  children: FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterialModel.isRaw(fmt)).map((FactoryMaterialType fmt){
+                    Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterialModel.getRecipeFromType(fmt);
 
                     return InkWell(
                       onTap: (){
@@ -123,7 +123,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                 child: CustomPaint(
                                                   painter: ObjectPainter(
                                                     widget.progress,
-                                                    material: FactoryMaterial.getFromType(fmrt.materialType)..state = fmrt.state,
+                                                    material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
                                                   ),
                                                 ),
                                               ),
@@ -143,7 +143,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                   child: CustomPaint(
                                     painter: ObjectPainter(
                                       widget.progress,
-                                      material: FactoryMaterial.getFromType(fmt),
+                                      material: FactoryMaterialModel.getFromType(fmt),
                                     ),
                                   ),
                                 ),
@@ -191,7 +191,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
               Text('Craft queue:'),
               Column(
                 children: FactoryMaterialType.values.where((FactoryMaterialType type){
-                  return _showFirst.objects.where((FactoryMaterial _fm) => _fm.type == type).isNotEmpty;
+                  return _showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == type).isNotEmpty;
                 }).map((FactoryMaterialType fmt){
                   return Chip(
                     label: Column(
@@ -206,7 +206,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                   child: CustomPaint(
                                     painter: ObjectPainter(
                                       widget.progress,
-                                      material: FactoryMaterial.getFromType(fmt)
+                                      material: FactoryMaterialModel.getFromType(fmt)
                                     ),
                                   ),
                                 ),
@@ -221,12 +221,12 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                 borderRadius: BorderRadius.circular(20.0),
                                 color: Colors.grey.shade800
                               ),
-                              child: Center(child: Text('${_showFirst.objects.where((FactoryMaterial _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
+                              child: Center(child: Text('${_showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == fmt).length}', style: TextStyle(color: Colors.white),))
                             ),
                           ],
                         ),
 
-                        FactoryMaterial.isRaw(fmt) ? Row(
+                        FactoryMaterialModel.isRaw(fmt) ? Row(
                           children: FactoryMaterialState.values.where((FactoryMaterialState fms) => fms.index < 4).map((FactoryMaterialState states){
                             return Row(
                               children: <Widget>[
@@ -235,11 +235,11 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                   child: CustomPaint(
                                     painter: ObjectPainter(
                                       widget.progress,
-                                      material: FactoryMaterial.getFromType(fmt)..state = states
+                                      material: FactoryMaterialModel.getFromType(fmt)..state = states
                                     ),
                                   ),
                                 ),
-                                Text('${_showFirst.objects.where((FactoryMaterial _fm) => _fm.type == fmt && _fm.state == states).length}'),
+                                Text('${_showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == fmt && _fm.state == states).length}'),
                               ],
                             );
                           }).toList(),

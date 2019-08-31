@@ -1,49 +1,38 @@
-import 'dart:math';
-import 'dart:ui';
+part of factory_equipment;
 
-import 'package:flutter/material.dart' hide TextStyle;
-import 'package:flutter_factory/game/material/aluminium.dart';
-import 'package:flutter_factory/game/material/copper.dart';
-import 'package:flutter_factory/game/material/diamond.dart';
-import 'package:flutter_factory/game/material/gold.dart';
-import 'package:flutter_factory/game/material/iron.dart';
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Dispenser extends FactoryEquipment{
+class Dispenser extends FactoryEquipmentModel{
   Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 3, int dispenseTickDuration = 1}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration);
 
   FactoryMaterialType dispenseMaterial;
 
   int dispenseAmount;
-  List<FactoryMaterial> _materials = <FactoryMaterial>[];
+  List<FactoryMaterialModel> _materials = <FactoryMaterialModel>[];
 
   bool _didToggle = false;
 
   @override
-  List<FactoryMaterial> tick() {
+  List<FactoryMaterialModel> tick() {
     _didToggle = tickDuration > 1 && (counter % tickDuration == 0 || counter % tickDuration == tickDuration - 1);
 
     if(_materials.isNotEmpty){
-      final List<FactoryMaterial> _fml = <FactoryMaterial>[]..addAll(_materials);
+      final List<FactoryMaterialModel> _fml = <FactoryMaterialModel>[]..addAll(_materials);
       _materials.clear();
 
       if(tickDuration == 1){
-        _materials = List<FactoryMaterial>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
+        _materials = List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
       }
 
       return _fml;
     }else if((counter - 1) % tickDuration != 0){
-      return <FactoryMaterial>[];
+      return <FactoryMaterialModel>[];
     }
 
-    _materials = List<FactoryMaterial>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
+    _materials = List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
 
-    return <FactoryMaterial>[];
+    return <FactoryMaterialModel>[];
   }
 
-  FactoryMaterial _getMaterial(){
+  FactoryMaterialModel _getMaterial(){
     switch(dispenseMaterial){
       case FactoryMaterialType.gold:
         return Gold.fromOffset(pointingOffset);
@@ -70,7 +59,7 @@ class Dispenser extends FactoryEquipment{
 
     canvas.save();
     canvas.scale(0.6);
-    FactoryMaterial.getFromType(dispenseMaterial).drawMaterial(Offset.zero, canvas, progress);
+    FactoryMaterialModel.getFromType(dispenseMaterial).drawMaterial(Offset.zero, canvas, progress);
 //    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
 //    _paragraphBuilder.pushStyle(TextStyle(color: Colors.black87));
 //    _paragraphBuilder.addText(factoryMaterialToString(dispenseMaterial));
@@ -109,7 +98,7 @@ class Dispenser extends FactoryEquipment{
         break;
     }
 
-    _materials.forEach((FactoryMaterial fm){
+    _materials.forEach((FactoryMaterialModel fm){
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
     });
   }
@@ -140,7 +129,7 @@ class Dispenser extends FactoryEquipment{
   }
 
   @override
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialType dispenseMaterial, int dispenseAmount}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialType dispenseMaterial, int dispenseAmount}) {
     return Dispenser(
       coordinates ?? this.coordinates,
       direction ?? this.direction,

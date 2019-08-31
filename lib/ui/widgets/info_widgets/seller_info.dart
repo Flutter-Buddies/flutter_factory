@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/seller.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 
 class SellerInfo extends StatelessWidget {
   SellerInfo({Key key, @required this.equipment}) : super(key: key);

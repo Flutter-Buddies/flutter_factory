@@ -1,30 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/craftables/antenna.dart';
-import 'package:flutter_factory/game/craftables/battery.dart';
-import 'package:flutter_factory/game/craftables/clock.dart';
-import 'package:flutter_factory/game/craftables/computer_chip.dart';
-import 'package:flutter_factory/game/craftables/cooler_plate.dart';
-import 'package:flutter_factory/game/craftables/drone.dart';
-import 'package:flutter_factory/game/craftables/engine.dart';
-import 'package:flutter_factory/game/craftables/grill.dart';
-import 'package:flutter_factory/game/craftables/heater_plate.dart';
-import 'package:flutter_factory/game/craftables/light_bulb.dart';
-import 'package:flutter_factory/game/craftables/processor.dart';
-import 'package:flutter_factory/game/craftables/railway.dart';
-import 'package:flutter_factory/game/material/aluminium.dart';
-import 'package:flutter_factory/game/material/copper.dart';
-import 'package:flutter_factory/game/material/diamond.dart';
-import 'package:flutter_factory/game/material/gold.dart';
-import 'package:flutter_factory/game/material/iron.dart';
+import 'package:flutter_factory/game/factory_material.dart';
 
-import 'factory_equipment.dart';
+import 'factory_equipment_model.dart';
 
-abstract class FactoryMaterial{
-  FactoryMaterial(this.x, this.y, this.value, this.type, {this.size = 8.0, this.state = FactoryMaterialState.raw}) : rotation = Random().nextDouble() * pi, offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
+abstract class FactoryMaterialModel{
+  FactoryMaterialModel(this.x, this.y, this.value, this.type, {this.size = 8.0, this.state = FactoryMaterialState.raw}) : rotation = Random().nextDouble() * pi, offsetX = Random().nextDouble() * 14 - 7, offsetY = Random().nextDouble() * 14 - 7;
 
-  FactoryMaterial.custom({this.x, this.y, this.value, this.type, this.size = 8.0, this.state = FactoryMaterialState.raw, this.rotation, this.offsetX, this.offsetY});
+  FactoryMaterialModel.custom({this.x, this.y, this.value, this.type, this.size = 8.0, this.state = FactoryMaterialState.raw, this.rotation, this.offsetX, this.offsetY});
 
   double x;
   double y;
@@ -41,16 +25,27 @@ abstract class FactoryMaterial{
 
   FactoryMaterialState state;
 
-  FactoryMaterial copyWith({
+  FactoryMaterialModel copyWith({
     double x,
     double y,
     double size,
     double value
   });
 
+  Map<String, dynamic> toMap(){
+    return <String, dynamic>{
+      'material_type': type.index,
+      'position': <String, dynamic>{
+        'x': x,
+        'y': y
+      },
+      'direction': direction.index,
+    };
+  }
+
   final Map<FactoryMaterialType, List<FactoryMaterialHistory>> _history = <FactoryMaterialType, List<FactoryMaterialHistory>>{};
 
-  static FactoryMaterial getFromType(FactoryMaterialType type, {Offset offset = Offset.zero}){
+  static FactoryMaterialModel getFromType(FactoryMaterialType type, {Offset offset = Offset.zero}){
     switch(type){
       case FactoryMaterialType.iron:
         return Iron.fromOffset(offset);
@@ -87,6 +82,10 @@ abstract class FactoryMaterial{
         return Antenna.fromOffset(offset);
       case FactoryMaterialType.grill:
         return Grill.fromOffset(offset);
+      case FactoryMaterialType.airCondition:
+        return AirConditioner.fromOffset(offset);
+      case FactoryMaterialType.washingMachine:
+        return WashingMachine.fromOffset(offset);
     }
 
     return null;
@@ -124,7 +123,7 @@ abstract class FactoryMaterial{
   }
 
   // TODO: Add this to log history of the material travel
-  void logHistory(FactoryEquipment equipment){
+  void logHistory(FactoryEquipmentModel equipment){
     if(_history.containsKey(type)){
       _history[type].add(FactoryMaterialHistory(state: state, position: Offset(equipment.coordinates.x.toDouble(), equipment.coordinates.y.toDouble())));
     }else{
@@ -158,7 +157,7 @@ abstract class FactoryMaterial{
   }
 
   static Map<FactoryRecipeMaterialType, int> getRecipeFromType(FactoryMaterialType type){
-    return FactoryMaterial.getFromType(type).getRecipe();
+    return FactoryMaterialModel.getFromType(type).getRecipe();
   }
 
   static bool isRaw(FactoryMaterialType type){
@@ -340,7 +339,9 @@ enum FactoryMaterialType{
   battery,
   drone,
   antenna,
-  grill
+  grill,
+  airCondition,
+  washingMachine
 }
 
 class FactoryRecipe{
@@ -350,7 +351,7 @@ class FactoryRecipe{
 }
 
 class FactoryRecipeMaterialType{
-  FactoryRecipeMaterialType(this.materialType, {FactoryMaterialState state}) : state = state ?? (FactoryMaterial.isRaw(materialType) ? FactoryMaterialState.raw : FactoryMaterialState.crafted);
+  FactoryRecipeMaterialType(this.materialType, {FactoryMaterialState state}) : state = state ?? (FactoryMaterialModel.isRaw(materialType) ? FactoryMaterialState.raw : FactoryMaterialState.crafted);
 
   final FactoryMaterialType materialType;
   final FactoryMaterialState state;
@@ -375,6 +376,8 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.drone: return 'Drone';
     case FactoryMaterialType.antenna: return 'Antenna';
     case FactoryMaterialType.grill: return 'Grill';
+    case FactoryMaterialType.airCondition: return 'Air Conditioner';
+    case FactoryMaterialType.washingMachine: return 'Washing Machine';
     default: return '';
   }
 }

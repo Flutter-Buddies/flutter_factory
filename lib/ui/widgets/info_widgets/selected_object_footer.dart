@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 
@@ -7,7 +7,7 @@ class SelectedObjectFooter extends StatelessWidget {
   SelectedObjectFooter(this._bloc, {@required this.equipment, Key key}) : super(key: key);
 
   final GameBloc _bloc;
-  final List<FactoryEquipment> equipment;
+  final List<FactoryEquipmentModel> equipment;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class SelectedObjectFooter extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             child: Text('←', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                             onPressed: (){
-                              equipment.forEach((FactoryEquipment fe){
+                              equipment.forEach((FactoryEquipmentModel fe){
                                 fe.direction = Direction.west;
                               });
                             },
@@ -39,7 +39,7 @@ class SelectedObjectFooter extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             child: Text('→', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                             onPressed: (){
-                              equipment.forEach((FactoryEquipment fe){
+                              equipment.forEach((FactoryEquipmentModel fe){
                                 fe.direction = Direction.east;
                               });
                             },
@@ -52,7 +52,7 @@ class SelectedObjectFooter extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             child: Text('↓', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                             onPressed: (){
-                              equipment.forEach((FactoryEquipment fe){
+                              equipment.forEach((FactoryEquipmentModel fe){
                                 fe.direction = Direction.north;
                               });
                             },
@@ -61,7 +61,7 @@ class SelectedObjectFooter extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             child: Text('↑', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                             onPressed: (){
-                              equipment.forEach((FactoryEquipment fe){
+                              equipment.forEach((FactoryEquipmentModel fe){
                                 fe.direction = Direction.south;
                               });
                             },

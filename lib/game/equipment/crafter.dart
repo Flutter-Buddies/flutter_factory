@@ -1,17 +1,12 @@
-import 'dart:ui';
+part of factory_equipment;
 
-import 'package:flutter/material.dart' hide TextStyle;
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Crafter extends FactoryEquipment{
-  Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 1}) : _recipe = FactoryMaterial.getRecipeFromType(craftMaterial), super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
+class Crafter extends FactoryEquipmentModel{
+  Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 1}) : _recipe = FactoryMaterialModel.getRecipeFromType(craftMaterial), super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
 
   final Map<FactoryRecipeMaterialType, int> _recipe;
   FactoryMaterialType craftMaterial;
 
-  FactoryMaterial _crafted;
+  FactoryMaterialModel _crafted;
 
   int getRecipeAmount(FactoryMaterialType fmt){
     return _recipe[fmt] ?? 0;
@@ -20,37 +15,37 @@ class Crafter extends FactoryEquipment{
   bool get canCraft{
     bool canCraft = true;
     _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
-      canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterial fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
+      canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterialModel fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
     });
     return canCraft;
   }
 
   @override
-  List<FactoryMaterial> tick() {
+  List<FactoryMaterialModel> tick() {
     if(tickDuration > 1 && counter % tickDuration != 1 && _crafted == null){
       print('Not ticking!');
-      return <FactoryMaterial>[];
+      return <FactoryMaterialModel>[];
     }
 
     if((canCraft && _crafted != null) && tickDuration == 1){
-      final FactoryMaterial _craftedMaterial = _crafted.copyWith();
+      final FactoryMaterialModel _craftedMaterial = _crafted.copyWith();
       _crafted = null;
       _craft();
 
       _craftedMaterial.direction = direction;
 
-      return <FactoryMaterial>[_craftedMaterial];
+      return <FactoryMaterialModel>[_craftedMaterial];
     }
 
     if(_crafted == null){
       _craft();
-      return <FactoryMaterial>[];
+      return <FactoryMaterialModel>[];
     }
 
-    final List<FactoryMaterial> _material = <FactoryMaterial>[]..add(_crafted);
+    final List<FactoryMaterialModel> _material = <FactoryMaterialModel>[]..add(_crafted);
     _crafted = null;
 
-    _material.map((FactoryMaterial fm){
+    _material.map((FactoryMaterialModel fm){
       fm.direction = direction;
     }).toList();
 
@@ -60,18 +55,18 @@ class Crafter extends FactoryEquipment{
   void changeRecipe(FactoryMaterialType fmt){
     craftMaterial = fmt;
     _recipe.clear();
-    _recipe.addAll(FactoryMaterial.getRecipeFromType(craftMaterial));
+    _recipe.addAll(FactoryMaterialModel.getRecipeFromType(craftMaterial));
   }
 
   void _craft(){
     if(canCraft){
       _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
         for(int j = 0; j < _recipe[fmt]; j++){
-          objects.remove(objects.firstWhere((FactoryMaterial fm) => fm.type == fmt.materialType && fm.state == fmt.state, orElse: () => null));
+          objects.remove(objects.firstWhere((FactoryMaterialModel fm) => fm.type == fmt.materialType && fm.state == fmt.state, orElse: () => null));
         }
       });
 
-      _crafted = FactoryMaterial.getFromType(craftMaterial, offset: pointingOffset);
+      _crafted = FactoryMaterialModel.getFromType(craftMaterial, offset: pointingOffset);
       _crafted.direction = direction;
     }
   }
@@ -97,7 +92,7 @@ class Crafter extends FactoryEquipment{
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.grey.shade900);
 
     canvas.scale(0.6);
-    FactoryMaterial.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
+    FactoryMaterialModel.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
 //    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
     canvas.restore();
   }
@@ -135,7 +130,6 @@ class Crafter extends FactoryEquipment{
 
     canvas.drawParagraph(_paragraph, Offset(-size, size / 6));
 
-
     canvas.restore();
   }
 
@@ -167,7 +161,7 @@ class Crafter extends FactoryEquipment{
   }
 
   @override
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterial craftMaterial}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialModel craftMaterial}) {
     return Crafter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,

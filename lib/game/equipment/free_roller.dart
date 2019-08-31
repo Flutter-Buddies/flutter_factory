@@ -1,21 +1,16 @@
-import 'dart:ui';
+part of factory_equipment;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class FreeRoller extends FactoryEquipment{
+class FreeRoller extends FactoryEquipmentModel{
   FreeRoller(Coordinates coordinates, Direction equipmentDirection, {int tickDuration}) : super(coordinates, equipmentDirection, EquipmentType.freeRoller, tickDuration: tickDuration);
 
 //  final int rotation;
 
   @override
-  List<FactoryMaterial> tick() {
-    final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(objects);
+  List<FactoryMaterialModel> tick() {
+    final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(objects);
     objects.clear();
 
-    _fm.map((FactoryMaterial fm){
+    _fm.map((FactoryMaterialModel fm){
 //      fm.direction = Direction.values[(fm.direction.index + rotation) % Direction.values.length];
       fm.moveMaterial();
     }).toList();
@@ -47,7 +42,7 @@ class FreeRoller extends FactoryEquipment{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress) {
-    objects.forEach((FactoryMaterial fm){
+    objects.forEach((FactoryMaterialModel fm){
       double _moveX = 0.0;
       double _moveY = 0.0;
 
@@ -83,7 +78,7 @@ class FreeRoller extends FactoryEquipment{
   }
 
   @override
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
     return FreeRoller(
       coordinates ?? this.coordinates,
       direction ?? this.direction,

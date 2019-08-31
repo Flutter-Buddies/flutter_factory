@@ -1,19 +1,14 @@
-import 'dart:ui';
+part of factory_equipment;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Roller extends FactoryEquipment{
+class Roller extends FactoryEquipmentModel{
   Roller(Coordinates coordinates, Direction direction, {int rollerTickDuration = 1}) : super(coordinates, direction, EquipmentType.roller, tickDuration: rollerTickDuration);
 
   @override
-  List<FactoryMaterial> tick() {
-    final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(objects);
+  List<FactoryMaterialModel> tick() {
+    final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(objects);
     objects.clear();
 
-    _fm.map((FactoryMaterial fm){
+    _fm.map((FactoryMaterialModel fm){
       fm.direction = direction;
       fm.moveMaterial();
     }).toList();
@@ -69,7 +64,7 @@ class Roller extends FactoryEquipment{
   }
 
   @override
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction, int tickDuration}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration}) {
     return Roller(
       coordinates ?? this.coordinates,
       direction ?? this.direction,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 

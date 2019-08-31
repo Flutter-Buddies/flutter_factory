@@ -1,9 +1,6 @@
-import 'dart:math';
+part of factory_material;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Grill extends FactoryMaterial{
+class Grill extends FactoryMaterialModel{
   Grill.fromOffset(Offset o) : super(o.dx, o.dy, 540.0, FactoryMaterialType.grill, state: FactoryMaterialState.crafted);
 
   Grill.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
@@ -13,7 +10,7 @@ class Grill extends FactoryMaterial{
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
 
-    double _size = size * 0.7;
+    double _size = size * 0.8;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -62,7 +59,7 @@ class Grill extends FactoryMaterial{
   }
 
   @override
-  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+  FactoryMaterialModel copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
     return Grill.custom(
       x: x ?? this.x,
       y: y ?? this.y,

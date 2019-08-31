@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+part of factory_material;
 
-class Processor extends FactoryMaterial{
+class Processor extends FactoryMaterialModel{
   Processor.fromOffset(Offset o) : super(o.dx, o.dy, 900.0, FactoryMaterialType.processor, state: FactoryMaterialState.crafted);
 
   Processor.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
@@ -45,7 +44,7 @@ class Processor extends FactoryMaterial{
   }
 
   @override
-  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+  FactoryMaterialModel copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
     return Processor.custom(
       x: x ?? this.x,
       y: y ?? this.y,

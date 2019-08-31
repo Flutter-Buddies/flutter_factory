@@ -1,16 +1,11 @@
-import 'dart:math';
+part of factory_equipment;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Melter extends FactoryEquipment{
+class Melter extends FactoryEquipmentModel{
   Melter(Coordinates coordinates, Direction direction, {this.meltCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.melter, tickDuration: tickDuration);
 
   final int meltCapacity;
 
-  List<FactoryMaterial> _outputMaterial = <FactoryMaterial>[];
+  List<FactoryMaterialModel> _outputMaterial = <FactoryMaterialModel>[];
 
   @override
   Melter copyWith({Coordinates coordinates, Direction direction, int meltCapacity}) {
@@ -22,18 +17,18 @@ class Melter extends FactoryEquipment{
   }
 
   @override
-  List<FactoryMaterial> tick() {
+  List<FactoryMaterialModel> tick() {
     if(tickDuration > 1 && counter % tickDuration != 1 && _outputMaterial.isEmpty){
       print('Not ticking!');
-      return <FactoryMaterial>[];
+      return <FactoryMaterialModel>[];
     }
 
     if(tickDuration == 1){
-      final List<FactoryMaterial> _fm = <FactoryMaterial>[]..addAll(_outputMaterial);
+      final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(_outputMaterial);
       _outputMaterial.clear();
       _processMaterial();
 
-      _fm.map((FactoryMaterial fm){
+      _fm.map((FactoryMaterialModel fm){
         fm.direction = direction;
         fm.moveMaterial();
       }).toList();
@@ -43,13 +38,13 @@ class Melter extends FactoryEquipment{
 
     if(_outputMaterial.isEmpty){
       _processMaterial();
-      return <FactoryMaterial>[];
+      return <FactoryMaterialModel>[];
     }
 
-    final List<FactoryMaterial> _material = <FactoryMaterial>[]..addAll(_outputMaterial);
+    final List<FactoryMaterialModel> _material = <FactoryMaterialModel>[]..addAll(_outputMaterial);
     _outputMaterial.clear();
 
-    _material.map((FactoryMaterial fm){
+    _material.map((FactoryMaterialModel fm){
       fm.direction = direction;
       fm.moveMaterial();
     }).toList();
@@ -60,7 +55,7 @@ class Melter extends FactoryEquipment{
   void _processMaterial(){
     _outputMaterial = objects.getRange(0, min(meltCapacity, objects.length)).toList();
     objects.removeRange(0, min(meltCapacity, objects.length));
-    _outputMaterial.forEach((FactoryMaterial m)=> m.changeState(FactoryMaterialState.fluid));
+    _outputMaterial.forEach((FactoryMaterialModel m)=> m.changeState(FactoryMaterialState.fluid));
   }
 
   @override
@@ -136,7 +131,7 @@ class Melter extends FactoryEquipment{
         break;
     }
 
-    _outputMaterial.forEach((FactoryMaterial fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
+    _outputMaterial.forEach((FactoryMaterialModel fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
   }
 
 

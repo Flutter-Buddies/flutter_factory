@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/sorter.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class SorterOptionsWidget extends StatelessWidget {
@@ -39,7 +39,7 @@ class SorterOptionsWidget extends StatelessWidget {
                                 child: CustomPaint(
                                   painter: ObjectPainter(
                                     progress,
-                                    material: FactoryMaterial.getFromType(fmt.materialType)..state = fmt.state
+                                    material: FactoryMaterialModel.getFromType(fmt.materialType)..state = fmt.state
                                   ),
                                 ),
                               ),
@@ -65,7 +65,7 @@ class SorterOptionsWidget extends StatelessWidget {
                       itemBuilder: (BuildContext context){
                         List<PopupMenuItem<FactoryRecipeMaterialType>> _itemsList = <PopupMenuItem<FactoryRecipeMaterialType>>[];
 
-                        FactoryMaterialType.values.where((FactoryMaterialType fmt) => FactoryMaterial.isRaw(fmt) && (!sorter.directions.containsKey(fmt) || sorter.directions[fmt] != d)).forEach((FactoryMaterialType fmt){
+                        FactoryMaterialType.values.where((FactoryMaterialType fmt) => FactoryMaterialModel.isRaw(fmt) && (!sorter.directions.containsKey(fmt) || sorter.directions[fmt] != d)).forEach((FactoryMaterialType fmt){
                           FactoryMaterialState.values.where((FactoryMaterialState fms) => fms.index < FactoryMaterialState.crafted.index).forEach((FactoryMaterialState fms){
                             _itemsList.add(PopupMenuItem<FactoryRecipeMaterialType>(
                               value: FactoryRecipeMaterialType(fmt, state: fms),
@@ -74,7 +74,7 @@ class SorterOptionsWidget extends StatelessWidget {
                           });
                         });
 
-                        _itemsList.addAll(FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterial.isRaw(fmt) && (!sorter.directions.containsKey(fmt) || sorter.directions[fmt] != d)).map((FactoryMaterialType fmt){
+                        _itemsList.addAll(FactoryMaterialType.values.where((FactoryMaterialType fmt) => !FactoryMaterialModel.isRaw(fmt) && (!sorter.directions.containsKey(fmt) || sorter.directions[fmt] != d)).map((FactoryMaterialType fmt){
                           return PopupMenuItem<FactoryRecipeMaterialType>(
                             value: FactoryRecipeMaterialType(fmt),
                             child: Text('${factoryMaterialToString(fmt)}'),

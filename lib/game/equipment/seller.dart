@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+part of factory_equipment;
 
-class Seller extends FactoryEquipment{
+class Seller extends FactoryEquipmentModel{
   Seller(Coordinates coordinates, Direction direction) : super(coordinates, direction, EquipmentType.seller);
 
   final List<double> _tickSellings = <double>[];
@@ -11,7 +8,7 @@ class Seller extends FactoryEquipment{
   double soldAverage = 0;
 
   @override
-  FactoryEquipment copyWith({Coordinates coordinates, Direction direction}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction}) {
     return Seller(
       coordinates ?? this.coordinates,
       direction ?? this.direction
@@ -19,10 +16,10 @@ class Seller extends FactoryEquipment{
   }
 
   @override
-  List<FactoryMaterial> tick() {
+  List<FactoryMaterialModel> tick() {
     soldValue = 0;
 
-    objects.forEach((FactoryMaterial fm){
+    objects.forEach((FactoryMaterialModel fm){
       soldValue += fm.value;
     });
 
@@ -36,7 +33,7 @@ class Seller extends FactoryEquipment{
 
     objects.clear();
 
-    return <FactoryMaterial>[];
+    return <FactoryMaterialModel>[];
   }
 
   @override

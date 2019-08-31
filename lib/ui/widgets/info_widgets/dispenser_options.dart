@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/equipment/dispenser.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class DispenserOptionsWidget extends StatelessWidget {
@@ -27,7 +27,7 @@ class DispenserOptionsWidget extends StatelessWidget {
                 onChanged: (FactoryMaterialType fmt){
                   dispenser.forEach((Dispenser d) => d.dispenseMaterial = fmt);
                 },
-                items: FactoryMaterialType.values.where(FactoryMaterial.isRaw).map((FactoryMaterialType fmt){
+                items: FactoryMaterialType.values.where(FactoryMaterialModel.isRaw).map((FactoryMaterialType fmt){
                   return DropdownMenuItem<FactoryMaterialType>(
                     value: fmt,
                     child: Row(
@@ -37,7 +37,7 @@ class DispenserOptionsWidget extends StatelessWidget {
                           child: CustomPaint(
                             painter: ObjectPainter(
                               progress,
-                              material: FactoryMaterial.getFromType(fmt)
+                              material: FactoryMaterialModel.getFromType(fmt)
                             ),
                           ),
                         ),

@@ -1,9 +1,6 @@
-import 'dart:math';
+part of factory_material;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Railway extends FactoryMaterial{
+class Railway extends FactoryMaterialModel{
   Railway.fromOffset(Offset o) : super(o.dx, o.dy, 8400.0, FactoryMaterialType.railway, state: FactoryMaterialState.crafted);
 
   Railway.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
@@ -12,7 +9,7 @@ class Railway extends FactoryMaterial{
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
-    double _size = size * 1.0;
+    double _size = size * 0.8;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -42,7 +39,7 @@ class Railway extends FactoryMaterial{
   }
 
   @override
-  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+  FactoryMaterialModel copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
     return Railway.custom(
       x: x ?? this.x,
       y: y ?? this.y,

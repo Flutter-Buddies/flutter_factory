@@ -1,9 +1,6 @@
-import 'dart:math';
+part of factory_material;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
-
-class Engine extends FactoryMaterial{
+class Engine extends FactoryMaterialModel{
   Engine.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.engine, state: FactoryMaterialState.crafted);
 
   Engine.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
@@ -13,7 +10,7 @@ class Engine extends FactoryMaterial{
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
 
-    double _size = size * 0.8;
+    double _size = size * 0.6;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -59,6 +56,15 @@ class Engine extends FactoryMaterial{
       Offset(_size * 0.4, -_size * 0.8),
     ], true);
 
+
+    _p.color = Colors.black.withOpacity(opacity);
+    _p.strokeWidth = 1.6;
+    _p.strokeCap = StrokeCap.round;
+    _p.style = PaintingStyle.stroke;
+    canvas.drawPath(_engineDetails, _p);
+    _p.strokeWidth = 0.5;
+    canvas.drawPath(_engine, _p);
+
     _p.color = Colors.white.withOpacity(opacity);
     _p.strokeWidth = 1.0;
     _p.strokeCap = StrokeCap.round;
@@ -78,7 +84,7 @@ class Engine extends FactoryMaterial{
   }
 
   @override
-  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+  FactoryMaterialModel copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
     return Engine.custom(
       x: x ?? this.x,
       y: y ?? this.y,

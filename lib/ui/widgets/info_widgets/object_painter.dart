@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 
 class ObjectPainter extends CustomPainter{
   ObjectPainter(this.progress, {this.objectSize = 48.0, this.equipment, this.material});
 
-  final FactoryMaterial material;
-  final FactoryEquipment equipment;
+  final FactoryMaterialModel material;
+  final FactoryEquipmentModel equipment;
 
   final double objectSize;
   final double progress;

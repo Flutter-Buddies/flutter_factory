@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_equipment.dart';
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class SelectedObjectInfoWidget extends StatelessWidget {
   SelectedObjectInfoWidget({this.progress = 0.0, @required this.equipment, Key key}) : super(key: key);
 
   final double progress;
-  final FactoryEquipment equipment;
+  final FactoryEquipmentModel equipment;
 
   @override
   Widget build(BuildContext context) {

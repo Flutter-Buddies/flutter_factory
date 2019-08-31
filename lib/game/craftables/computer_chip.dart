@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/model/factory_material.dart';
+part of factory_material;
 
-class ComputerChip extends FactoryMaterial{
+class ComputerChip extends FactoryMaterialModel{
   ComputerChip.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.computerChip, state: FactoryMaterialState.crafted);
 
   ComputerChip.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
@@ -10,7 +9,7 @@ class ComputerChip extends FactoryMaterial{
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
     Paint _p = Paint();
-    double _size = size * 0.4;
+    double _size = size * 0.3;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -42,7 +41,7 @@ class ComputerChip extends FactoryMaterial{
   }
 
   @override
-  FactoryMaterial copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
+  FactoryMaterialModel copyWith({double x, double y, double size, double value, FactoryMaterialType type}) {
     return ComputerChip.custom(
       x: x ?? this.x,
       y: y ?? this.y,
