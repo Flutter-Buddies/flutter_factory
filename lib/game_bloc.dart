@@ -330,52 +330,54 @@ class GameBloc{
     return null;
   }
 
-  FactoryMaterialModel _materialFromMap(String jsonMap){
-    final Map<String, dynamic> map = json.decode(jsonMap);
-
-    switch(FactoryMaterialType.values[map['material_type']]){
-      case FactoryMaterialType.iron:
-        return Iron.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.copper:
-        return Copper.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.diamond:
-        return Diamond.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.gold:
-        return Gold.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.aluminium:
-        return Aluminium.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.computerChip:
-        return ComputerChip.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.processor:
-        return Processor.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.engine:
-        return Engine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.heaterPlate:
-        return HeaterPlate.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.coolerPlate:
-        return CoolerPlate.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.lightBulb:
-        return LightBulb.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.clock:
-        return Clock.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.railway:
-        return Railway.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.battery:
-        return Battery.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.drone:
-        return Drone.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.antenna:
-        return Antenna.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.grill:
-        return Grill.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.airCondition:
-        return AirConditioner.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-      case FactoryMaterialType.washingMachine:
-        return WashingMachine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
-    }
-
-    return null;
-  }
+//  FactoryMaterialModel _materialFromMap(String jsonMap){
+//    final Map<String, dynamic> map = json.decode(jsonMap);
+//
+//    switch(FactoryMaterialType.values[map['material_type']]){
+//      case FactoryMaterialType.iron:
+//        return Iron.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.copper:
+//        return Copper.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.diamond:
+//        return Diamond.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.gold:
+//        return Gold.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.aluminium:
+//        return Aluminium.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.computerChip:
+//        return ComputerChip.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.processor:
+//        return Processor.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.engine:
+//        return Engine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.heaterPlate:
+//        return HeaterPlate.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.coolerPlate:
+//        return CoolerPlate.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.lightBulb:
+//        return LightBulb.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.clock:
+//        return Clock.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.railway:
+//        return Railway.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.battery:
+//        return Battery.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.drone:
+//        return Drone.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.antenna:
+//        return Antenna.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.grill:
+//        return Grill.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.airCondition:
+//        return AirConditioner.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.washingMachine:
+//        return WashingMachine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//      case FactoryMaterialType.toaster:
+//        return Toaster.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction;
+//    }
+//
+//    return null;
+//  }
 }
 
 enum GameUpdate{

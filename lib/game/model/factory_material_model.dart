@@ -86,6 +86,12 @@ abstract class FactoryMaterialModel{
         return AirConditioner.fromOffset(offset);
       case FactoryMaterialType.washingMachine:
         return WashingMachine.fromOffset(offset);
+      case FactoryMaterialType.toaster:
+        return Toaster.fromOffset(offset);
+      case FactoryMaterialType.solarPanel:
+        return SolarPanel.fromOffset(offset);
+      case FactoryMaterialType.serverRack:
+        return ServerRack.fromOffset(offset);
     }
 
     return null;
@@ -341,7 +347,10 @@ enum FactoryMaterialType{
   antenna,
   grill,
   airCondition,
-  washingMachine
+  washingMachine,
+  toaster,
+  solarPanel,
+  serverRack
 }
 
 class FactoryRecipe{
@@ -378,8 +387,12 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.grill: return 'Grill';
     case FactoryMaterialType.airCondition: return 'Air Conditioner';
     case FactoryMaterialType.washingMachine: return 'Washing Machine';
-    default: return '';
+    case FactoryMaterialType.toaster: return 'Toaster';
+    case FactoryMaterialType.solarPanel: return 'Solar panel';
+    case FactoryMaterialType.serverRack: return 'Server rack';
   }
+
+  return '';
 }
 
 String factoryMaterialStateToString(FactoryMaterialState state){
@@ -390,6 +403,7 @@ String factoryMaterialStateToString(FactoryMaterialState state){
     case FactoryMaterialState.spring: return 'Spring';
     case FactoryMaterialState.fluid: return 'Fluid';
     case FactoryMaterialState.crafted: return 'Crafted';
-    default: return '';
   }
+
+  return '';
 }

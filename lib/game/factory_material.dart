@@ -25,3 +25,6 @@ part 'craftables/light_bulb.dart';
 part 'craftables/processor.dart';
 part 'craftables/railway.dart';
 part 'craftables/washing_machine.dart';
+part 'craftables/toaster.dart';
+part 'craftables/solar_panel.dart';
+part 'craftables/server_rack.dart';

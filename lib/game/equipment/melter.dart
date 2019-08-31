@@ -82,28 +82,9 @@ class Melter extends FactoryEquipmentModel{
 
   @override
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
-    super.drawTrack(offset, canvas, size, progress);
-
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     drawRoller(direction, canvas, size, progress);
-
-    if(direction == Direction.east || direction == Direction.west){
-      canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
-      for(int i = 0; i < 3; i++){
-        final double _xOffset = ((size / 6) * i + (direction == Direction.east ? progress : -progress) * size) % (size * 0.5);
-        canvas.drawLine(Offset(_xOffset - size / 6, size / 3), Offset(_xOffset - size / 6, -size / 3), Paint()..color = Colors.white70);
-      }
-    }else{
-      canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
-
-      for(int i = 0; i < 3; i++){
-        double _yOffset = ((size / 6) * i + (direction == Direction.north ? progress : -progress) * size) % (size * 0.5);
-
-        canvas.drawLine(Offset(size / 3, _yOffset - size / 3), Offset(-size / 3, _yOffset - size / 3), Paint()..color = Colors.white70);
-      }
-    }
-
     canvas.restore();
   }
 

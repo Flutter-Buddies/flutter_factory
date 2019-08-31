@@ -8,8 +8,8 @@ class Battery extends FactoryMaterialModel{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-    double _size = size * 0.3;
+    final Paint _p = Paint();
+    final double _size = size * 0.3;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
