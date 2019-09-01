@@ -36,50 +36,54 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                 headerBuilder: (BuildContext context, bool isExpanded){
                   return Container(
                     margin: const EdgeInsets.all(12.0),
-                    child: Column(
+                    height: 80.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Container(
                               child: Text('${factoryMaterialToString(_showFirst.craftMaterial)}',
-                                style: Theme.of(context).textTheme.title.copyWith(color: Colors.grey, fontSize: 14.0),
+                                style: Theme.of(context).textTheme.subtitle,
                               ),
                             ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 24.0),
-                              transform: Matrix4.diagonal3Values(2.5, 2.5, 2.5)..translate(-20.0),
-                              child: CustomPaint(
-                                painter: ObjectPainter(
-                                  widget.progress,
-                                  material: FactoryMaterialModel.getFromType(_showFirst.craftMaterial),
-                                ),
-                              ),
+                            SizedBox(height: 12.0,),
+                            Row(
+                              children: _craftMaterial.keys.map((FactoryRecipeMaterialType fmrt){
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Container(
+                                        child: CustomPaint(
+                                          painter: ObjectPainter(
+                                            widget.progress,
+                                            material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
+                                            scale: 4.0
+                                          ),
+                                        ),
+                                      ),
+
+                                      SizedBox(width: 16.0,),
+                                      Text('x ${_craftMaterial[fmrt]}', style: Theme.of(context).textTheme.caption,)
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
                             ),
                           ],
                         ),
-                        Row(
-                          children: _craftMaterial.keys.map((FactoryRecipeMaterialType fmrt){
-                            return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    transform: Matrix4.diagonal3Values(2.0, 2.0, 2.0),
-                                    child: CustomPaint(
-                                      painter: ObjectPainter(
-                                        widget.progress,
-                                        material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
-                                      ),
-                                    ),
-                                  ),
-
-                                  SizedBox(width: 12.0,),
-                                  Text('x ${_craftMaterial[fmrt]}', style: Theme.of(context).textTheme.caption,)
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: CustomPaint(
+                            painter: ObjectPainter(
+                              widget.progress,
+                              scale: 6.0,
+                              material: FactoryMaterialModel.getFromType(_showFirst.craftMaterial),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -94,10 +98,22 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                         widget.crafter.forEach((Crafter c){
                           c.changeRecipe(fmt);
                         });
+
+                        setState(() {
+                          _recepiesOpen = false;
+                        });
                       },
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 250),
+                        padding: const EdgeInsets.all(8.0),
                         height: 80.0,
-                        color: fmt.index % 2 == 0 ? Colors.white : Colors.grey.shade100,
+                        foregroundDecoration: BoxDecoration(
+                          color: fmt == widget.crafter.first.craftMaterial ? Colors.blue.withOpacity(0.2) : Colors.transparent,
+                          border: fmt == widget.crafter.first.craftMaterial ? Border.all(color: Colors.blue) : null
+                        ),
+                        decoration: BoxDecoration(
+                          color: fmt.index % 2 == 0 ? Colors.white : Colors.grey.shade100,
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
@@ -108,27 +124,28 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
-                                      margin: const EdgeInsets.only(left: 12.0),
-                                      child: Text('${factoryMaterialToString(fmt)}'),
+                                      child: Text('${factoryMaterialToString(fmt)}',
+                                        style: Theme.of(context).textTheme.subtitle,
+                                      ),
                                     ),
                                     SizedBox(height: 12.0,),
                                     Row(
                                       children: _recepie.keys.map((FactoryRecipeMaterialType fmrt){
                                         return Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 18.0),
+                                          margin: const EdgeInsets.symmetric(horizontal: 12.0),
                                           child: Row(
                                             children: <Widget>[
                                               Container(
-                                                transform: Matrix4.diagonal3Values(3.6, 3.6, 3.6),
                                                 child: CustomPaint(
                                                   painter: ObjectPainter(
                                                     widget.progress,
                                                     material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
+                                                    scale: 2.5
                                                   ),
                                                 ),
                                               ),
 
-                                              SizedBox(width: 24.0,),
+                                              SizedBox(width: 16.0,),
                                               Text('x ${_recepie[fmrt]}', style: Theme.of(context).textTheme.caption,)
                                             ],
                                           ),
@@ -138,12 +155,13 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                   ],
                                 ),
                                 Container(
-                                  transform: Matrix4.diagonal3Values(2.8, 2.8, 2.8)..translate(-20.0),
+                                  transform: Matrix4.translationValues(-32.0, 0.0, 0.0),
                                   margin: const EdgeInsets.symmetric(horizontal: 12.0),
                                   child: CustomPaint(
                                     painter: ObjectPainter(
                                       widget.progress,
                                       material: FactoryMaterialModel.getFromType(fmt),
+                                      scale: 3.0
                                     ),
                                   ),
                                 ),

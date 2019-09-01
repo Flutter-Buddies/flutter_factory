@@ -21,54 +21,57 @@ class SelectedObjectFooter extends StatelessWidget {
               children: <Widget>[
                 Text('Direction:'),
                 Flexible(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          FlatButton(
-                            padding: EdgeInsets.zero,
-                            child: Text('←', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                            onPressed: (){
-                              equipment.forEach((FactoryEquipmentModel fe){
-                                fe.direction = Direction.west;
-                              });
-                            },
-                          ),
-                          FlatButton(
-                            padding: EdgeInsets.zero,
-                            child: Text('→', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                            onPressed: (){
-                              equipment.forEach((FactoryEquipmentModel fe){
-                                fe.direction = Direction.east;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: <Widget>[
-                          FlatButton(
-                            padding: EdgeInsets.zero,
-                            child: Text('↓', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                            onPressed: (){
-                              equipment.forEach((FactoryEquipmentModel fe){
-                                fe.direction = Direction.north;
-                              });
-                            },
-                          ),
-                          FlatButton(
-                            padding: EdgeInsets.zero,
-                            child: Text('↑', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                            onPressed: (){
-                              equipment.forEach((FactoryEquipmentModel fe){
-                                fe.direction = Direction.south;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        FlatButton(
+                          color: equipment.first.direction == Direction.south ? Colors.blue.shade200 : Colors.transparent,
+                          padding: EdgeInsets.zero,
+                          child: Text('↑', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                          onPressed: (){
+                            equipment.forEach((FactoryEquipmentModel fe){
+                              fe.direction = Direction.south;
+                            });
+                          },
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            FlatButton(
+                              color: equipment.first.direction == Direction.west ? Colors.blue.shade200 : Colors.transparent,
+                              padding: EdgeInsets.zero,
+                              child: Text('←', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                              onPressed: (){
+                                equipment.forEach((FactoryEquipmentModel fe){
+                                  fe.direction = Direction.west;
+                                });
+                              },
+                            ),
+                            FlatButton(
+                              color: equipment.first.direction == Direction.east ? Colors.blue.shade200 : Colors.transparent,
+                              padding: EdgeInsets.zero,
+                              child: Text('→', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                              onPressed: (){
+                                equipment.forEach((FactoryEquipmentModel fe){
+                                  fe.direction = Direction.east;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        FlatButton(
+                          color: equipment.first.direction == Direction.north ? Colors.blue.shade200 : Colors.transparent,
+                          padding: EdgeInsets.zero,
+                          child: Text('↓', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                          onPressed: (){
+                            equipment.forEach((FactoryEquipmentModel fe){
+                              fe.direction = Direction.north;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 )
               ],

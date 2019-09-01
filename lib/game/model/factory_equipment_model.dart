@@ -302,3 +302,39 @@ String directionToString(Direction d){
       return '';
   }
 }
+
+String equipmentTypeToString(EquipmentType type){
+  switch(type){
+    case EquipmentType.dispenser: return 'Dispenser';
+    case EquipmentType.roller: return 'Roller';
+    case EquipmentType.freeRoller: return 'Free roller';
+    case EquipmentType.crafter: return 'Crafter';
+    case EquipmentType.splitter: return 'Splitter';
+    case EquipmentType.sorter: return 'Sorter';
+    case EquipmentType.seller: return 'Seller';
+    case EquipmentType.hydraulic_press: return 'Hydraulic press';
+    case EquipmentType.wire_bender: return 'Wire bender';
+    case EquipmentType.cutter: return 'Cutter';
+    case EquipmentType.melter: return 'Melter';
+  }
+
+  return '';
+}
+
+String equipmentDescriptionFromType(EquipmentType type){
+  switch(type){
+    case EquipmentType.dispenser: return 'Dispenses new raw material that can be processed, crafted or sold.';
+    case EquipmentType.roller: return 'Moves material in selected direction.';
+    case EquipmentType.freeRoller: return 'Moves material but it won\'t change it\'s direction.';
+    case EquipmentType.crafter: return 'Crafter can craft new more complicated materials.';
+    case EquipmentType.splitter: return 'Splits incoming materials to all selected directions equally. Multiples of same direction can be set.';
+    case EquipmentType.sorter: return 'It can move specific material in any direction, it has \'default\' exit where any other material will exit.';
+    case EquipmentType.seller: return 'Sells material for profit.';
+    case EquipmentType.hydraulic_press: return 'Press raw material to make plates.';
+    case EquipmentType.wire_bender: return 'Bend raw material to make springs.';
+    case EquipmentType.cutter: return 'Cut raw material to make gears.';
+    case EquipmentType.melter: return 'Melt raw material to get liquid.';
+  }
+
+  return '';
+}

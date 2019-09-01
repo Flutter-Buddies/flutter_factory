@@ -35,7 +35,7 @@ class Splitter extends FactoryEquipmentModel{
 
     if(directions.contains(Direction.values[(direction.index + 2) % Direction.values.length])){
       canvas.save();
-      canvas.translate(0.0, -size / 4);
+//      canvas.translate(0.0, -size / 4);
       drawRoller(Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress);
       canvas.restore();
     }else{

@@ -20,7 +20,7 @@ class SelectedObjectInfoWidget extends StatelessWidget {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-                child: Text('${equipment.type.toString().replaceAll('EquipmentType.', '').toUpperCase()}',
+                child: Text('${equipmentTypeToString(equipment.type)}',
                   style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0),
                 ),
               ),

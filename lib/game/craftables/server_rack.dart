@@ -15,6 +15,8 @@ class ServerRack extends FactoryMaterialModel{
     canvas.translate(offset.dx, offset.dy);
     canvas.rotate(pi * 0.5);
 
+    _p.color = Colors.black.withOpacity(opacity);
+    canvas.drawRect(Rect.fromPoints(Offset(_size * 0.94, _size * 0.64), Offset(-_size * 0.94, -_size * 0.64)), _p);
     _p.color = Colors.grey.withOpacity(opacity);
     canvas.drawRect(Rect.fromPoints(Offset(_size * 0.9, _size * 0.6), Offset(-_size * 0.9, -_size * 0.6)), _p);
     _p.color = Colors.grey.shade700.withOpacity(opacity);

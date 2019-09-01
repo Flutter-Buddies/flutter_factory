@@ -4,6 +4,7 @@ class Seller extends FactoryEquipmentModel{
   Seller(Coordinates coordinates, Direction direction) : super(coordinates, direction, EquipmentType.seller);
 
   final List<double> _tickSellings = <double>[];
+  final List<List<FactoryRecipeMaterialType>> soldItems = <List<FactoryRecipeMaterialType>>[];
   double soldValue = 0;
   double soldAverage = 0;
 
@@ -23,6 +24,11 @@ class Seller extends FactoryEquipmentModel{
       soldValue += fm.value;
     });
 
+    if(soldItems.length > 90){
+      soldItems.removeRange(0, 30);
+    }
+
+    soldItems.add(objects.map<FactoryRecipeMaterialType>((FactoryMaterialModel fmt) => FactoryRecipeMaterialType(fmt.type, state: fmt.state)).toList());
     _tickSellings.add(soldValue);
 
     if(_tickSellings.length > 100){

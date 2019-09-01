@@ -17,7 +17,7 @@ class WashingMachine extends FactoryMaterialModel{
     final Path _frame = Path();
 
     _frame.addRRect(RRect.fromRectAndRadius(Rect.fromPoints(
-      Offset(_size * 0.8, _size * 0.8),
+      Offset(_size * 0.8, _size * 1.0),
       Offset(-_size * 0.8, -_size * 0.8),
     ), Radius.circular(_size * 0.05)));
 

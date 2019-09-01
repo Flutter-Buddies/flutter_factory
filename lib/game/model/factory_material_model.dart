@@ -174,9 +174,11 @@ abstract class FactoryMaterialModel{
     if(isRawMaterial && state != FactoryMaterialState.raw){
       switch(state){
         case FactoryMaterialState.plate:
+          double _size = size * 0.7;
+
           canvas.drawRRect(
             RRect.fromRectAndRadius(
-              Rect.fromCircle(center: offset, radius: size * 0.8 + 0.2),
+              Rect.fromCircle(center: offset, radius: _size + 0.2),
               Radius.circular(size * 0.3)
             ),
             Paint()..color = Colors.black.withOpacity(opacity)
@@ -184,15 +186,15 @@ abstract class FactoryMaterialModel{
 
           canvas.drawRRect(
             RRect.fromRectAndRadius(
-              Rect.fromCircle(center: offset, radius: size * 0.8),
+              Rect.fromCircle(center: offset, radius: _size),
               Radius.circular(size * 0.3)
             ),
             Paint()..color = getColor().withOpacity(opacity)
           );
           break;
         case FactoryMaterialState.gear:
-          double _bigCircleSize = size * 0.5;
-          double _smallCircleSize = size * 0.3;
+          double _bigCircleSize = size * 0.4;
+          double _smallCircleSize = size * 0.2;
 
           Path _gear = Path();
 
@@ -201,12 +203,11 @@ abstract class FactoryMaterialModel{
 
           _gear.moveTo(sin(pi * 2) * _smallCircleSize, cos(pi * 2) * _smallCircleSize);
 
-          for(int i = 0; i <= 35; i++){
-            double _size = i % 5 >= 2 ? _smallCircleSize : _bigCircleSize;
-            _gear.lineTo(sin((i/35) * pi * 2) * _size, cos((i/35) * pi * 2) * _size);
+          for(int i = 0; i <= 28; i++){
+            double _size = i % 4 >= 2 ? _smallCircleSize : _bigCircleSize;
+            _gear.lineTo(sin((i/28) * pi * 2) * _size, cos((i/28) * pi * 2) * _size);
           }
 
-          canvas.drawCircle(Offset.zero, _bigCircleSize * 0.6, Paint()..color = getColor().withOpacity(opacity)..style = PaintingStyle.stroke..strokeWidth = 2.4);
           canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 1.6..style = PaintingStyle.stroke..strokeJoin = StrokeJoin.round);
 
           canvas.restore();
@@ -364,6 +365,14 @@ class FactoryRecipeMaterialType{
 
   final FactoryMaterialType materialType;
   final FactoryMaterialState state;
+
+  @override
+  bool operator ==(dynamic other) {
+    return materialType == other.materialType && state == other.state;
+  }
+
+  @override
+  int get hashCode => materialType.hashCode | state.hashCode;
 }
 
 String factoryMaterialToString(FactoryMaterialType fmt){

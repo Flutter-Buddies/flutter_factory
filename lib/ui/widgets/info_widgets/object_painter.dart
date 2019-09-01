@@ -3,7 +3,7 @@ import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 
 class ObjectPainter extends CustomPainter{
-  ObjectPainter(this.progress, {this.objectSize = 48.0, this.equipment, this.material});
+  ObjectPainter(this.progress, {this.objectSize = 48.0, this.scale = 1.0, this.equipment, this.material});
 
   final FactoryMaterialModel material;
   final FactoryEquipmentModel equipment;
@@ -11,8 +11,13 @@ class ObjectPainter extends CustomPainter{
   final double objectSize;
   final double progress;
 
+  final double scale;
+
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.scale(scale);
+
     if(material != null){
       material.drawMaterial(Offset.zero, canvas, progress);
     }
@@ -22,6 +27,8 @@ class ObjectPainter extends CustomPainter{
       equipment.drawMaterial(Offset.zero, canvas, objectSize, progress);
       equipment.drawEquipment(Offset.zero, canvas, objectSize, progress);
     }
+
+    canvas.restore();
   }
 
   @override
