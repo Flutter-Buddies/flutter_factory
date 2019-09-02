@@ -39,7 +39,7 @@ abstract class FactoryMaterialModel{
         'x': x,
         'y': y
       },
-      'direction': direction.index,
+      'direction': direction?.index ?? -1,
     };
   }
 

@@ -25,21 +25,23 @@ class Splitter extends FactoryEquipmentModel{
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
+    final Direction _myDir = Direction.values[(direction.index + 2) % Direction.values.length];
+
     directions.forEach((Direction d){
-      if(d == Direction.values[(direction.index + 2) % Direction.values.length]){
+      if(d == _myDir){
         drawRoller(d, canvas, size, progress);
       }else{
         drawSplitter(d, canvas, size, progress);
       }
     });
 
-    if(directions.contains(Direction.values[(direction.index + 2) % Direction.values.length])){
+    if(directions.contains(_myDir)){
       canvas.save();
 //      canvas.translate(0.0, -size / 4);
-      drawRoller(Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress);
+      drawRoller(_myDir, canvas, size, progress);
       canvas.restore();
     }else{
-      drawSplitter(Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress, entry: true);
+      drawSplitter(_myDir, canvas, size, progress, entry: true);
     }
 
     canvas.restore();

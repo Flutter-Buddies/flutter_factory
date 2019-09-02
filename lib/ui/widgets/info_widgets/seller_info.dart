@@ -26,7 +26,8 @@ class SellerInfo extends StatelessWidget {
       });
     });
 
-    int _soldInTime = min(equipment.soldItems.length, 60);
+    final int _soldInTime = min(equipment.soldItems.length, 60);
+    final List<FactoryRecipeMaterialType> _sortedKeys = _items.keys.toList()..sort((FactoryRecipeMaterialType first, FactoryRecipeMaterialType second) => first.materialType.index.compareTo(second.materialType.index));
 
     return Container(
       child: Column(
@@ -61,7 +62,7 @@ class SellerInfo extends StatelessWidget {
                 ),
                 Divider(),
                 Column(
-                  children: _items.keys.map((FactoryRecipeMaterialType frmt){
+                  children: _sortedKeys.map((FactoryRecipeMaterialType frmt){
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[

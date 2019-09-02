@@ -275,7 +275,8 @@ abstract class FactoryEquipmentModel{
       'equipment_type': type.index,
       'position': coordinates.toMap(),
       'direction': direction.index,
-      'tick_duration': tickDuration
+      'tick_duration': tickDuration,
+      'material': objects.map((FactoryMaterialModel fmm) => fmm.toMap()).toList()
     };
   }
 }
