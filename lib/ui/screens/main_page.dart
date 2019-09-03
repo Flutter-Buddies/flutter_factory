@@ -379,6 +379,8 @@ class InfoWindow extends StatelessWidget {
         break;
       case EquipmentType.freeRoller:
         break;
+      case EquipmentType.portal:
+        break;
     }
 
     _options.add(_showRotationOptions());
