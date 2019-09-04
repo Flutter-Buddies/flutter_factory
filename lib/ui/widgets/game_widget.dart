@@ -122,6 +122,22 @@ class GamePainter extends CustomPainter{
       Paint()..color = Colors.grey
     );
 
+    for(int i = 0; i < columns; i++){
+      canvas.drawLine(
+        Offset(-cubeSize / 2, cubeSize * i + cubeSize / 2),
+        Offset(cubeSize * rows + cubeSize / 2, cubeSize * i + cubeSize / 2),
+        Paint()..color = Colors.grey.shade400..strokeWidth = 0.4
+      );
+    }
+
+    for(int i = 0; i < rows; i++){
+      canvas.drawLine(
+        Offset(cubeSize * i + cubeSize / 2, -cubeSize / 2),
+        Offset(cubeSize * i + cubeSize / 2, cubeSize * columns + cubeSize / 2),
+        Paint()..color = Colors.grey.shade400..strokeWidth = 0.4
+      );
+    }
+
     selectedTiles.forEach((Coordinates c){
       canvas.drawRect(
         Rect.fromCircle(
