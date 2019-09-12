@@ -8,6 +8,8 @@ class Seller extends FactoryEquipmentModel{
   double soldValue = 0;
   double soldAverage = 0;
 
+  bool _startSelling = false;
+
   @override
   FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction}) {
     return Seller(
@@ -20,6 +22,10 @@ class Seller extends FactoryEquipmentModel{
   List<FactoryMaterialModel> tick() {
     soldValue = 0;
 
+    if(objects.isNotEmpty){
+      _startSelling = true;
+    }
+
     objects.forEach((FactoryMaterialModel fm){
       soldValue += fm.value;
     });
@@ -28,7 +34,9 @@ class Seller extends FactoryEquipmentModel{
       soldItems.removeRange(0, 30);
     }
 
-    soldItems.add(objects.map<FactoryRecipeMaterialType>((FactoryMaterialModel fmt) => FactoryRecipeMaterialType(fmt.type, state: fmt.state)).toList());
+    if(_startSelling){
+      soldItems.add(objects.map<FactoryRecipeMaterialType>((FactoryMaterialModel fmt) => FactoryRecipeMaterialType(fmt.type, state: fmt.state)).toList());
+    }
     _tickSellings.add(soldValue);
 
     if(_tickSellings.length > 100){

@@ -60,6 +60,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             ],
           ),
           SwitchListTile(
+            contentPadding: EdgeInsets.zero,
             title: Text('Show arrows'),
             subtitle: Text('Visual representation on equipment'),
             onChanged: (bool value){
@@ -68,8 +69,40 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               });
             },
             value: _bloc.showArrows,
-
           ),
+
+          Column(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 60.0,
+                child: RaisedButton(
+                  color: Colors.green.shade400,
+                  onPressed: (){
+                    _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
+                      d.dispenserWorking(true);
+                    });
+                  },
+                  child: Text('Turn on all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+                ),
+              ),
+              SizedBox(height: 8.0,),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 60.0,
+                child: RaisedButton(
+                  color: Colors.red.shade400,
+                  onPressed: (){
+                    _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
+                      d.dispenserWorking(false);
+                    });
+                  },
+                  child: Text('Turn off all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+                ),
+              ),
+            ],
+          ),
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Column(
@@ -81,6 +114,14 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300)),
                 Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300)),
               ],
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80.0,
+            child: FlatButton(
+              onPressed: _bloc.clearLine,
+              child: Text('Vaporize all material on this floor', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.red, fontWeight: FontWeight.w400),),
             ),
           ),
           SizedBox(height: 28.0),
@@ -303,9 +344,9 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
                     child: Container(
-                      height: 60.0,
-                      color: Colors.black12,
-                      margin: const EdgeInsets.only(top: 24.0),
+                      height: 80.0,
+                      color: Colors.black38,
+                      padding: const EdgeInsets.only(top: 24.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[

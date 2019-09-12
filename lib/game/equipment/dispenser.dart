@@ -9,9 +9,20 @@ class Dispenser extends FactoryEquipmentModel{
   List<FactoryMaterialModel> _materials = <FactoryMaterialModel>[];
 
   bool _didToggle = false;
+  bool _isWorking = true;
+
+  bool get isWorking => _isWorking;
+
+  void dispenserWorking(bool value){
+    _isWorking = value;
+  }
 
   @override
   List<FactoryMaterialModel> tick() {
+    if(!_isWorking){
+      return <FactoryMaterialModel>[];
+    }
+
     _didToggle = tickDuration > 1 && (counter % tickDuration == 0 || counter % tickDuration == tickDuration - 1);
 
     if(_materials.isNotEmpty){
@@ -76,6 +87,10 @@ class Dispenser extends FactoryEquipmentModel{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+    if(!_isWorking){
+      return;
+    }
+    
     double _moveX = 0.0;
     double _moveY = 0.0;
 
