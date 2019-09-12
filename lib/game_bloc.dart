@@ -26,8 +26,23 @@ class GameBloc{
   }
 
   int _factoryFloor = 0;
+  String get floor => _getFloorName();
 
   ObjectDB _db;
+
+  String _getFloorName(){
+    if(_factoryFloor == 0){
+      return 'Ground floor';
+    }else if(_factoryFloor == 1){
+      return 'First floor';
+    }else if(_factoryFloor == 2){
+      return 'Second floor';
+    }else if(_factoryFloor == 3){
+      return 'Secret floor';
+    }else{
+      return 'Floor $_factoryFloor';
+    }
+  }
 
   Future<ObjectDB> get db async {
     if(_db == null){

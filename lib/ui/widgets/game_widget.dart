@@ -108,6 +108,8 @@ class GamePainter extends CustomPainter{
   void paint(Canvas canvas, Size size) {
     canvas.saveLayer(null, Paint());
 
+    canvas.drawPaint(Paint()..color = Colors.black);
+
     final Matrix4 _transformMatrix = Matrix4.identity()
       ..translate(camera.position.dx, camera.position.dy)
       ..scale(camera.scale);

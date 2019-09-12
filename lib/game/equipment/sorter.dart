@@ -192,11 +192,11 @@ class Sorter extends FactoryEquipmentModel{
   }
 
   @override
-  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, Map<FactoryRecipeMaterialType, Direction> directions}) {
     return Sorter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      directions ?? this.directions
+      directions ?? <FactoryRecipeMaterialType, Direction>{}..addAll(this.directions)
     );
   }
 

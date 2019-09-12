@@ -106,7 +106,7 @@ class Splitter extends FactoryEquipmentModel{
     return Splitter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      directions ?? this.directions,
+      directions ?? <Direction>[]..addAll(this.directions),
     );
   }
 

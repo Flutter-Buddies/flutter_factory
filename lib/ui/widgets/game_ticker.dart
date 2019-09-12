@@ -10,7 +10,7 @@ class GameTicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 120.0,
+      top: 200.0,
       right: 100.0,
       child: Container(
         child: StreamBuilder<GameUpdate>(

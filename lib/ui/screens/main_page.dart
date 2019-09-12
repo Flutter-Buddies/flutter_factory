@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
@@ -32,10 +34,11 @@ class BackdropHolder extends StatefulWidget {
 
 class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProviderStateMixin{
   GameBloc _bloc;
+  GlobalKey<ScaffoldState> _key = GlobalKey();
 
   Widget _showSettings(){
     return Container(
-      width: MediaQuery.of(context).size.width * 0.75,
+      width: MediaQuery.of(context).size.width * 0.8,
       color: Colors.white,
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -67,38 +70,19 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             value: _bloc.showArrows,
 
           ),
-
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(0);
-                },
-                child: Text('Ground floor'),
-              ),
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(1);
-                },
-                child: Text('First floor'),
-              ),
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(2);
-                },
-                child: Text('Second floor'),
-              ),
-              FlatButton(
-                onPressed: (){
-                  _bloc.changeFloor(3);
-                },
-                child: Text('Secret floor'),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300)),
+                Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300)),
+                Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300)),
+                Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300)),
+              ],
+            ),
           ),
-
           SizedBox(height: 28.0),
           Container(
             width: MediaQuery.of(context).size.width,
@@ -109,6 +93,85 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _showFloors(){
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      color: Colors.white,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('Current floor:',
+                  style: Theme.of(context).textTheme.button,
+                ),
+                Text('${_bloc.floor}',
+                  style: Theme.of(context).textTheme.button,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 60.0,
+          ),
+          Divider(),
+          Material(
+            type: MaterialType.transparency,
+              child: InkWell(
+              onTap: (){
+                _bloc.changeFloor(0);
+              },
+              child: Container(
+                height: 80.0,
+                child: Center(child: Text('Ground floor'))
+              ),
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+                  child: InkWell(
+              onTap: (){
+                _bloc.changeFloor(1);
+              },
+              child: Container(
+                height: 80.0,
+                child: Center(child: Text('First floor'))
+              ),
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: (){
+                _bloc.changeFloor(2);
+              },
+              child: Container(
+                height: 80.0,
+                child: Center(child: Text('Second floor'))
+              ),
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: (){
+                _bloc.changeFloor(3);
+              },
+              child: Container(
+                height: 80.0,
+                child: Center(child: Text('Secret floor'))
+              ),
+            ),
+                ),
         ],
       ),
     );
@@ -150,23 +213,69 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
         child: Icon(Icons.build),
       );
     }else{
-      return FloatingActionButton(
-        key: Key('info_fab'),
-        backgroundColor: Colors.yellow.shade700,
-        onPressed: (){
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (BuildContext context){
-              return StreamBuilder<GameUpdate>(
-                stream: _bloc.gameUpdate,
-                builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
-                  return InfoWindow(_bloc);
-                }
-              );
-            }
-          );
-        },
-        child: Icon(Icons.developer_mode),
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          _selectedEquipment.isEmpty ? SizedBox.shrink() : Container(
+            padding: EdgeInsets.only(left: 36.0),
+            child: Row(
+              children: <Widget>[
+                FloatingActionButton(
+                  key: Key('rotate_ccw'),
+                  backgroundColor: Colors.blue.shade700,
+                  onPressed: (){
+                    _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                      fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
+                    });
+                  },
+                  child: Icon(Icons.rotate_right),
+                ),
+                SizedBox(width: 12.0,),
+                FloatingActionButton(
+                  key: Key('rotate_cw'),
+                  backgroundColor: Colors.blue.shade700,
+                  onPressed: (){
+                    _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                      fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
+                    });
+                  },
+                  child: Icon(Icons.rotate_left),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              FloatingActionButton(
+                key: Key('delete_fab'),
+                backgroundColor: Colors.red,
+                onPressed: (){
+                  _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+                },
+                child: Icon(Icons.clear),
+              ),
+              SizedBox(width: 12.0,),
+              FloatingActionButton(
+                key: Key('info_fab'),
+                backgroundColor: Colors.yellow.shade700,
+                onPressed: (){
+                  showModalBottomSheet<void>(
+                    context: context,
+                    builder: (BuildContext context){
+                      return StreamBuilder<GameUpdate>(
+                        stream: _bloc.gameUpdate,
+                        builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
+                          return InfoWindow(_bloc);
+                        }
+                      );
+                    }
+                  );
+                },
+                child: Icon(Icons.developer_mode),
+              ),
+            ],
+          ),
+        ],
       );
     }
   }
@@ -181,62 +290,68 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
         final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
 
         return Scaffold(
-          drawer: _showSettings(),
+          key: _key,
+          drawer: _showFloors(),
+          endDrawer: _showSettings(),
           floatingActionButton: _showFab(),
           body: GameProvider(
             bloc: _bloc,
             child: Stack(
               children: <Widget>[
                 GameWidget(),
-                GameTicker(),
-
-                Positioned(
-                  top: 120.0,
-                  right: 0.0,
-                  child: Container(
-                    color: Colors.black26,
-                    padding: const EdgeInsets.all(4.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
-                        Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
-                        Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
-                        Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
-                      ],
+                ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+                    child: Container(
+                      height: 60.0,
+                      color: Colors.black12,
+                      margin: const EdgeInsets.only(top: 24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: (){
+                                    _key.currentState.openDrawer();
+                                  },
+                                  child: Icon(Icons.menu,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(_bloc.floor,
+                                  style: Theme.of(context).textTheme.title.copyWith(color: Colors.white),
+                                ),
+                                InkWell(
+                                  onTap: (){
+                                    _key.currentState.openEndDrawer();
+                                  },
+                                  child: Icon(Icons.settings,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 4.0,
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width  * _bloc.progress,
+                              height: 4.0,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                ),
-
-                _selectedEquipment.isEmpty ? SizedBox.shrink() : Positioned(
-                  bottom: 12,
-                  left: 12,
-                  child: Row(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        key: Key('rotate_ccw'),
-                        backgroundColor: Colors.blue.shade700,
-                        onPressed: (){
-                          _selectedEquipment.forEach((FactoryEquipmentModel fem){
-                            fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
-                          });
-                        },
-                        child: Icon(Icons.rotate_right),
-                      ),
-                      SizedBox(width: 12.0,),
-                      FloatingActionButton(
-                        key: Key('rotate_cw'),
-                        backgroundColor: Colors.blue.shade700,
-                        onPressed: (){
-                          _selectedEquipment.forEach((FactoryEquipmentModel fem){
-                            fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
-                          });
-                        },
-                        child: Icon(Icons.rotate_left),
-                      ),
-                    ],
                   ),
-                )
+                ),
               ],
             ),
           ),
