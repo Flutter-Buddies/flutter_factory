@@ -19,6 +19,16 @@ enum GameWindows{
   buy, settings
 }
 
+class GameCameraPosition{
+  double scale = 1.0;
+  Offset position = Offset.zero;
+
+  void reset(){
+    scale = 1.0;
+    position = Offset.zero;
+  }
+}
+
 class GameBloc{
   GameBloc(){
     _waitForTick();
@@ -28,9 +38,20 @@ class GameBloc{
   int _factoryFloor = 0;
   String get floor => _getFloorName();
 
+  bool _inChallenge = false;
+
+  int mapWidth = 32;
+  int mapHeight = 32;
+
+  final GameCameraPosition gameCameraPosition = GameCameraPosition();
+
   ObjectDB _db;
 
   String _getFloorName(){
+    if(_inChallenge){
+      return 'Challenge';
+    }
+
     if(_factoryFloor == 0){
       return 'Ground floor';
     }else if(_factoryFloor == 1){
@@ -53,13 +74,64 @@ class GameBloc{
   }
 
   void changeFloor(int factoryFloor) async {
-    if(factoryFloor == _factoryFloor){
+    if(factoryFloor == _factoryFloor && !_inChallenge){
       return;
     }
 
-    await _saveFactory();
+    _inChallenge = false;
+
+    if(!_inChallenge){
+      await _saveFactory();
+    }
+
+    mapWidth = 32;
+    mapHeight = 32;
+
     _factoryFloor = factoryFloor;
     _loadFactory();
+  }
+
+  void loadChallenge(int challengeNb) async {
+    await _saveFactory();
+    _inChallenge = true;
+
+    mapWidth = 5;
+    mapHeight = 4;
+
+    _equipment.clear();
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 0),
+      Direction.north,
+      FactoryMaterialType.iron,
+      dispenseAmount: 4
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(5, 0),
+      Direction.north,
+      FactoryMaterialType.gold,
+      dispenseAmount: 2
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(5, 4),
+      Direction.south,
+      FactoryMaterialType.copper,
+      dispenseAmount: 4
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 4),
+      Direction.south,
+      FactoryMaterialType.aluminium,
+      dispenseAmount: 4
+    ));
+
+    _equipment.add(Seller(
+      Coordinates(4, 4),
+      Direction.south,
+    ));
   }
 
   Future<void> _openDatabase() async {

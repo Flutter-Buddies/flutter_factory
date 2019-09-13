@@ -13,14 +13,12 @@ class GameWidget extends StatefulWidget {
   _GameWidgetState createState() => _GameWidgetState();
 }
 
-class GameCameraPosition{
-  double scale = 1.0;
-  Offset position = Offset.zero;
-}
-
 class _GameWidgetState extends State<GameWidget> {
-  final GameCameraPosition _gameCameraPosition = GameCameraPosition();
   final List<Coordinates> _selected = <Coordinates>[];
+  FactoryEquipmentModel _copyMaterial;
+
+  int doubleTapDuration = 300;
+  int _lastTap = 0;
 
   GameBloc _bloc;
 
@@ -37,23 +35,23 @@ class _GameWidgetState extends State<GameWidget> {
       builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
         return GestureDetector(
           onScaleStart: (ScaleStartDetails ssd){
-            _scaleEnd = _gameCameraPosition.scale;
-            _startPoint = ssd.focalPoint - _gameCameraPosition.position;
+            _scaleEnd = _bloc.gameCameraPosition.scale;
+            _startPoint = ssd.focalPoint - _bloc.gameCameraPosition.position;
           },
           onScaleUpdate: (ScaleUpdateDetails sud){
-            _gameCameraPosition.scale = _scaleEnd * sud.scale;
+            _bloc.gameCameraPosition.scale = _scaleEnd * sud.scale;
 
             final Offset normalizedOffset = _startPoint / _scaleEnd;
-            final Offset _offset = sud.focalPoint - normalizedOffset * _gameCameraPosition.scale;
+            final Offset _offset = sud.focalPoint - normalizedOffset * _bloc.gameCameraPosition.scale;
 
-            _gameCameraPosition.position = _offset;
+            _bloc.gameCameraPosition.position = _offset;
           },
           onLongPress: _selected.clear,
           onLongPressMoveUpdate: (LongPressMoveUpdateDetails lpmud){
-            final Offset _s = (lpmud.globalPosition - _gameCameraPosition.position) / _gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
+            final Offset _s = (lpmud.globalPosition - _bloc.gameCameraPosition.position) / _bloc.gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
             final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
 
-            if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 32 && _coordinate.y <= 32){
+            if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
               if(!_selected.contains(_coordinate)){
                 _selected.add(_coordinate);
               }
@@ -62,13 +60,34 @@ class _GameWidgetState extends State<GameWidget> {
             _bloc.selectedTiles = _selected;
           },
           onTapUp: (TapUpDetails tud){
-            final Offset _s = (tud.globalPosition - _gameCameraPosition.position) / _gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
-            final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
+            int _tapTime = DateTime.now().millisecondsSinceEpoch;
 
-            if(_selected.contains(_coordinate)){
+            final Offset _s = (tud.globalPosition - _bloc.gameCameraPosition.position) / _bloc.gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
+            final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
+            final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+
+            if(_se != null && _tapTime - _lastTap < doubleTapDuration){
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('${equipmentTypeToString(_se.type)} copied!'),
+                duration: Duration(milliseconds: 350),
+                behavior: SnackBarBehavior.floating,
+              ));
+              _selected.clear();
+              _copyMaterial = _se;
+              _bloc.equipment.remove(_se);
+            }else if(_copyMaterial != null){
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('${equipmentTypeToString(_copyMaterial.type)} pasted!'),
+                duration: Duration(milliseconds: 350),
+                behavior: SnackBarBehavior.floating,
+              ));
+              _bloc.equipment.add(_copyMaterial.copyWith(coordinates: _coordinate));
+              _selected.add(_coordinate);
+              _tapTime = 0;
+              _copyMaterial = null;
+            }else if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
             }else{
-              final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
               final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _selected.contains(fe.coordinates)).toList();
               final bool _isSameEquipment = _selectedEquipment.isEmpty || (_selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _selected.length && (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first?.type));
 
@@ -76,15 +95,16 @@ class _GameWidgetState extends State<GameWidget> {
                 _selected.clear();
               }
 
-              if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= 32 && _coordinate.y <= 32){
+              if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
                 _selected.add(_coordinate);
               }
             }
 
+            _lastTap = _tapTime;
             _bloc.selectedTiles = _selected;
           },
           child: CustomPaint(
-            painter: GamePainter(_bloc, 32, 32, _gameCameraPosition, _cubeSize, selectedTiles: _selected),
+            painter: GamePainter(_bloc, _bloc.mapWidth, _bloc.mapHeight, _bloc.gameCameraPosition, _cubeSize, selectedTiles: _selected, copyMaterial: _copyMaterial),
             child: const SizedBox.expand(),
           ),
         );
@@ -94,7 +114,7 @@ class _GameWidgetState extends State<GameWidget> {
 }
 
 class GamePainter extends CustomPainter{
-  const GamePainter(this.bloc, this.rows, this.columns, this.camera, this.cubeSize, {this.selectedTiles, Listenable repaint}) : super(repaint: repaint);
+  const GamePainter(this.bloc, this.rows, this.columns, this.camera, this.cubeSize, {this.selectedTiles, this.copyMaterial, Listenable repaint}) : super(repaint: repaint);
 
   final int rows;
   final int columns;
@@ -103,6 +123,7 @@ class GamePainter extends CustomPainter{
 
   final List<Coordinates> selectedTiles;
   final GameCameraPosition camera;
+  final FactoryEquipmentModel copyMaterial;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -165,6 +186,11 @@ class GamePainter extends CustomPainter{
         fe.paintInfo(Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
       }
     });
+
+    if(copyMaterial != null){
+      copyMaterial.drawEquipment(Offset(copyMaterial.coordinates.x * cubeSize, copyMaterial.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
+      canvas.drawRect(Rect.fromCircle(center: Offset(copyMaterial.coordinates.x * cubeSize, copyMaterial.coordinates.y * cubeSize), radius: cubeSize / 2), Paint()..color = Colors.grey.withOpacity(0.5));
+    }
 
     bloc.getExcessMaterial.forEach((FactoryMaterialModel fm){
       if(bloc.getLastExcessMaterial.contains(fm)){
