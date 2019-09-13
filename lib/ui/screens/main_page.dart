@@ -120,7 +120,11 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             width: MediaQuery.of(context).size.width,
             height: 80.0,
             child: FlatButton(
-              onPressed: _bloc.clearLine,
+              onPressed: (){
+                _bloc.equipment.forEach((FactoryEquipmentModel fem){
+                  fem.objects.clear();
+                });
+              },
               child: Text('Vaporize all material on this floor', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.red, fontWeight: FontWeight.w400),),
             ),
           ),
