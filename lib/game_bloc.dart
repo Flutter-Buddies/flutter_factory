@@ -146,7 +146,7 @@ class GameBloc{
 
   void changeTickSpeed(int newSpeed) => _tickSpeed = newSpeed;
 
-  String get gameSpeed => '$_tickSpeed ms';
+  int get gameSpeed => _tickSpeed;
 
   int _frameRate = 0;
   int _tickStart = 0;
@@ -328,6 +328,7 @@ class GameBloc{
 
   void dispose(){
     _saveFactory();
+    _hiveBox.close();
     _gameUpdate.close();
   }
 
@@ -447,7 +448,7 @@ class ChallengesBloc extends GameBloc{
 
   double complete = 0.0;
 
-  Map<FactoryRecipeMaterialType, double> _challengeGoal;
+  Map<FactoryRecipeMaterialType, double> challengeGoal;
   
   Seller goalSeller;
 
@@ -460,16 +461,16 @@ class ChallengesBloc extends GameBloc{
   bool _tick(){
     bool _realTick = super._tick();
 
-    if(_realTick && _challengeGoal != null){
+    if(_realTick && challengeGoal != null){
       int soldItems = 0;
 
       if(goalSeller != null){
         goalSeller.soldItems.getRange(max(goalSeller.soldItems.length - 60, 0), goalSeller.soldItems.length).forEach((List<FactoryRecipeMaterialType> frmtList){
-          soldItems += frmtList.where((FactoryRecipeMaterialType frmt) => frmt.materialType == _challengeGoal.keys.first.materialType).length;
+          soldItems += frmtList.where((FactoryRecipeMaterialType frmt) => frmt.materialType == challengeGoal.keys.first.materialType).length;
         });
       }
 
-      complete = (soldItems / 60) / _challengeGoal.values.first;
+      complete = (soldItems / 60) / challengeGoal.values.first;
       _didComplete = complete == 1.0;
 
       print('Sold items: $soldItems / $_didComplete / $complete');
@@ -479,12 +480,12 @@ class ChallengesBloc extends GameBloc{
   }
 
   String getChallengeGoalDescription(){
-    if(_challengeGoal == null || _challengeGoal.isEmpty){
+    if(challengeGoal == null || challengeGoal.isEmpty){
       return '';
     }
 
-    final FactoryRecipeMaterialType _frmt = _challengeGoal.keys.first;
-    return 'You have to produce ${_challengeGoal[_frmt]} ${factoryMaterialToString(_frmt.materialType)} per tick';
+    final FactoryRecipeMaterialType _frmt = challengeGoal.keys.first;
+    return 'You have to produce ${challengeGoal[_frmt]} ${factoryMaterialToString(_frmt.materialType)} per tick';
   }
 
   @override
@@ -555,7 +556,7 @@ class ChallengesBloc extends GameBloc{
   }
 
   void _loadFirstChallenge(){
-    _challengeGoal = <FactoryRecipeMaterialType, double>{
+    challengeGoal = <FactoryRecipeMaterialType, double>{
       FactoryRecipeMaterialType(FactoryMaterialType.washingMachine): 2
     };
 
@@ -612,7 +613,7 @@ class ChallengesBloc extends GameBloc{
   }
 
   void _loadSecondChallenge(){
-    _challengeGoal = <FactoryRecipeMaterialType, double>{
+    challengeGoal = <FactoryRecipeMaterialType, double>{
       FactoryRecipeMaterialType(FactoryMaterialType.airCondition): 1
     };
 
@@ -672,7 +673,7 @@ class ChallengesBloc extends GameBloc{
   }
 
   void _loadThirdChallenge(){
-    _challengeGoal = <FactoryRecipeMaterialType, double>{
+    challengeGoal = <FactoryRecipeMaterialType, double>{
       FactoryRecipeMaterialType(FactoryMaterialType.lightBulb): 1
     };
 
@@ -708,7 +709,7 @@ class ChallengesBloc extends GameBloc{
   }
 
   void _loadFourthChallenge(){
-    _challengeGoal = <FactoryRecipeMaterialType, double>{
+    challengeGoal = <FactoryRecipeMaterialType, double>{
       FactoryRecipeMaterialType(FactoryMaterialType.engine): 1
     };
 
@@ -744,7 +745,7 @@ class ChallengesBloc extends GameBloc{
   }
 
   void _loadFifthChallenge(){
-    _challengeGoal = <FactoryRecipeMaterialType, double>{
+    challengeGoal = <FactoryRecipeMaterialType, double>{
       FactoryRecipeMaterialType(FactoryMaterialType.railway): 0.6
     };
 

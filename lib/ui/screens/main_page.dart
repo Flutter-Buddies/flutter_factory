@@ -36,6 +36,11 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
   GameBloc _bloc;
   GlobalKey<ScaffoldState> _key = GlobalKey();
 
+  void dispose(){
+    _bloc.dispose();
+    super.dispose();
+  }
+
   Widget _showSettings(){
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
@@ -52,7 +57,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 onPressed: _bloc.increaseGameSpeed,
                 child: Icon(Icons.remove),
               ),
-              Text('Tick speed: ${_bloc.gameSpeed}'),
+              Text('Tick speed: ${_bloc.gameSpeed} ms'),
               FloatingActionButton(
                 onPressed: _bloc.decreaseGameSpeed,
                 child: Icon(Icons.add),

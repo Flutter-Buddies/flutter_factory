@@ -15,9 +15,40 @@ import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dar
 import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/sorter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class ChallengesListPage extends StatelessWidget {
+class ChallengesListPage extends StatefulWidget {
   ChallengesListPage({Key key}) : super(key: key);
+
+  @override
+  _ChallengesListPageState createState() => _ChallengesListPageState();
+}
+
+class _ChallengesListPageState extends State<ChallengesListPage> {
+  List<bool> _completed = <bool>[];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _openBoxes();
+  }
+
+  void _openBoxes() async {
+    for(int i = 0; i < 5; i++){
+      Box _box = await Hive.openBox('challenge_$i');
+      print(_box.get('did_complete'));
+
+      if(mounted){
+        setState((){
+          _completed.add(_box.get('did_complete') ?? false);
+        });
+      }
+
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,29 +62,41 @@ class ChallengesListPage extends StatelessWidget {
             child: ListView.separated(
               itemCount: 5,
               separatorBuilder: (BuildContext context, int i){
-                return Divider();
+                return Divider(height: 0.0);
               },
               itemBuilder: (BuildContext context, int i){
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: ListTile(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute<void>(
-                        builder: (BuildContext context) => ChallengesPage(loadChallenge: i,)
-                      ));
-                    },
-                    title: Text('Challenge ${i + 1}',
-                      style: Theme.of(context).textTheme.title,
+                return Stack(
+                  children: <Widget>[
+                    Positioned(
+                      right: 0.0,
+                      child: Container(
+                        height: 90.0,
+                        width: 12.0,
+                        color: _completed.isEmpty ? Colors.white : _completed[i] ? Colors.green : Colors.red,
+                      ),
                     ),
-                    subtitle: Text('You have to use the space given to you, and build production line that will output ${
-                       i == 0 ? '2 Washing machines' :
-                         i == 1 ? '1 Air conditioner' :
-                           i == 2 ? '1 Light bulb' :
-                             i == 3 ? '1 Engine' : '0.6 Railway'
-                    } per tick.',
-                      style: Theme.of(context).textTheme.caption,
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: ListTile(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute<void>(
+                            builder: (BuildContext context) => ChallengesPage(loadChallenge: i,)
+                          ));
+                        },
+                        title: Text('Challenge ${i + 1}',
+                          style: Theme.of(context).textTheme.title,
+                        ),
+                        subtitle: Text('You have to use the space given to you, and build production line that will output ${
+                          i == 0 ? '2 Washing machines' :
+                          i == 1 ? '1 Air conditioner' :
+                          i == 2 ? '1 Light bulb' :
+                          i == 3 ? '1 Engine' : '0.6 Railway'
+                        } per tick.',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 );
               },
             ),
@@ -79,6 +122,13 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
   ChallengesBloc _bloc;
   GlobalKey<ScaffoldState> _key = GlobalKey();
 
+
+   @override
+   void dispose(){
+     _bloc.dispose();
+     super.dispose();
+   }
+
   Widget _showSettings(){
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
@@ -95,7 +145,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                 onPressed: _bloc.increaseGameSpeed,
                 child: Icon(Icons.remove),
               ),
-              Text('Tick speed: ${_bloc.gameSpeed}'),
+              Text('Tick speed: ${_bloc.gameSpeed} ms'),
               FloatingActionButton(
                 onPressed: _bloc.decreaseGameSpeed,
                 child: Icon(Icons.add),
@@ -164,7 +214,10 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
         child: Icon(Icons.build),
       );
     }else if(!_equipment.isMutable){
-      return SizedBox.shrink();
+      return Container(
+        color: Colors.white,
+        child: InfoWindow(_bloc)
+      );
     }else{
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,8 +318,10 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                     filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
                     child: Stack(
                       children: <Widget>[
-                        Container(
-                          color: Color.lerp(Colors.red, Colors.green, _bloc.complete).withOpacity(0.4),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: _bloc.gameSpeed),
+                          curve: Curves.easeOutCubic,
+                          color: Color.lerp(Colors.red, Colors.green, _bloc.complete).withOpacity(_bloc.complete == 1.0 ? 0.9 : 0.6),
                           height: 110.0,
                           width: MediaQuery.of(context).size.width * _bloc.complete,
                         ),
@@ -300,6 +355,9 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                                                 style: Theme.of(context).textTheme.title.copyWith(color: Colors.white),
                                               ),
                                               Text(_bloc.getChallengeGoalDescription(),
+                                                style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),
+                                              ),
+                                              Text('Current production: ${(_bloc.complete * _bloc.challengeGoal.values.first).toStringAsFixed(2)}',
                                                 style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),
                                               ),
                                             ],
@@ -425,7 +483,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showDispenserOptions(){
-      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Dispenser && fe.isMutable).map<Dispenser>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
+      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Dispenser).map<Dispenser>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
     }
 
     Widget _showSplitterOptions(){
@@ -437,7 +495,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     Widget _showCrafterOptions(){
-      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Crafter && fe.isMutable).map<Crafter>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
+      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Crafter).map<Crafter>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
     }
 
     Widget _showRotationOptions(){
@@ -480,7 +538,9 @@ class InfoWindow extends StatelessWidget {
         break;
     }
 
-    _options.add(_showRotationOptions());
+    if(_equipment.isMutable){
+      _options.add(_showRotationOptions());
+    }
 
     return Container(
       child: SingleChildScrollView(
