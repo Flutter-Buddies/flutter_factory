@@ -9,9 +9,9 @@ import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
-import 'package:objectdb/objectdb.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:hive/hive.dart';
 
 import 'game/factory_material.dart';
 
@@ -32,26 +32,28 @@ class GameCameraPosition{
 class GameBloc{
   GameBloc(){
     _waitForTick();
-    _loadFactory();
+
+    _loadHive().then((_){
+      _loadFactoryFloor();
+    });
   }
+
+  Future<void> _loadHive() async {
+    final Directory _path = await getApplicationDocumentsDirectory();
+    Hive.init(_path.path);
+  }
+
+  Box _hiveBox;
 
   int _factoryFloor = 0;
   String get floor => _getFloorName();
 
-  bool _inChallenge = false;
-
-  int mapWidth = 32;
-  int mapHeight = 32;
+  int mapWidth = 31;
+  int mapHeight = 31;
 
   final GameCameraPosition gameCameraPosition = GameCameraPosition();
 
-  ObjectDB _db;
-
   String _getFloorName(){
-    if(_inChallenge){
-      return 'Challenge';
-    }
-
     if(_factoryFloor == 0){
       return 'Ground floor';
     }else if(_factoryFloor == 1){
@@ -65,87 +67,35 @@ class GameBloc{
     }
   }
 
-  Future<ObjectDB> get db async {
-    if(_db == null){
-      await _openDatabase();
-    }
-
-    return _db;
-  }
-
   void changeFloor(int factoryFloor) async {
-    if(factoryFloor == _factoryFloor && !_inChallenge){
+    if(factoryFloor == _factoryFloor){
       return;
     }
 
-    _inChallenge = false;
+    selectedTiles.clear();
 
-    if(!_inChallenge){
-      await _saveFactory();
-    }
-
-    mapWidth = 32;
-    mapHeight = 32;
-
-    _factoryFloor = factoryFloor;
-    _loadFactory();
-  }
-
-  void loadChallenge(int challengeNb) async {
     await _saveFactory();
-    _inChallenge = true;
 
-    mapWidth = 5;
-    mapHeight = 4;
-
-    _equipment.clear();
-
-    _equipment.add(Dispenser(
-      Coordinates(0, 0),
-      Direction.north,
-      FactoryMaterialType.iron,
-      dispenseAmount: 4
-    ));
-
-    _equipment.add(Dispenser(
-      Coordinates(5, 0),
-      Direction.north,
-      FactoryMaterialType.gold,
-      dispenseAmount: 2
-    ));
-
-    _equipment.add(Dispenser(
-      Coordinates(5, 4),
-      Direction.south,
-      FactoryMaterialType.copper,
-      dispenseAmount: 4
-    ));
-
-    _equipment.add(Dispenser(
-      Coordinates(0, 4),
-      Direction.south,
-      FactoryMaterialType.aluminium,
-      dispenseAmount: 4
-    ));
-
-    _equipment.add(Seller(
-      Coordinates(4, 4),
-      Direction.south,
-    ));
+    await _hiveBox.close();
+    _factoryFloor = factoryFloor;
+    _loadFactoryFloor();
   }
 
-  Future<void> _openDatabase() async {
-    final Directory _path = await getApplicationDocumentsDirectory();
-    _db = ObjectDB(_path.path + '._factory.db');
-    _db.open();
-    return;
-  }
+  Future<void> _loadFactoryFloor() async {
+    mapHeight = 31;
+    mapWidth = 31;
 
-  void _loadFactory() async {
     print('Loading factory from DB!');
 
-    ObjectDB _dbObject = await db;
-    final Map<String, dynamic> _result = await _dbObject.first(<String, int>{'factory_floor': _factoryFloor});
+    _hiveBox = await Hive.openBox('factory_floor_$_factoryFloor');
+
+    print(_hiveBox.toMap());
+    final Map<dynamic, dynamic> _result = _hiveBox.toMap();
+
+    if(_result.isEmpty){
+      _equipment.clear();
+      return;
+    }
 
     print('Got from DB!');
 
@@ -176,14 +126,7 @@ class GameBloc{
   }
 
   Future<void> _saveFactory() async {
-    ObjectDB _dbObject = await db;
-    final Map<String, dynamic> _result = await _dbObject.first(<String, int>{'factory_floor': _factoryFloor});
-
-    if(_result == null){
-      await _dbObject.insert(toMap());
-    }else{
-      await _dbObject.update(<String, int>{'factory_floor': _factoryFloor}, toMap());
-    }
+    await _hiveBox.putAll(toMap());
   }
 
   Duration _duration = Duration();
@@ -335,12 +278,14 @@ class GameBloc{
     _saveFactory();
   }
 
-  void _tick(){
+  bool _tick(){
     List<FactoryMaterialModel> _material;
+    bool _realTick = false;
 
     if(_duration.inMilliseconds ~/ _tickSpeed == _lastTrigger ~/ _tickSpeed){
       _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.objects));
     }else{
+      _realTick = true;
       _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
       _lastTrigger = _duration.inMilliseconds;
 
@@ -363,6 +308,8 @@ class GameBloc{
     }
 
     _gameUpdate.add(GameUpdate.tick);
+
+    return _realTick;
   }
 
   void changeWindow(GameWindows window){
@@ -399,7 +346,7 @@ class GameBloc{
 
     switch(EquipmentType.values[map['equipment_type']]){
       case EquipmentType.dispenser:
-        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount'], dispenseTickDuration: map['tick_duration']);
+        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount'], dispenseTickDuration: map['tick_duration'], isMutable: map['is_mutable']);
       case EquipmentType.roller:
         return Roller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], rollerTickDuration: map['tick_duration']);
       case EquipmentType.crafter:
@@ -417,7 +364,7 @@ class GameBloc{
 
         return Sorter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], _sorterMap);
       case EquipmentType.seller:
-        return Seller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        return Seller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], isMutable: map['is_mutable']);
       case EquipmentType.hydraulic_press:
         return HydraulicPress(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], pressCapacity: map['press_capacity']);
       case EquipmentType.wire_bender:
@@ -484,6 +431,371 @@ class GameBloc{
     }
 
     return null;
+  }
+}
+
+class ChallengesBloc extends GameBloc{
+  ChallengesBloc(int challenge) : super() {
+    _challenge = challenge;
+
+    _loadFactoryFloor();
+  }
+
+  int _challenge = 0;
+  
+  bool _didComplete = false;
+
+  double complete = 0.0;
+
+  Map<FactoryRecipeMaterialType, double> _challengeGoal;
+  
+  Seller goalSeller;
+
+  @override
+  int get _factoryFloor => _challenge;
+
+  void loadChallenge(int challenge) => changeFloor(challenge);
+  
+  @override
+  bool _tick(){
+    bool _realTick = super._tick();
+
+    if(_realTick && _challengeGoal != null){
+      int soldItems = 0;
+
+      if(goalSeller != null){
+        goalSeller.soldItems.getRange(max(goalSeller.soldItems.length - 60, 0), goalSeller.soldItems.length).forEach((List<FactoryRecipeMaterialType> frmtList){
+          soldItems += frmtList.where((FactoryRecipeMaterialType frmt) => frmt.materialType == _challengeGoal.keys.first.materialType).length;
+        });
+      }
+
+      complete = (soldItems / 60) / _challengeGoal.values.first;
+      _didComplete = complete == 1.0;
+
+      print('Sold items: $soldItems / $_didComplete / $complete');
+    }
+
+    return _realTick;
+  }
+
+  String getChallengeGoalDescription(){
+    if(_challengeGoal == null || _challengeGoal.isEmpty){
+      return '';
+    }
+
+    final FactoryRecipeMaterialType _frmt = _challengeGoal.keys.first;
+    return 'You have to produce ${_challengeGoal[_frmt]} ${factoryMaterialToString(_frmt.materialType)} per tick';
+  }
+
+  @override
+  String _getFloorName(){
+    return 'Challenge ${_challenge + 1}';
+  }
+
+  @override
+  void changeFloor(int factoryFloor){}
+
+  @override
+  Future<void> _saveFactory() async {
+    _hiveBox.putAll(toMap());
+  }
+
+  @override
+  Future<void> _loadFactoryFloor() async {
+    if(_challenge == 0){
+      _loadFirstChallenge();
+    }else if(_challenge == 1){
+      _loadSecondChallenge();
+    }else if(_challenge == 2){
+      _loadThirdChallenge();
+    }else if(_challenge == 3){
+      _loadFourthChallenge();
+    }else{
+      _loadFifthChallenge();
+    }
+
+    print('Loading factory from DB!');
+
+    _hiveBox = await Hive.openBox('challenge_$_factoryFloor');
+    final Map<dynamic, dynamic> _result = _hiveBox.toMap();
+
+    if(_result == null || _result.isEmpty){
+      goalSeller = _equipment.firstWhere((FactoryEquipmentModel fem) => fem is Seller);
+      return;
+    }
+
+    print('Got from DB!');
+
+    _didComplete = _result['did_complete'];
+    final List<dynamic> _equipmentList = _result['equipment'];
+
+    print('Loaded equipment: ${_equipmentList.length}');
+
+    _equipment.clear();
+    _equipment.addAll(_equipmentList.map((dynamic eq){
+      final FactoryEquipmentModel _fem = _equipmentFromMap(eq);
+      //      _fem.objects.add(Gold.fromOffset(Offset(_fem.coordinates.x.toDouble(), _fem.coordinates.y.toDouble())));
+
+      final Map<String, dynamic> map = json.decode(eq);
+
+      final List<dynamic> _materialMap = map['material'];
+      final List<FactoryMaterialModel> _materials = _materialMap.map((dynamic map){
+        final FactoryMaterialModel _material = _materialFromMap(map);
+        _material.direction ??= _fem.direction;
+        return _material;
+      }).toList();
+
+      _fem.objects.addAll(_materials);
+
+      return _fem;
+    }));
+
+    print(_result);
+    goalSeller = _equipment.firstWhere((FactoryEquipmentModel fem) => fem is Seller);
+  }
+
+  void _loadFirstChallenge(){
+    _challengeGoal = <FactoryRecipeMaterialType, double>{
+      FactoryRecipeMaterialType(FactoryMaterialType.washingMachine): 2
+    };
+
+    gameCameraPosition.position = Offset(60.0, 300.0);
+    gameCameraPosition.scale = 2.0;
+
+    mapWidth = 5;
+    mapHeight = 4;
+
+    _equipment.clear();
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 0),
+      Direction.north,
+      FactoryMaterialType.iron,
+      dispenseAmount: 4,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(5, 0),
+      Direction.north,
+      FactoryMaterialType.gold,
+      dispenseAmount: 2,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(5, 4),
+      Direction.south,
+      FactoryMaterialType.copper,
+      dispenseAmount: 4,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 4),
+      Direction.south,
+      FactoryMaterialType.aluminium,
+      dispenseAmount: 4,
+      isMutable: false
+    ));
+
+    _equipment.add(Seller(
+      Coordinates(4, 4),
+      Direction.south,
+      isMutable: false
+    ));
+  }
+
+  void restart() async {
+    await _hiveBox.clear();
+    _loadFactoryFloor();
+  }
+
+  void _loadSecondChallenge(){
+    _challengeGoal = <FactoryRecipeMaterialType, double>{
+      FactoryRecipeMaterialType(FactoryMaterialType.airCondition): 1
+    };
+
+    gameCameraPosition.position = Offset(90.0, 300.0);
+    gameCameraPosition.scale = 2.0;
+
+    mapWidth = 4;
+    mapHeight = 4;
+
+    _equipment.clear();
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 0),
+      Direction.north,
+      FactoryMaterialType.diamond,
+      dispenseAmount: 1,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(1, 1),
+      Direction.north,
+      FactoryMaterialType.gold,
+      dispenseAmount: 1,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(2, 2),
+      Direction.west,
+      FactoryMaterialType.gold,
+      dispenseAmount: 1,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(3, 3),
+      Direction.north,
+      FactoryMaterialType.gold,
+      dispenseAmount: 1,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(4, 4),
+      Direction.west,
+      FactoryMaterialType.aluminium,
+      dispenseAmount: 1,
+      isMutable: false
+    ));
+
+    _equipment.add(Seller(
+      Coordinates(0, 4),
+      Direction.west,
+      isMutable: false
+    ));
+  }
+
+  void _loadThirdChallenge(){
+    _challengeGoal = <FactoryRecipeMaterialType, double>{
+      FactoryRecipeMaterialType(FactoryMaterialType.lightBulb): 1
+    };
+
+    gameCameraPosition.position = Offset(120.0, 300.0);
+    gameCameraPosition.scale = 2.5;
+
+    mapWidth = 2;
+    mapHeight = 3;
+
+    _equipment.clear();
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 0),
+      Direction.east,
+      FactoryMaterialType.copper,
+      dispenseAmount: 2,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 3),
+      Direction.east,
+      FactoryMaterialType.iron,
+      dispenseAmount: 2,
+      isMutable: false
+    ));
+
+    _equipment.add(Seller(
+      Coordinates(2, 0),
+      Direction.west,
+      isMutable: false
+    ));
+  }
+
+  void _loadFourthChallenge(){
+    _challengeGoal = <FactoryRecipeMaterialType, double>{
+      FactoryRecipeMaterialType(FactoryMaterialType.engine): 1
+    };
+
+    gameCameraPosition.position = Offset(120.0, 300.0);
+    gameCameraPosition.scale = 2.5;
+
+    mapWidth = 2;
+    mapHeight = 3;
+
+    _equipment.clear();
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 0),
+      Direction.east,
+      FactoryMaterialType.gold,
+      dispenseAmount: 1,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 3),
+      Direction.east,
+      FactoryMaterialType.iron,
+      dispenseAmount: 2,
+      isMutable: false
+    ));
+
+    _equipment.add(Seller(
+      Coordinates(2, 0),
+      Direction.west,
+      isMutable: false
+    ));
+  }
+
+  void _loadFifthChallenge(){
+    _challengeGoal = <FactoryRecipeMaterialType, double>{
+      FactoryRecipeMaterialType(FactoryMaterialType.railway): 0.6
+    };
+
+    gameCameraPosition.position = Offset(80.0, 300.0);
+    gameCameraPosition.scale = 2.0;
+
+    mapWidth = 4;
+    mapHeight = 4;
+
+    _equipment.clear();
+
+    _equipment.add(Dispenser(
+      Coordinates(0, 0),
+      Direction.north,
+      FactoryMaterialType.iron,
+      dispenseAmount: 4,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(2, 0),
+      Direction.north,
+      FactoryMaterialType.iron,
+      dispenseAmount: 4,
+      isMutable: false
+    ));
+
+    _equipment.add(Dispenser(
+      Coordinates(4, 0),
+      Direction.north,
+      FactoryMaterialType.iron,
+      dispenseAmount: 4,
+      isMutable: false
+    ));
+
+    _equipment.add(Seller(
+      Coordinates(2, 4),
+      Direction.north,
+      isMutable: false
+    ));
+  }
+  
+  @override
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> _map = super.toMap();
+    
+    _map.addAll(<String, dynamic>{
+      'did_complete': _didComplete
+    });
+    
+    return _map;
   }
 }
 

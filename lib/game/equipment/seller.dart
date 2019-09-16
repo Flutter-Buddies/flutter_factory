@@ -1,7 +1,7 @@
 part of factory_equipment;
 
 class Seller extends FactoryEquipmentModel{
-  Seller(Coordinates coordinates, Direction direction) : super(coordinates, direction, EquipmentType.seller);
+  Seller(Coordinates coordinates, Direction direction, {bool isMutable = true}) : super(coordinates, direction, EquipmentType.seller, isMutable: isMutable);
 
   final List<double> _tickSellings = <double>[];
   final List<List<FactoryRecipeMaterialType>> soldItems = <List<FactoryRecipeMaterialType>>[];

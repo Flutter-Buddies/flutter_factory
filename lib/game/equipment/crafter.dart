@@ -166,7 +166,7 @@ class Crafter extends FactoryEquipmentModel{
       coordinates ?? this.coordinates,
       direction ?? this.direction,
       craftMaterial ?? this.craftMaterial,
-      craftingTickDuration: tickDuration ?? this.tickDuration
+      craftingTickDuration: tickDuration ?? this.tickDuration,
     );
   }
 

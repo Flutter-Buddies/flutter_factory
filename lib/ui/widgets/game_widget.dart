@@ -66,7 +66,7 @@ class _GameWidgetState extends State<GameWidget> {
             final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
             final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
 
-            if(_se != null && _tapTime - _lastTap < doubleTapDuration){
+            if(_se != null && _tapTime - _lastTap < doubleTapDuration && _se.isMutable){
               Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text('${equipmentTypeToString(_se.type)} copied!'),
                 duration: Duration(milliseconds: 350),
@@ -76,15 +76,17 @@ class _GameWidgetState extends State<GameWidget> {
               _copyMaterial = _se;
               _bloc.equipment.remove(_se);
             }else if(_copyMaterial != null){
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text('${equipmentTypeToString(_copyMaterial.type)} pasted!'),
-                duration: Duration(milliseconds: 350),
-                behavior: SnackBarBehavior.floating,
-              ));
-              _bloc.equipment.add(_copyMaterial.copyWith(coordinates: _coordinate));
-              _selected.add(_coordinate);
-              _tapTime = 0;
-              _copyMaterial = null;
+              if(_se == null){
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('${equipmentTypeToString(_copyMaterial.type)} pasted!'),
+                  duration: Duration(milliseconds: 350),
+                  behavior: SnackBarBehavior.floating,
+                ));
+                _bloc.equipment.add(_copyMaterial.copyWith(coordinates: _coordinate));
+                _selected.add(_coordinate);
+                _tapTime = 0;
+                _copyMaterial = null;
+              }
             }else if(_selected.contains(_coordinate)){
               _selected.remove(_coordinate);
             }else{

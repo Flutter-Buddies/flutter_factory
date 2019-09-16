@@ -1,7 +1,7 @@
 part of factory_equipment;
 
 class Dispenser extends FactoryEquipmentModel{
-  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 3, int dispenseTickDuration = 1}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration);
+  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 3, int dispenseTickDuration = 1, bool isMutable = true}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration, isMutable: isMutable);
 
   FactoryMaterialType dispenseMaterial;
 

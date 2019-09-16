@@ -30,7 +30,7 @@ class SelectedObjectFooter extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           child: Text('↑', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                           onPressed: (){
-                            equipment.forEach((FactoryEquipmentModel fe){
+                            equipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach((FactoryEquipmentModel fe){
                               fe.direction = Direction.south;
                             });
                           },
@@ -43,7 +43,7 @@ class SelectedObjectFooter extends StatelessWidget {
                               padding: EdgeInsets.zero,
                               child: Text('←', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                               onPressed: (){
-                                equipment.forEach((FactoryEquipmentModel fe){
+                                equipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach((FactoryEquipmentModel fe){
                                   fe.direction = Direction.west;
                                 });
                               },
@@ -53,7 +53,7 @@ class SelectedObjectFooter extends StatelessWidget {
                               padding: EdgeInsets.zero,
                               child: Text('→', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                               onPressed: (){
-                                equipment.forEach((FactoryEquipmentModel fe){
+                                equipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach((FactoryEquipmentModel fe){
                                   fe.direction = Direction.east;
                                 });
                               },
@@ -65,7 +65,7 @@ class SelectedObjectFooter extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           child: Text('↓', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
                           onPressed: (){
-                            equipment.forEach((FactoryEquipmentModel fe){
+                            equipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach((FactoryEquipmentModel fe){
                               fe.direction = Direction.north;
                             });
                           },
@@ -84,7 +84,7 @@ class SelectedObjectFooter extends StatelessWidget {
             child: RaisedButton(
               color: Colors.red,
               onPressed: (){
-                equipment.forEach(_bloc.removeEquipment);
+                equipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach(_bloc.removeEquipment);
               },
               child: Text('DELETE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
             ),

@@ -5,13 +5,15 @@ import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 
 abstract class FactoryEquipmentModel{
-  FactoryEquipmentModel(this.coordinates, this.direction, this.type, {this.tickDuration = 1});
+  FactoryEquipmentModel(this.coordinates, this.direction, this.type, {this.tickDuration = 1, this.isMutable = true});
 
   FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction});
 
   Coordinates coordinates;
   Direction direction;
   EquipmentType type;
+
+  final bool isMutable;
 
   final Map<Direction, int> inputDirections = <Direction, int>{};
 
@@ -276,6 +278,7 @@ abstract class FactoryEquipmentModel{
       'position': coordinates.toMap(),
       'direction': direction.index,
       'tick_duration': tickDuration,
+      'is_mutable': isMutable,
       'material': objects.map((FactoryMaterialModel fmm) => fmm.toMap()).toList()
     };
   }

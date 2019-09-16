@@ -221,45 +221,6 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               ),
             ),
           ),
-          Divider(),
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: (){
-                _bloc.selectedTiles.clear();
-                _bloc.gameCameraPosition.position = Offset(60.0, 300.0);
-                _bloc.gameCameraPosition.scale = 2.0;
-
-                Navigator.pop(context);
-
-                showDialog<void>(
-                  context: context,
-                  builder: (BuildContext context){
-                    return SimpleDialog(
-                      contentPadding: const EdgeInsets.all(24.0),
-                      title: Text('Challenge I'),
-                      children: <Widget>[
-                        Text('You have to use the space given to you, and build production line that will output 2 washing machines per tick.'),
-                        Text('You are not allowed to move, rotate or in any way modify existing machines'),
-
-                        SizedBox(height: 20.0,),
-                        Text('!!! Not all features are yet implemented (like save/load, don\'t allow movement or rotation of placed machines and solved screen for when you actually solve it)!!!', style: Theme.of(context).textTheme.caption.copyWith(color: Colors.red),),
-                        Text('This is just a test for upcoming feature ;)', style: Theme.of(context).textTheme.caption,),
-
-                        SizedBox(height: 20.0,),
-                        Text('This challenge has designed by Elomavi from Discord', style: Theme.of(context).textTheme.caption,),
-                      ],
-                    );
-                  }
-                );
-                _bloc.loadChallenge(0);
-              },
-              child: Container(
-                height: 80.0,
-                child: Center(child: Text('Challenge I'))
-              ),
-            ),
-          ),
         ],
       ),
     );

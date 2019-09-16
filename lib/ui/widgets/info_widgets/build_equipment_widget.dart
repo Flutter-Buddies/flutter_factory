@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
@@ -90,7 +91,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                   );
                                 },
                                 body: Column(
-                                  children: EquipmentType.values.map((EquipmentType et){
+                                  children: EquipmentType.values.where((EquipmentType et) => !(et is Dispenser || et is Seller)).map((EquipmentType et){
                                     return InkWell(
                                       onTap: (){
                                         widget._bloc.buildSelectedEquipmentType = et;
