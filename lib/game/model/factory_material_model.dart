@@ -106,7 +106,7 @@ abstract class FactoryMaterialModel{
   Color getColor(){
     switch(type){
       case FactoryMaterialType.iron:
-        return Colors.grey.shade600;
+        return Colors.grey.shade700;
       case FactoryMaterialType.copper:
         return Colors.orange;
       case FactoryMaterialType.diamond:
@@ -114,7 +114,7 @@ abstract class FactoryMaterialModel{
       case FactoryMaterialType.gold:
         return Colors.yellow;
       case FactoryMaterialType.aluminium:
-        return Colors.grey.shade50;
+        return Colors.grey.shade100;
       default:
         return Colors.red;
     }

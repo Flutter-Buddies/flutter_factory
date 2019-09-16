@@ -18,37 +18,8 @@ import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class ChallengesListPage extends StatefulWidget {
+class ChallengesListPage extends StatelessWidget {
   ChallengesListPage({Key key}) : super(key: key);
-
-  @override
-  _ChallengesListPageState createState() => _ChallengesListPageState();
-}
-
-class _ChallengesListPageState extends State<ChallengesListPage> {
-  List<bool> _completed = <bool>[];
-
-  @override
-  void initState() {
-    super.initState();
-
-    _openBoxes();
-  }
-
-  void _openBoxes() async {
-    for(int i = 0; i < 5; i++){
-      Box _box = await Hive.openBox('challenge_$i');
-      print(_box.get('did_complete'));
-
-      if(mounted){
-        setState((){
-          _completed.add(_box.get('did_complete') ?? false);
-        });
-      }
-
-    }
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,13 +38,18 @@ class _ChallengesListPageState extends State<ChallengesListPage> {
               itemBuilder: (BuildContext context, int i){
                 return Stack(
                   children: <Widget>[
-                    Positioned(
-                      right: 0.0,
-                      child: Container(
-                        height: 90.0,
-                        width: 12.0,
-                        color: _completed.isEmpty ? Colors.white : _completed[i] ? Colors.green : Colors.red,
-                      ),
+                    FutureBuilder<Box>(
+                      future: Hive.openBox('challenge_$i'),
+                      builder: (BuildContext context, AsyncSnapshot<Box> snapshot) {
+                        return Positioned(
+                          right: 0.0,
+                          child: Container(
+                            height: 90.0,
+                            width: 12.0,
+                            color: snapshot.hasData ? Colors.grey : snapshot.data.get('did_complete') ? Colors.green : Colors.yellow,
+                          ),
+                        );
+                      }
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
