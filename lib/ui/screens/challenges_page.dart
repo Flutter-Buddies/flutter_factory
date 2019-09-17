@@ -16,7 +16,6 @@ import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/sorter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 class ChallengesListPage extends StatelessWidget {
   ChallengesListPage({Key key}) : super(key: key);
@@ -36,50 +35,46 @@ class ChallengesListPage extends StatelessWidget {
                 return Divider(height: 0.0);
               },
               itemBuilder: (BuildContext context, int i){
-                return Stack(
-                  children: <Widget>[
-                    FutureBuilder<Box>(
-                      future: Hive.openBox('challenge_$i'),
-                      builder: (BuildContext context, AsyncSnapshot<Box> snapshot) {
-                        if(snapshot.hasData){
-                          return WatchBoxBuilder(
-                            box: snapshot.data,
-                            builder: (BuildContext context, Box box) => Positioned(
-                              right: 0.0,
-                              child: Container(
-                                height: 90.0,
-                                width: 12.0,
-                                color: box.get('did_complete') ? Colors.green : Colors.yellow,
-                              ),
+                return Container(
+                  height: 120.0,
+                  child: Stack(
+                    children: <Widget>[
+                      FutureBuilder<Box>(
+                        future: Hive.openBox('challenge_$i'),
+                        builder: (BuildContext context, AsyncSnapshot<Box> snapshot) {
+                          return Positioned(
+                            right: 0.0,
+                            child: Container(
+                              height: 120.0,
+                              width: 12.0,
+                              color: !snapshot.hasData ? Colors.grey : snapshot.data.get('did_complete') ? Colors.green : Colors.yellow,
                             ),
                           );
-                        }else{
-                          return SizedBox.shrink();
                         }
-                      }
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: ListTile(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute<void>(
-                            builder: (BuildContext context) => ChallengesPage(loadChallenge: i,)
-                          ));
-                        },
-                        title: Text('Challenge ${i + 1}',
-                          style: Theme.of(context).textTheme.title,
-                        ),
-                        subtitle: Text('You have to use the space given to you, and build production line that will output ${
-                          i == 0 ? '2 Washing machines' :
-                          i == 1 ? '1 Air conditioner' :
-                          i == 2 ? '1 Light bulb' :
-                          i == 3 ? '1 Engine' : '0.6 Railway'
-                        } per tick.',
-                          style: Theme.of(context).textTheme.caption,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: ListTile(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute<void>(
+                              builder: (BuildContext context) => ChallengesPage(loadChallenge: i,)
+                            ));
+                          },
+                          title: Text('Challenge ${i + 1}',
+                            style: Theme.of(context).textTheme.title,
+                          ),
+                          subtitle: Text('You have to use the space given to you, and build production line that will output ${
+                            i == 0 ? '2 Washing machines' :
+                            i == 1 ? '1 Air conditioner' :
+                            i == 2 ? '1 Light bulb' :
+                            i == 3 ? '1 Engine' : '0.6 Railway'
+                          } per tick.',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               },
             ),
@@ -518,6 +513,8 @@ class InfoWindow extends StatelessWidget {
       case EquipmentType.melter:
         break;
       case EquipmentType.freeRoller:
+        break;
+      case EquipmentType.rotatingFreeRoller:
         break;
     }
 

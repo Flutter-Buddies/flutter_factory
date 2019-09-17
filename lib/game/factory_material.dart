@@ -28,3 +28,7 @@ part 'craftables/washing_machine.dart';
 part 'craftables/toaster.dart';
 part 'craftables/solar_panel.dart';
 part 'craftables/server_rack.dart';
+part 'craftables/headphones.dart';
+part 'craftables/power_supply.dart';
+part 'craftables/speakers.dart';
+part 'craftables/radio.dart';

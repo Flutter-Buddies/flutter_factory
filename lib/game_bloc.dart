@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Radio;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
@@ -219,6 +219,9 @@ class GameBloc{
       case EquipmentType.freeRoller:
         _addEquipment(FreeRoller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
+      case EquipmentType.rotatingFreeRoller:
+        _addEquipment(RotatingFreeRoller(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
     }
 
     _saveFactory();
@@ -248,6 +251,8 @@ class GameBloc{
         return Melter(selectedTiles.first, buildSelectedEquipmentDirection);
       case EquipmentType.freeRoller:
         return FreeRoller(selectedTiles.first, buildSelectedEquipmentDirection);
+      case EquipmentType.rotatingFreeRoller:
+        return RotatingFreeRoller(selectedTiles.first, buildSelectedEquipmentDirection);
     }
 
     return null;
@@ -377,6 +382,8 @@ class GameBloc{
         return Melter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration'], meltCapacity: map['melt_capacity']);
       case EquipmentType.freeRoller:
         return FreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
+      case EquipmentType.rotatingFreeRoller:
+        return RotatingFreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
     }
 
     return null;
@@ -430,6 +437,14 @@ class GameBloc{
         return SolarPanel.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
       case FactoryMaterialType.serverRack:
         return ServerRack.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.headphones:
+        return Headphones.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.powerSupply:
+        return PowerSupply.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.speakers:
+        return Speakers.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.radio:
+        return Radio.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
     }
 
     return null;

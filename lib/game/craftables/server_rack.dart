@@ -3,7 +3,7 @@ part of factory_material;
 class ServerRack extends FactoryMaterialModel{
   ServerRack.fromOffset(Offset o) : super(o.dx, o.dy, 11000.0, FactoryMaterialType.serverRack, state: FactoryMaterialState.crafted);
 
-  ServerRack.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  ServerRack.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.serverRack, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

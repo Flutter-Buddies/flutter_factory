@@ -319,7 +319,7 @@ enum Direction{
 }
 
 enum EquipmentType{
-  dispenser, roller, freeRoller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter
+  dispenser, roller, freeRoller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter, rotatingFreeRoller
 }
 
 String directionToString(Direction d){
@@ -350,6 +350,7 @@ String equipmentTypeToString(EquipmentType type){
     case EquipmentType.wire_bender: return 'Wire bender';
     case EquipmentType.cutter: return 'Cutter';
     case EquipmentType.melter: return 'Melter';
+    case EquipmentType.rotatingFreeRoller: return 'Rotating free roller';
   }
 
   return '';
@@ -368,6 +369,7 @@ String equipmentDescriptionFromType(EquipmentType type){
     case EquipmentType.wire_bender: return 'Bend raw material to make springs.';
     case EquipmentType.cutter: return 'Cut raw material to make gears.';
     case EquipmentType.melter: return 'Melt raw material to get liquid.';
+    case EquipmentType.rotatingFreeRoller: return 'Will rotate any material that comes in for 90 deg';
   }
 
   return '';

@@ -91,7 +91,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                   );
                                 },
                                 body: Column(
-                                  children: EquipmentType.values.where((EquipmentType et) => !(et is Dispenser || et is Seller)).map((EquipmentType et){
+                                  children: EquipmentType.values.map((EquipmentType et){
                                     return InkWell(
                                       onTap: (){
                                         widget._bloc.buildSelectedEquipmentType = et;

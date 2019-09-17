@@ -10,6 +10,7 @@ import 'package:flutter_factory/ui/widgets/game_widget.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/build_equipment_widget.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/crafter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/dispenser_options.dart';
+import 'package:flutter_factory/ui/widgets/info_widgets/free_roller_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_footer.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
@@ -558,6 +559,9 @@ class InfoWindow extends StatelessWidget {
       case EquipmentType.melter:
         break;
       case EquipmentType.freeRoller:
+        break;
+      case EquipmentType.rotatingFreeRoller:
+        _options.add(FreeRollerInfo(equipment: _equipment));
         break;
     }
 

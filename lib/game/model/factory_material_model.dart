@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Radio;
 import 'package:flutter_factory/game/factory_material.dart';
 
 import 'factory_equipment_model.dart';
@@ -92,6 +92,14 @@ abstract class FactoryMaterialModel{
         return SolarPanel.fromOffset(offset);
       case FactoryMaterialType.serverRack:
         return ServerRack.fromOffset(offset);
+      case FactoryMaterialType.headphones:
+        return Headphones.fromOffset(offset);
+      case FactoryMaterialType.powerSupply:
+        return PowerSupply.fromOffset(offset);
+      case FactoryMaterialType.radio:
+        return Radio.fromOffset(offset);
+      case FactoryMaterialType.speakers:
+        return Speakers.fromOffset(offset);
     }
 
     return null;
@@ -351,7 +359,11 @@ enum FactoryMaterialType{
   washingMachine,
   toaster,
   solarPanel,
-  serverRack
+  serverRack,
+  headphones,
+  powerSupply,
+  radio,
+  speakers
 }
 
 class FactoryRecipe{
@@ -399,6 +411,10 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.toaster: return 'Toaster';
     case FactoryMaterialType.solarPanel: return 'Solar panel';
     case FactoryMaterialType.serverRack: return 'Server rack';
+    case FactoryMaterialType.headphones: return 'Headphones';
+    case FactoryMaterialType.powerSupply: return 'Power supply';
+    case FactoryMaterialType.radio: return 'Radio';
+    case FactoryMaterialType.speakers: return 'Speakers';
   }
 
   return '';
