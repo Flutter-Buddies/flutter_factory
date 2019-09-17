@@ -21,6 +21,7 @@ class Splitter extends FactoryEquipmentModel{
     return _fm;
   }
 
+  /// TODO: Fox this, splitters don't need to have 'input' direction set up! Just split directions are important
   @override
   void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();

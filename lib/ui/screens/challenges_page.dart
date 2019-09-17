@@ -41,14 +41,21 @@ class ChallengesListPage extends StatelessWidget {
                     FutureBuilder<Box>(
                       future: Hive.openBox('challenge_$i'),
                       builder: (BuildContext context, AsyncSnapshot<Box> snapshot) {
-                        return Positioned(
-                          right: 0.0,
-                          child: Container(
-                            height: 90.0,
-                            width: 12.0,
-                            color: snapshot.hasData ? Colors.grey : snapshot.data.get('did_complete') ? Colors.green : Colors.yellow,
-                          ),
-                        );
+                        if(snapshot.hasData){
+                          return WatchBoxBuilder(
+                            box: snapshot.data,
+                            builder: (BuildContext context, Box box) => Positioned(
+                              right: 0.0,
+                              child: Container(
+                                height: 90.0,
+                                width: 12.0,
+                                color: box.get('did_complete') ? Colors.green : Colors.yellow,
+                              ),
+                            ),
+                          );
+                        }else{
+                          return SizedBox.shrink();
+                        }
                       }
                     ),
                     Container(

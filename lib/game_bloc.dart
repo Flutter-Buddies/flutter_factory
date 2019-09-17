@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -45,13 +46,13 @@ class GameBloc{
 
   Box _hiveBox;
 
-  int _factoryFloor = 0;
-  String get floor => _getFloorName();
-
   int mapWidth = 31;
   int mapHeight = 31;
 
   final GameCameraPosition gameCameraPosition = GameCameraPosition();
+  int _factoryFloor = 0;
+
+  String get floor => _getFloorName();
 
   String _getFloorName(){
     if(_factoryFloor == 0){

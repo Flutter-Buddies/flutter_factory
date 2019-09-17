@@ -1,12 +1,15 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 
 abstract class FactoryEquipmentModel{
   FactoryEquipmentModel(this.coordinates, this.direction, this.type, {this.tickDuration = 1, this.isMutable = true});
 
+  /// Copy factory equipment as new entity.
+  /// This allows for moving and coping equipment around
   FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction});
 
   Coordinates coordinates;
@@ -15,8 +18,15 @@ abstract class FactoryEquipmentModel{
 
   final bool isMutable;
 
+  /// Directions from where new material is coming from.
+  ///
+  /// It will remember material for 100 ticks before dropping direction as active
   final Map<Direction, int> inputDirections = <Direction, int>{};
 
+  /// Equipment tickDuration, or how long does it take to process material and send it to next
+  /// square. Next square will be found from [direction] of the equipment.
+  ///
+  /// The [direction] can be changed,
   int tickDuration;
   int counter = 0;
 
@@ -44,6 +54,10 @@ abstract class FactoryEquipmentModel{
     objects.add(m);
   }
 
+  /// Get offset where material should go.
+  ///
+  /// This is used by [Dispenser] and [Crafter] to make new materials
+  /// at their exit points.
   Offset get pointingOffset{
     Offset o;
 
@@ -65,13 +79,24 @@ abstract class FactoryEquipmentModel{
     return o;
   }
 
+  /// Tick is when one tick has passed, all equipment should return materials they want to send to next equipment.
+  ///
+  /// If no materials can be forwarded then pass empty array
+  /// This is overridden by any new equipment, it will set how the equipment behaves on tick
   List<FactoryMaterialModel> tick();
 
+  /// Trigger equipment tick from [GameBloc] where material will be forwarded to next
+  /// equipment in the line or will be added to excess material list (factory floor) that will disappear after few ticks
+  ///
+  /// Increases equipment counter, counter is used to determine if equipments [tickDuration] has passed
   List<FactoryMaterialModel> equipmentTick(){
     counter++;
     return tick();
   }
 
+  /// Draws equipment on the canvas
+  ///
+  /// Empty since some equipment doesn't need anything extra to show like [Roller], [Splitter] or [FreeRoller]
   void drawEquipment(Offset offset, Canvas canvas, double size, double progress){}
 
   void drawTrack(Offset offset, Canvas canvas, double size, double progress){
@@ -84,6 +109,7 @@ abstract class FactoryEquipmentModel{
     canvas.restore();
   }
 
+  /// TODO: Rewrite this! This may improve game performance!
   void drawSplitter(Direction d, Canvas canvas, double size, double progress, {bool entry = false}){
     switch(d){
       case Direction.west:
@@ -117,6 +143,7 @@ abstract class FactoryEquipmentModel{
     }
   }
 
+  /// TODO: Remove progress from here, it is not needed!
   void drawRoller(Direction d, Canvas canvas, double size, double progress){
     switch(d){
       case Direction.east:
@@ -162,6 +189,8 @@ abstract class FactoryEquipmentModel{
     }
   }
 
+  /// Draw material that is leaving the equipment
+  /// TODO: Save directions to temp variable that will only change on tick?
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;
@@ -186,6 +215,7 @@ abstract class FactoryEquipmentModel{
     });
   }
 
+  /// Show equipment info (arrows) and other useful information
   void paintInfo(Offset offset, Canvas canvas, double size, double progress){
     double x = offset.dx;
     double y = offset.dy;
