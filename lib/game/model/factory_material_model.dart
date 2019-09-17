@@ -100,6 +100,16 @@ abstract class FactoryMaterialModel{
         return Radio.fromOffset(offset);
       case FactoryMaterialType.speakers:
         return Speakers.fromOffset(offset);
+      case FactoryMaterialType.tv:
+        return Tv.fromOffset(offset);
+      case FactoryMaterialType.tablet:
+        return Tablet.fromOffset(offset);
+      case FactoryMaterialType.fridge:
+        return Fridge.fromOffset(offset);
+      case FactoryMaterialType.smartphone:
+        return Smartphone.fromOffset(offset);
+      case FactoryMaterialType.microwave:
+        return Microwave.fromOffset(offset);
     }
 
     return null;
@@ -363,7 +373,12 @@ enum FactoryMaterialType{
   headphones,
   powerSupply,
   radio,
-  speakers
+  speakers,
+  tv,
+  smartphone,
+  fridge,
+  tablet,
+  microwave
 }
 
 class FactoryRecipe{
@@ -415,6 +430,11 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.powerSupply: return 'Power supply';
     case FactoryMaterialType.radio: return 'Radio';
     case FactoryMaterialType.speakers: return 'Speakers';
+    case FactoryMaterialType.tv: return 'TV';
+    case FactoryMaterialType.tablet: return 'Tablet';
+    case FactoryMaterialType.microwave: return 'Microwave';
+    case FactoryMaterialType.fridge: return 'Fridge';
+    case FactoryMaterialType.smartphone: return 'Smartphone';
   }
 
   return '';

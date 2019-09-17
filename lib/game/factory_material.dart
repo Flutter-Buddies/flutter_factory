@@ -32,3 +32,8 @@ part 'craftables/headphones.dart';
 part 'craftables/power_supply.dart';
 part 'craftables/speakers.dart';
 part 'craftables/radio.dart';
+part 'craftables/tv.dart';
+part 'craftables/smartphone.dart';
+part 'craftables/fridge.dart';
+part 'craftables/tablet.dart';
+part 'craftables/microwave.dart';

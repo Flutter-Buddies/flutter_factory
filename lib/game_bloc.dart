@@ -445,6 +445,16 @@ class GameBloc{
         return Speakers.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
       case FactoryMaterialType.radio:
         return Radio.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.tv:
+        return Tv.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.tablet:
+        return Tablet.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.microwave:
+        return Microwave.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.fridge:
+        return Fridge.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.smartphone:
+        return Smartphone.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
     }
 
     return null;
