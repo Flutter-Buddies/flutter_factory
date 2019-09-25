@@ -59,7 +59,7 @@ class WireBender extends FactoryEquipmentModel{
   }
 
   @override
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
@@ -74,7 +74,7 @@ class WireBender extends FactoryEquipmentModel{
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Colors.white);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = theme.machineAccentColor);
 
     final double _change = Curves.elasticInOut.transform(_machineProgress) * 6.28;
     final double _size = size / 4.2;
@@ -82,9 +82,9 @@ class WireBender extends FactoryEquipmentModel{
 
     _linesPaint.strokeWidth = 0.6;
     _linesPaint.strokeJoin = StrokeJoin.round;
-    _linesPaint.color = Colors.black54;
+    _linesPaint.color = theme.machinePrimaryColor;
     canvas.drawLine(Offset(0.0, 0.0), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    _linesPaint.color = Colors.black12;
+    _linesPaint.color = theme.machinePrimaryColor.withOpacity(0.2);
     canvas.drawLine(Offset(-size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
     canvas.drawLine(Offset(size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
     canvas.drawLine(Offset(size / 4, -size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
@@ -97,15 +97,15 @@ class WireBender extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    drawRoller(direction, canvas, size, progress);
+    drawRoller(theme, direction, canvas, size, progress);
     canvas.restore();
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;
 

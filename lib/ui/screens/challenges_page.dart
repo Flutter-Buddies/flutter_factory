@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_ticker.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
@@ -130,18 +131,38 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
               ),
             ],
           ),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text('Show arrows'),
-            subtitle: Text('Visual representation on equipment'),
-            onChanged: (bool value){
-              setState(() {
-                _bloc.showArrows = value;
-              });
-            },
-            value: _bloc.showArrows,
+
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text('Show arrows'),
+                subtitle: Text('Visual representation on equipment'),
+                onChanged: (bool value){
+                  setState(() {
+                    _bloc.showArrows = value;
+                  });
+                },
+                value: _bloc.showArrows,
+              ),
+              SizedBox(height: 28.0),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 80.0,
+                child: SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: DynamicTheme.of(context).brightness == Brightness.light,
+                  onChanged: (bool value){
+                    DynamicTheme.of(context).setBrightness(value ? Brightness.light : Brightness.dark);
+                  },
+                  title: Text('Theme'),
+                  subtitle: Text(DynamicTheme.of(context).brightness == Brightness.light ? 'Light' : 'Dark'),
+                )
+              ),
+            ],
           ),
-          SizedBox(height: 28.0),
           Container(
             width: MediaQuery.of(context).size.width,
             height: 80.0,

@@ -55,12 +55,19 @@ class Dispenser extends FactoryEquipmentModel{
   }
 
   @override
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
+
+    if(tickDuration == 1){
+      _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
+    }
+
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade200);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(Colors.red, Colors.green, _didToggle ? (counter % tickDuration == tickDuration - 1 ? progress : 1 - progress) : (counter % tickDuration == 0 ? 1 : 0)));
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.grey.shade200);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = theme.machineAccentColor);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(theme.machineInActiveColor, theme.machineActiveColor, _machineProgress));
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = theme.machineAccentColor);
 
     canvas.save();
     canvas.scale(0.6);
@@ -80,7 +87,7 @@ class Dispenser extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     if(!isWorking){
       return;
     }
@@ -113,8 +120,8 @@ class Dispenser extends FactoryEquipmentModel{
   }
 
   @override
-  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
-    super.paintInfo(offset, canvas, size, progress);
+  void paintInfo(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(theme, offset, canvas, size, progress);
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(0.6);

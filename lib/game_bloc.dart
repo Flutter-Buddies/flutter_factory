@@ -20,6 +20,10 @@ enum GameWindows{
   buy, settings
 }
 
+enum CopyMode{
+  move, copy
+}
+
 class GameCameraPosition{
   double scale = 1.0;
   Offset position = Offset.zero;
@@ -51,6 +55,8 @@ class GameBloc{
 
   final GameCameraPosition gameCameraPosition = GameCameraPosition();
   int _factoryFloor = 0;
+
+  CopyMode copyMode = CopyMode.move;
 
   String get floor => _getFloorName();
 
@@ -299,18 +305,20 @@ class GameBloc{
         _excessMaterial.removeAt(0);
       }
 
-      final List<FactoryMaterialModel> _excess = <FactoryMaterialModel>[];
+      _equipment.forEach((FactoryEquipmentModel fem){
+        _material.removeWhere((FactoryMaterialModel fmm){
+          bool _remove = false;
 
-      _material.forEach((FactoryMaterialModel fm){
-        FactoryEquipmentModel _e = _equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates.x == fm.x.floor() && fe.coordinates.y == fm.y.floor(), orElse: () => null);
-        if(_e != null){
-          _e.input(fm);
-        }else{
-          _excess.add(fm);
-        }
+          if(fmm.x == fem.coordinates.x && fmm.y == fem.coordinates.y){
+            _remove = true;
+            fem.input(fmm);
+          }
+
+          return _remove;
+        });
       });
 
-      _excessMaterial.add(_excess);
+      _excessMaterial.add(_material);
     }
 
     _gameUpdate.add(GameUpdate.tick);

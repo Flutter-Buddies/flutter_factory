@@ -19,36 +19,36 @@ class RotatingFreeRoller extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress){
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     double _size = size * 0.8;
 
-    drawRoller(Direction.north, canvas, size, progress);
-    drawRoller(Direction.west, canvas, size, progress);
-    drawRoller(Direction.east, canvas, size, progress);
-    drawRoller(Direction.south, canvas, size, progress);
+    drawRoller(theme, Direction.north, canvas, size, progress);
+    drawRoller(theme, Direction.west, canvas, size, progress);
+    drawRoller(theme, Direction.east, canvas, size, progress);
+    drawRoller(theme, Direction.south, canvas, size, progress);
 
-    canvas.drawRect(Rect.fromPoints(Offset(_size * 0.4, _size * 0.4), Offset(-_size * 0.4, -_size * 0.4)), Paint()..color = Colors.grey.shade600);
+    canvas.drawRect(Rect.fromPoints(Offset(_size * 0.4, _size * 0.4), Offset(-_size * 0.4, -_size * 0.4)), Paint()..color = theme.floorColor);
 
 //    for(int i = 0; i < 8; i++){
 //      for(int j = 0; j < 8; j++){
 //        canvas.drawCircle(Offset(_size * 0.35 + (i * (-_size * 0.1)), _size * 0.35 + (j * (-_size * 0.1))), _size * 0.045, Paint()..color = Colors.black54);
 //      }
 //    }
-    canvas.drawCircle(Offset(0.0, 0.0), _size * 0.4, Paint()..color = Colors.black54);
+    canvas.drawCircle(Offset(0.0, 0.0), _size * 0.4, Paint()..color = theme.rollersColor);
 
     canvas.drawLine(
       Offset(cos((rotation == 1 ? progress : -progress) * pi * 2) * _size * 0.1, sin((rotation == 1 ? progress : -progress) * pi * 2) * _size * 0.1),
       Offset(cos((rotation == 1 ? progress : -progress) * pi * 2) * _size * 0.4, sin((rotation == 1 ? progress : -progress) * pi * 2) * _size * 0.4),
-      Paint()..color = Colors.grey.shade600..strokeWidth = 1.0
+      Paint()..color = theme.machinePrimaryLightColor..strokeWidth = 1.0
     );
 
     canvas.restore();
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress) {
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     objects.forEach((FactoryMaterialModel fm){
       double _moveX = 0.0;
       double _moveY = 0.0;
@@ -73,7 +73,7 @@ class RotatingFreeRoller extends FactoryEquipmentModel{
   }
 
   @override
-  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
+  void paintInfo(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(0.6);

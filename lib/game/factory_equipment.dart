@@ -8,6 +8,7 @@ import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/factory_material.dart';
+import 'package:flutter_factory/ui/theme/game_theme.dart';
 
 part 'equipment/crafter.dart';
 part 'equipment/cutter.dart';
