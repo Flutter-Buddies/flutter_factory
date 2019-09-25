@@ -1,7 +1,7 @@
 part of factory_equipment;
 
 class Dispenser extends FactoryEquipmentModel{
-  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 3, int dispenseTickDuration = 1, bool isMutable = true}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration, isMutable: isMutable);
+  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 3, int dispenseTickDuration = 1, bool isMutable = true, this.isWorking = true}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration, isMutable: isMutable);
 
   FactoryMaterialType dispenseMaterial;
 
@@ -9,17 +9,11 @@ class Dispenser extends FactoryEquipmentModel{
   List<FactoryMaterialModel> _materials = <FactoryMaterialModel>[];
 
   bool _didToggle = false;
-  bool _isWorking = true;
-
-  bool get isWorking => _isWorking;
-
-  void dispenserWorking(bool value){
-    _isWorking = value;
-  }
+  bool isWorking;
 
   @override
   List<FactoryMaterialModel> tick() {
-    if(!_isWorking){
+    if(!isWorking){
       return <FactoryMaterialModel>[];
     }
 
@@ -87,7 +81,7 @@ class Dispenser extends FactoryEquipmentModel{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
-    if(!_isWorking){
+    if(!isWorking){
       return;
     }
     
@@ -144,13 +138,14 @@ class Dispenser extends FactoryEquipmentModel{
   }
 
   @override
-  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialType dispenseMaterial, int dispenseAmount}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialType dispenseMaterial, int dispenseAmount, bool isWorking}) {
     return Dispenser(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
       dispenseMaterial ?? this.dispenseMaterial,
       dispenseTickDuration: tickDuration ?? this.tickDuration,
       dispenseAmount: dispenseAmount ?? this.dispenseAmount,
+      isWorking: isWorking ?? this.isWorking,
     );
   }
 
@@ -160,7 +155,8 @@ class Dispenser extends FactoryEquipmentModel{
     final Map<String, dynamic> _map = super.toMap();
     _map.addAll(<String, dynamic>{
       'dispense_material': dispenseMaterial.index,
-      'dispense_amount': dispenseAmount
+      'dispense_amount': dispenseAmount,
+//      'is_working': isWorking
     });
     return _map;
   }

@@ -37,3 +37,8 @@ part 'craftables/smartphone.dart';
 part 'craftables/fridge.dart';
 part 'craftables/tablet.dart';
 part 'craftables/microwave.dart';
+part 'craftables/computer.dart';
+part 'craftables/electric_board.dart';
+part 'craftables/generator.dart';
+part 'craftables/smart_watch.dart';
+part 'craftables/water_heater.dart';

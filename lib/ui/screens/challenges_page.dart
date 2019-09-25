@@ -47,7 +47,7 @@ class ChallengesListPage extends StatelessWidget {
                             child: Container(
                               height: 120.0,
                               width: 12.0,
-                              color: !snapshot.hasData ? Colors.grey : snapshot.data.get('did_complete') ? Colors.green : Colors.yellow,
+                              color: !snapshot.hasData ? Colors.grey : (snapshot.data?.get('did_complete') ?? false) ? Colors.green : Colors.yellow,
                             ),
                           );
                         }
@@ -235,6 +235,10 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                 backgroundColor: Colors.red,
                 onPressed: (){
                   _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates) && fe.isMutable).toList().forEach(_bloc.removeEquipment);
+
+                  if(_bloc.selectedTiles.length > 1){
+                    _bloc.selectedTiles.clear();
+                  }
                 },
                 child: Icon(Icons.clear),
               ),
@@ -433,6 +437,7 @@ class InfoWindow extends StatelessWidget {
 
                 _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
 
+                _bloc.selectedTiles.clear();
                 _bloc.changeWindow(GameWindows.buy);
               },
               color: Colors.red,

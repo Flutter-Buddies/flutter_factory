@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -309,7 +310,7 @@ abstract class FactoryEquipmentModel{
       'direction': direction.index,
       'tick_duration': tickDuration,
       'is_mutable': isMutable,
-      'material': objects.map((FactoryMaterialModel fmm) => fmm.toMap()).toList()
+      'material': objects.getRange(max(0, objects.length - 50), objects.length).map((FactoryMaterialModel fmm) => fmm.toMap()).toList()
     };
   }
 }

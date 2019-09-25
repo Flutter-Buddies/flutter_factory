@@ -353,7 +353,7 @@ class GameBloc{
 
     switch(EquipmentType.values[map['equipment_type']]){
       case EquipmentType.dispenser:
-        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount'], dispenseTickDuration: map['tick_duration'], isMutable: map['is_mutable']);
+        return Dispenser(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['dispense_material']], dispenseAmount: map['dispense_amount'], dispenseTickDuration: map['tick_duration'], isMutable: map['is_mutable'], isWorking: map['is_working'] ?? true);
       case EquipmentType.roller:
         return Roller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], rollerTickDuration: map['tick_duration']);
       case EquipmentType.crafter:
@@ -455,6 +455,16 @@ class GameBloc{
         return Fridge.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
       case FactoryMaterialType.smartphone:
         return Smartphone.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.computer:
+        return Computer.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.electricBoard:
+        return ElectricBoard.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.generator:
+        return Generator.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.smartWatch:
+        return SmartWatch.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.waterHeater:
+        return WaterHeater.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
     }
 
     return null;
@@ -496,8 +506,12 @@ class ChallengesBloc extends GameBloc{
         });
       }
 
-      complete = (soldItems / 60) / challengeGoal.values.first;
-      _didComplete = complete == 1.0;
+      if(!_didComplete){
+        complete = (soldItems / 60) / challengeGoal.values.first;
+        _didComplete = complete == 1.0;
+      }else{
+        complete = 1.0;
+      }
 
       print('Sold items: $soldItems / $_didComplete / $complete');
     }

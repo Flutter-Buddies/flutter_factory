@@ -51,6 +51,11 @@ class Microwave extends FactoryMaterialModel{
       center: Offset(-_size * 0.12, 0.0),
       height: _size * 1.1,
       width: _size * 1.65
+    ), _p..color = Colors.grey.shade600..strokeWidth = 0.1..style = PaintingStyle.stroke);
+
+    canvas.drawRect(Rect.fromPoints(
+      Offset(_size, _size * 0.6),
+      Offset(-_size, -_size * 0.6),
     ), _p..color = Colors.black87..strokeWidth = 0.1..style = PaintingStyle.stroke);
 
     canvas.restore();

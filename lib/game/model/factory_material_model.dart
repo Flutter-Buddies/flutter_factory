@@ -110,6 +110,16 @@ abstract class FactoryMaterialModel{
         return Smartphone.fromOffset(offset);
       case FactoryMaterialType.microwave:
         return Microwave.fromOffset(offset);
+      case FactoryMaterialType.computer:
+        return Computer.fromOffset(offset);
+      case FactoryMaterialType.electricBoard:
+        return ElectricBoard.fromOffset(offset);
+      case FactoryMaterialType.generator:
+        return Generator.fromOffset(offset);
+      case FactoryMaterialType.smartWatch:
+        return SmartWatch.fromOffset(offset);
+      case FactoryMaterialType.waterHeater:
+        return WaterHeater.fromOffset(offset);
     }
 
     return null;
@@ -378,7 +388,12 @@ enum FactoryMaterialType{
   smartphone,
   fridge,
   tablet,
-  microwave
+  microwave,
+  computer,
+  electricBoard,
+  generator,
+  smartWatch,
+  waterHeater
 }
 
 class FactoryRecipe{
@@ -435,6 +450,11 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.microwave: return 'Microwave';
     case FactoryMaterialType.fridge: return 'Fridge';
     case FactoryMaterialType.smartphone: return 'Smartphone';
+    case FactoryMaterialType.computer: return 'Computer';
+    case FactoryMaterialType.waterHeater: return 'Water Heater';
+    case FactoryMaterialType.generator: return 'Generator';
+    case FactoryMaterialType.smartWatch: return 'Smart Watch';
+    case FactoryMaterialType.electricBoard: return 'Electric Board';
   }
 
   return '';

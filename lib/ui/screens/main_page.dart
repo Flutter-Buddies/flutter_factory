@@ -86,7 +86,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   color: Colors.green.shade400,
                   onPressed: (){
                     _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
-                      d.dispenserWorking(true);
+                      d.isWorking = true;
                     });
                   },
                   child: Text('Turn on all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
@@ -100,7 +100,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   color: Colors.red.shade400,
                   onPressed: (){
                     _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
-                      d.dispenserWorking(false);
+                      d.isWorking = false;
                     });
                   },
                   child: Text('Turn off all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
@@ -306,6 +306,10 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 backgroundColor: Colors.red,
                 onPressed: (){
                   _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+
+                  if(_bloc.selectedTiles.length > 1){
+                    _bloc.selectedTiles.clear();
+                  }
                 },
                 child: Icon(Icons.clear),
               ),
@@ -479,6 +483,7 @@ class InfoWindow extends StatelessWidget {
 
                 _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
 
+                _bloc.selectedTiles.clear();
                 _bloc.changeWindow(GameWindows.buy);
               },
               color: Colors.red,
