@@ -3,7 +3,7 @@ part of factory_material;
 class SolarPanel extends FactoryMaterialModel{
   SolarPanel.fromOffset(Offset o) : super(o.dx, o.dy, 900.0, FactoryMaterialType.solarPanel, state: FactoryMaterialState.crafted);
 
-  SolarPanel.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  SolarPanel.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.solarPanel, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

@@ -72,7 +72,7 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
@@ -87,9 +87,9 @@ class Crafter extends FactoryEquipmentModel{
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 //    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.grey.shade900);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade900);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(Colors.red, Colors.green, _machineProgress));//_didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.grey.shade900);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = theme.machinePrimaryDarkColor);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(theme.machineActiveColor, theme.machineInActiveColor, _machineProgress));//_didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = theme.machinePrimaryDarkColor);
 
     canvas.scale(0.6);
     FactoryMaterialModel.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
@@ -98,19 +98,19 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress){
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    drawRoller(direction, canvas, size, progress);
+    drawRoller(theme, direction, canvas, size, progress);
     //    inputDirections.keys.forEach((Direction d) => drawSplitter(d, canvas, size, progress));
 
     canvas.restore();
   }
 
   @override
-  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
-    super.paintInfo(offset, canvas, size, progress);
+  void paintInfo(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(theme, offset, canvas, size, progress);
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(0.6);
@@ -134,7 +134,7 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;
 
@@ -166,7 +166,7 @@ class Crafter extends FactoryEquipmentModel{
       coordinates ?? this.coordinates,
       direction ?? this.direction,
       craftMaterial ?? this.craftMaterial,
-      craftingTickDuration: tickDuration ?? this.tickDuration
+      craftingTickDuration: tickDuration ?? this.tickDuration,
     );
   }
 

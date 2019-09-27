@@ -29,20 +29,20 @@ class Sorter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     if(directions.containsValue(direction)){
-      drawRoller(direction, canvas, size, progress);
+      drawRoller(theme, direction, canvas, size, progress);
     }else{
-      drawSplitter(direction, canvas, size, progress);
+      drawSplitter(theme, direction, canvas, size, progress);
     }
 
     directions.values.forEach((Direction d){
       if(d == direction){
         return;
       }else{
-        drawSplitter(d, canvas, size, progress);
+        drawSplitter(theme, d, canvas, size, progress);
       }
     });
 
@@ -50,8 +50,8 @@ class Sorter extends FactoryEquipmentModel{
   }
 
   @override
-  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
-    super.paintInfo(offset, canvas, size, progress);
+  void paintInfo(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(theme, offset, canvas, size, progress);
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -94,18 +94,16 @@ class Sorter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = Colors.grey.shade700);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = theme.machinePrimaryColor);
 
     final Paint _gatesPaint = Paint();
-    _gatesPaint.color = Colors.grey.shade600;
-
     if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north || objects.indexWhere((FactoryMaterialModel fm) => _materialToDirection(fm, Direction.south)) != -1 || Direction.values[(direction.index - 2) % Direction.values.length] == Direction.north){
-      _gatesPaint.color = Colors.green;
+      _gatesPaint.color = theme.machineActiveColor;
     }else{
-      _gatesPaint.color = Colors.grey.shade600;
+      _gatesPaint.color = theme.machinePrimaryLightColor;
     }
 
     canvas.drawRRect(RRect.fromRectAndCorners(
@@ -118,9 +116,9 @@ class Sorter extends FactoryEquipmentModel{
     ), _gatesPaint);
 
     if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south || objects.indexWhere((FactoryMaterialModel fm) => _materialToDirection(fm, Direction.north)) != -1 || Direction.values[(direction.index - 2) % Direction.values.length] == Direction.south){
-      _gatesPaint.color = Colors.green;
+      _gatesPaint.color = theme.machineActiveColor;
     }else{
-      _gatesPaint.color = Colors.grey.shade600;
+      _gatesPaint.color = theme.machinePrimaryLightColor;
     }
 
     canvas.drawRRect(RRect.fromRectAndCorners(
@@ -133,9 +131,9 @@ class Sorter extends FactoryEquipmentModel{
     ), _gatesPaint);
 
     if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east || objects.indexWhere((FactoryMaterialModel fm) => _materialToDirection(fm, Direction.west)) != -1 || Direction.values[(direction.index - 2) % Direction.values.length] == Direction.east){
-      _gatesPaint.color = Colors.green;
+      _gatesPaint.color = theme.machineActiveColor;
     }else{
-      _gatesPaint.color = Colors.grey.shade600;
+      _gatesPaint.color = theme.machinePrimaryLightColor;
     }
 
     canvas.drawRRect(RRect.fromRectAndCorners(
@@ -148,9 +146,9 @@ class Sorter extends FactoryEquipmentModel{
     ), _gatesPaint);
 
     if(Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west || objects.indexWhere((FactoryMaterialModel fm) => _materialToDirection(fm, Direction.east)) != -1 || Direction.values[(direction.index - 2) % Direction.values.length] == Direction.west){
-      _gatesPaint.color = Colors.green;
+      _gatesPaint.color = theme.machineActiveColor;
     }else{
-      _gatesPaint.color = Colors.grey.shade600;
+      _gatesPaint.color = theme.machinePrimaryLightColor;
     }
 
     canvas.drawRRect(RRect.fromRectAndCorners(
@@ -166,7 +164,7 @@ class Sorter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress) {
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     objects.forEach((FactoryMaterialModel fm){
       double _moveX = 0.0;
       double _moveY = 0.0;
@@ -192,11 +190,11 @@ class Sorter extends FactoryEquipmentModel{
   }
 
   @override
-  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, List<Direction> directions}) {
+  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, Map<FactoryRecipeMaterialType, Direction> directions}) {
     return Sorter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      directions ?? this.directions
+      directions ?? <FactoryRecipeMaterialType, Direction>{}..addAll(this.directions)
     );
   }
 

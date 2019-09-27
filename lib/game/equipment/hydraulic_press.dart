@@ -59,7 +59,7 @@ class HydraulicPress extends FactoryEquipmentModel{
   }
 
   @override
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
@@ -85,12 +85,12 @@ class HydraulicPress extends FactoryEquipmentModel{
       _machineLegs.addRRect(RRect.fromRectAndCorners(Rect.fromPoints(Offset(-size / 2.2, size / 2.2), Offset(-size / 3.0, -size / 2.2)), bottomLeft: Radius.circular(size / 2.2 / 2), topLeft: Radius.circular(size / 2.2 / 2)));
     }
 //    _path.addRRect(RRect.fromRectAndCorners(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2))));
-    canvas.drawPath(_machineLegs, Paint()..color = Colors.grey.shade100);
+    canvas.drawPath(_machineLegs, Paint()..color = theme.machineAccentColor);
 
 
     double _change = Curves.easeInCubic.transform(_machineProgress) * 3;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)).deflate(_change), Radius.circular(size / 2.5 / 2)).deflate(_change), Paint()..color = Colors.yellow);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.7, size / 2.7), Offset(-size / 2.7, -size / 2.7)).deflate(_change), Radius.circular(size / 2.7 / 2)).deflate(_change), Paint()..color = Colors.grey.shade700);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)).deflate(_change), Radius.circular(size / 2.5 / 2)).deflate(_change), Paint()..color = theme.machineWarningColor);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.7, size / 2.7), Offset(-size / 2.7, -size / 2.7)).deflate(_change), Radius.circular(size / 2.7 / 2)).deflate(_change), Paint()..color = theme.machinePrimaryLightColor);
 
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.0, size / 2.0), Offset(-size / 2.0, -size / 2.0)), Radius.circular(size / 2.5 / 2)), Paint()..color = Colors.white24);
 
@@ -102,20 +102,20 @@ class HydraulicPress extends FactoryEquipmentModel{
       _machineTop.addRect(Rect.fromPoints(Offset(size / 2.2, size / 3.8), Offset(-size / 2.2, size / 5.0)));
       _machineTop.addRect(Rect.fromPoints(Offset(size / 2.2, -size / 3.8), Offset(-size / 2.2, -size / 5.0)));
     }
-    canvas.drawPath(_machineTop, Paint()..color = Colors.white);
+    canvas.drawPath(_machineTop, Paint()..color = theme.machineAccentLightColor);
     canvas.restore();
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    drawRoller(direction, canvas, size, progress);
+    drawRoller(theme, direction, canvas, size, progress);
     canvas.restore();
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;
 

@@ -3,7 +3,7 @@ part of factory_material;
 class Railway extends FactoryMaterialModel{
   Railway.fromOffset(Offset o) : super(o.dx, o.dy, 8400.0, FactoryMaterialType.railway, state: FactoryMaterialState.crafted);
 
-  Railway.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  Railway.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.railway, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

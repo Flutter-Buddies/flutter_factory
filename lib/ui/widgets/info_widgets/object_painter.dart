@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/ui/theme/game_theme.dart';
+import 'package:flutter_factory/ui/theme/light_game_theme.dart';
 
 class ObjectPainter extends CustomPainter{
-  ObjectPainter(this.progress, {this.objectSize = 48.0, this.scale = 1.0, this.equipment, this.material});
+  ObjectPainter(this.progress, {this.theme = const LightGameTheme(), this.objectSize = 48.0, this.scale = 1.0, this.equipment, this.material});
 
   final FactoryMaterialModel material;
   final FactoryEquipmentModel equipment;
 
   final double objectSize;
   final double progress;
+  final GameTheme theme;
 
   final double scale;
 
@@ -23,9 +26,9 @@ class ObjectPainter extends CustomPainter{
     }
 
     if(equipment != null){
-      equipment.drawTrack(Offset.zero, canvas, objectSize, progress);
-      equipment.drawMaterial(Offset.zero, canvas, objectSize, progress);
-      equipment.drawEquipment(Offset.zero, canvas, objectSize, progress);
+      equipment.drawTrack(theme, Offset.zero, canvas, objectSize, progress);
+      equipment.drawMaterial(theme, Offset.zero, canvas, objectSize, progress);
+      equipment.drawEquipment(theme, Offset.zero, canvas, objectSize, progress);
     }
 
     canvas.restore();

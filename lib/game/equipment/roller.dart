@@ -17,16 +17,16 @@ class Roller extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
-    super.drawTrack(offset, canvas, size, progress);
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    super.drawTrack(theme, offset, canvas, size, progress);
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
     if(direction == Direction.east || direction == Direction.west){
-      canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
+      canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = theme.rollersColor);
     }else{
-      canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = Colors.grey.shade800);
+      canvas.drawRect(Rect.fromPoints(Offset(size / 3, size / 3), Offset(-size / 3, -size / 3)), Paint()..color = theme.rollersColor);
     }
 
     void drawLines(Direction d, {bool entry = false}){
@@ -34,25 +34,25 @@ class Roller extends FactoryEquipmentModel{
         case Direction.west:
           for(int i = 0; i < 4; i++){
             double _xOffset = ((size / 6) * i + (entry ? progress : -progress) * size) % (size / 1.5) - size / 3 / 2;
-            canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 2, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 2, -size / 3), Paint()..color = Colors.white70);
+            canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 2, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 2, -size / 3), Paint()..color = theme.rollerDividersColor);
           }
           break;
         case Direction.east:
           for(int i = 0; i < 4; i++){
             double _xOffset = ((size / 6) * i + (entry ? -progress : progress) * size) % (size / 1.5) - size / 3 / 2;
-            canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 2, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 2, -size / 3), Paint()..color = Colors.white70);
+            canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 2, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 2, -size / 3), Paint()..color = theme.rollerDividersColor);
           }
           break;
         case Direction.south:
           for(int i = 0; i < 4; i++){
             double _yOffset = ((size / 6) * i + (entry ? progress : -progress) * size) % (size / 1.5) - size / 3 / 2;
-            canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 2), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 2), Paint()..color = Colors.white70);
+            canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 2), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 2), Paint()..color = theme.rollerDividersColor);
           }
           break;
         case Direction.north:
           for(int i = 0; i < 4; i++){
             double _yOffset = ((size / 6) * i + (entry ? -progress : progress) * size) % (size / 1.5) - size / 3 / 2;
-            canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 2), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 2), Paint()..color = Colors.white70);
+            canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 2), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 2), Paint()..color = theme.rollerDividersColor);
           }
           break;
       }

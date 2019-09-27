@@ -3,7 +3,7 @@ part of factory_material;
 class Drone extends FactoryMaterialModel{
   Drone.fromOffset(Offset o) : super(o.dx, o.dy, 13000.0, FactoryMaterialType.drone, state: FactoryMaterialState.crafted);
 
-  Drone.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  Drone.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.drone, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

@@ -22,33 +22,33 @@ class Splitter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     final Direction _myDir = Direction.values[(direction.index + 2) % Direction.values.length];
 
     directions.forEach((Direction d){
       if(d == _myDir){
-        drawRoller(d, canvas, size, progress);
+        drawRoller(theme, d, canvas, size, progress);
       }else{
-        drawSplitter(d, canvas, size, progress);
+        drawSplitter(theme, d, canvas, size, progress);
       }
     });
 
     if(directions.contains(_myDir)){
       canvas.save();
 //      canvas.translate(0.0, -size / 4);
-      drawRoller(_myDir, canvas, size, progress);
+      drawRoller(theme, _myDir, canvas, size, progress);
       canvas.restore();
     }else{
-      drawSplitter(_myDir, canvas, size, progress, entry: true);
+      drawSplitter(theme, _myDir, canvas, size, progress, entry: true);
     }
 
     canvas.restore();
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress) {
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     objects.forEach((FactoryMaterialModel fm){
       double _moveX = 0.0;
       double _moveY = 0.0;
@@ -73,8 +73,8 @@ class Splitter extends FactoryEquipmentModel{
   }
 
   @override
-  void paintInfo(Offset offset, Canvas canvas, double size, double progress) {
-    super.paintInfo(offset, canvas, size, progress);
+  void paintInfo(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    super.paintInfo(theme, offset, canvas, size, progress);
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -106,7 +106,7 @@ class Splitter extends FactoryEquipmentModel{
     return Splitter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
-      directions ?? this.directions,
+      directions ?? <Direction>[]..addAll(this.directions),
     );
   }
 

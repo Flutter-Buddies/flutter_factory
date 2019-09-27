@@ -3,7 +3,7 @@ part of factory_material;
 class Antenna extends FactoryMaterialModel{
   Antenna.fromOffset(Offset o) : super(o.dx, o.dy, 540.0, FactoryMaterialType.antenna, state: FactoryMaterialState.crafted);
 
-  Antenna.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  Antenna.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.antenna, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Radio;
 import 'package:flutter_factory/game/factory_material.dart';
 
 import 'factory_equipment_model.dart';
@@ -92,6 +92,34 @@ abstract class FactoryMaterialModel{
         return SolarPanel.fromOffset(offset);
       case FactoryMaterialType.serverRack:
         return ServerRack.fromOffset(offset);
+      case FactoryMaterialType.headphones:
+        return Headphones.fromOffset(offset);
+      case FactoryMaterialType.powerSupply:
+        return PowerSupply.fromOffset(offset);
+      case FactoryMaterialType.radio:
+        return Radio.fromOffset(offset);
+      case FactoryMaterialType.speakers:
+        return Speakers.fromOffset(offset);
+      case FactoryMaterialType.tv:
+        return Tv.fromOffset(offset);
+      case FactoryMaterialType.tablet:
+        return Tablet.fromOffset(offset);
+      case FactoryMaterialType.fridge:
+        return Fridge.fromOffset(offset);
+      case FactoryMaterialType.smartphone:
+        return Smartphone.fromOffset(offset);
+      case FactoryMaterialType.microwave:
+        return Microwave.fromOffset(offset);
+      case FactoryMaterialType.computer:
+        return Computer.fromOffset(offset);
+      case FactoryMaterialType.electricBoard:
+        return ElectricBoard.fromOffset(offset);
+      case FactoryMaterialType.generator:
+        return Generator.fromOffset(offset);
+      case FactoryMaterialType.smartWatch:
+        return SmartWatch.fromOffset(offset);
+      case FactoryMaterialType.waterHeater:
+        return WaterHeater.fromOffset(offset);
     }
 
     return null;
@@ -106,7 +134,7 @@ abstract class FactoryMaterialModel{
   Color getColor(){
     switch(type){
       case FactoryMaterialType.iron:
-        return Colors.grey.shade300;
+        return Colors.grey.shade700;
       case FactoryMaterialType.copper:
         return Colors.orange;
       case FactoryMaterialType.diamond:
@@ -351,7 +379,21 @@ enum FactoryMaterialType{
   washingMachine,
   toaster,
   solarPanel,
-  serverRack
+  serverRack,
+  headphones,
+  powerSupply,
+  radio,
+  speakers,
+  tv,
+  smartphone,
+  fridge,
+  tablet,
+  microwave,
+  computer,
+  electricBoard,
+  generator,
+  smartWatch,
+  waterHeater
 }
 
 class FactoryRecipe{
@@ -399,6 +441,20 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.toaster: return 'Toaster';
     case FactoryMaterialType.solarPanel: return 'Solar panel';
     case FactoryMaterialType.serverRack: return 'Server rack';
+    case FactoryMaterialType.headphones: return 'Headphones';
+    case FactoryMaterialType.powerSupply: return 'Power supply';
+    case FactoryMaterialType.radio: return 'Radio';
+    case FactoryMaterialType.speakers: return 'Speakers';
+    case FactoryMaterialType.tv: return 'TV';
+    case FactoryMaterialType.tablet: return 'Tablet';
+    case FactoryMaterialType.microwave: return 'Microwave';
+    case FactoryMaterialType.fridge: return 'Fridge';
+    case FactoryMaterialType.smartphone: return 'Smartphone';
+    case FactoryMaterialType.computer: return 'Computer';
+    case FactoryMaterialType.waterHeater: return 'Water Heater';
+    case FactoryMaterialType.generator: return 'Generator';
+    case FactoryMaterialType.smartWatch: return 'Smart Watch';
+    case FactoryMaterialType.electricBoard: return 'Electric Board';
   }
 
   return '';

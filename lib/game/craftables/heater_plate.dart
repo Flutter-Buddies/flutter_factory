@@ -3,7 +3,7 @@ part of factory_material;
 class HeaterPlate extends FactoryMaterialModel{
   HeaterPlate.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.heaterPlate, state: FactoryMaterialState.crafted);
 
-  HeaterPlate.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  HeaterPlate.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.heaterPlate, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

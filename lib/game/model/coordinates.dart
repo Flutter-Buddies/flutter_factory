@@ -9,6 +9,14 @@ class Coordinates{
     return x == other.x && y == other.y;
   }
 
+  Coordinates operator +(Coordinates other){
+    return Coordinates(x + other.x, y + other.y);
+  }
+
+  Coordinates operator -(Coordinates other){
+    return Coordinates(x - other.x, y - other.y);
+  }
+
   @override
   int get hashCode => (x * y).hashCode;
 

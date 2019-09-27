@@ -3,7 +3,7 @@ part of factory_material;
 class ComputerChip extends FactoryMaterialModel{
   ComputerChip.fromOffset(Offset o) : super(o.dx, o.dy, 360.0, FactoryMaterialType.computerChip, state: FactoryMaterialState.crafted);
 
-  ComputerChip.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.raw, double rotation, double offsetX, double offsetY}) :
+  ComputerChip.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
       super.custom(x: x, y: y, value: value, type: FactoryMaterialType.computerChip, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override

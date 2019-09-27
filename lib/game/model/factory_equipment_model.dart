@@ -1,20 +1,34 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/ui/theme/game_theme.dart';
 
 abstract class FactoryEquipmentModel{
-  FactoryEquipmentModel(this.coordinates, this.direction, this.type, {this.tickDuration = 1});
+  FactoryEquipmentModel(this.coordinates, this.direction, this.type, {this.tickDuration = 1, this.isMutable = true});
 
+  /// Copy factory equipment as new entity.
+  /// This allows for moving and coping equipment around
   FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction});
 
   Coordinates coordinates;
   Direction direction;
   EquipmentType type;
 
+  final bool isMutable;
+
+  /// Directions from where new material is coming from.
+  ///
+  /// It will remember material for 100 ticks before dropping direction as active
   final Map<Direction, int> inputDirections = <Direction, int>{};
 
+  /// Equipment tickDuration, or how long does it take to process material and send it to next
+  /// square. Next square will be found from [direction] of the equipment.
+  ///
+  /// The [direction] can be changed,
   int tickDuration;
   int counter = 0;
 
@@ -42,6 +56,10 @@ abstract class FactoryEquipmentModel{
     objects.add(m);
   }
 
+  /// Get offset where material should go.
+  ///
+  /// This is used by [Dispenser] and [Crafter] to make new materials
+  /// at their exit points.
   Offset get pointingOffset{
     Offset o;
 
@@ -63,104 +81,119 @@ abstract class FactoryEquipmentModel{
     return o;
   }
 
+  /// Tick is when one tick has passed, all equipment should return materials they want to send to next equipment.
+  ///
+  /// If no materials can be forwarded then pass empty array
+  /// This is overridden by any new equipment, it will set how the equipment behaves on tick
   List<FactoryMaterialModel> tick();
 
+  /// Trigger equipment tick from [GameBloc] where material will be forwarded to next
+  /// equipment in the line or will be added to excess material list (factory floor) that will disappear after few ticks
+  ///
+  /// Increases equipment counter, counter is used to determine if equipments [tickDuration] has passed
   List<FactoryMaterialModel> equipmentTick(){
     counter++;
     return tick();
   }
 
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress){}
+  /// Draws equipment on the canvas
+  ///
+  /// Empty since some equipment doesn't need anything extra to show like [Roller], [Splitter] or [FreeRoller]
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){}
 
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress){
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    drawSplitter(direction, canvas, size, progress);
+    drawSplitter(theme, direction, canvas, size, progress);
 //    inputDirections.keys.forEach((Direction d) => drawSplitter(d, canvas, size, progress));
 
     canvas.restore();
   }
 
-  void drawSplitter(Direction d, Canvas canvas, double size, double progress, {bool entry = false}){
+  /// TODO: Rewrite this! This may improve game performance!
+  void drawSplitter(GameTheme theme, Direction d, Canvas canvas, double size, double progress, {bool entry = false}){
     switch(d){
       case Direction.west:
-        canvas.drawRect(Rect.fromCircle(center: Offset(-size / 3, 0.0), radius: size / 3), Paint()..color = Colors.grey.shade800);
+        canvas.drawRect(Rect.fromCircle(center: Offset(-size / 3, 0.0), radius: size / 3), Paint()..color = theme.rollersColor);
         for(int i = 0; i < 4; i++){
           double _xOffset = ((size / 6) * i + (entry ? progress : -progress) * size) % (size / 1.5) - size / 3 / 2;
-          canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 6, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 6, -size / 3), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(_xOffset - size / 3 - size / 3 + size / 6, size / 3), Offset(_xOffset - size / 3 - size / 3 + size / 6, -size / 3), Paint()..color = theme.rollerDividersColor);
         }
         break;
       case Direction.east:
-        canvas.drawRect(Rect.fromCircle(center: Offset(size / 3, 0.0), radius: size / 3), Paint()..color = Colors.grey.shade800);
+        canvas.drawRect(Rect.fromCircle(center: Offset(size / 3, 0.0), radius: size / 3), Paint()..color = theme.rollersColor);
         for(int i = 0; i < 4; i++){
           double _xOffset = ((size / 6) * i + (entry ? -progress : progress) * size) % (size / 1.5) - size / 3 / 2;
-          canvas.drawLine(Offset(_xOffset - size / 3 + size / 3 + size / 6, size / 3), Offset(_xOffset - size / 3 + size / 3 + size / 6, -size / 3), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(_xOffset - size / 3 + size / 3 + size / 6, size / 3), Offset(_xOffset - size / 3 + size / 3 + size / 6, -size / 3), Paint()..color = theme.rollerDividersColor);
         }
         break;
       case Direction.south:
-        canvas.drawRect(Rect.fromCircle(center: Offset(0.0, -size / 3), radius: size / 3), Paint()..color = Colors.grey.shade800);
+        canvas.drawRect(Rect.fromCircle(center: Offset(0.0, -size / 3), radius: size / 3), Paint()..color = theme.rollersColor);
         for(int i = 0; i < 4; i++){
           double _yOffset = ((size / 6) * i + (entry ? progress : -progress) * size) % (size / 1.5) - size / 3 / 2;
-          canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 6), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 6), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(size / 3, _yOffset - size / 3 - size / 3 + size / 6), Offset(-size / 3, _yOffset - size / 3 - size / 3 + size / 6), Paint()..color = theme.rollerDividersColor);
         }
         break;
       case Direction.north:
-        canvas.drawRect(Rect.fromCircle(center: Offset(0.0, size / 3), radius: size / 3), Paint()..color = Colors.grey.shade800);
+        canvas.drawRect(Rect.fromCircle(center: Offset(0.0, size / 3), radius: size / 3), Paint()..color = theme.rollersColor);
         for(int i = 0; i < 4; i++){
           double _yOffset = ((size / 6) * i + (entry ? -progress : progress) * size) % (size / 1.5) - size / 3 / 2;
-          canvas.drawLine(Offset(size / 3, _yOffset + size / 3 - size / 3 + size / 6), Offset(-size / 3, _yOffset + size / 3 - size / 3 + size / 6), Paint()..color = Colors.white70);
+          canvas.drawLine(Offset(size / 3, _yOffset + size / 3 - size / 3 + size / 6), Offset(-size / 3, _yOffset + size / 3 - size / 3 + size / 6), Paint()..color = theme.rollerDividersColor);
         }
         break;
     }
   }
 
-  void drawRoller(Direction d, Canvas canvas, double size, double progress){
+  /// TODO: Remove progress from here, it is not needed!
+  void drawRoller(GameTheme theme, Direction d, Canvas canvas, double size, double progress){
     switch(d){
       case Direction.east:
         canvas.drawRect(Rect.fromPoints(
           Offset(size / 1.7, -size / 3),
           Offset(size / 3, size / 3)
-        ), Paint()..color = Colors.grey);
+        ), Paint()..color = theme.rollerDividersColor);
         for(int i = 0; i < 3; i++){
           final double _xOffset = i * (size / 8);
-          canvas.drawLine(Offset(size / 1.7 - _xOffset, size / 3), Offset(size / 1.7 - _xOffset, -size / 3), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+          canvas.drawLine(Offset(size / 1.7 - _xOffset, size / 3), Offset(size / 1.7 - _xOffset, -size / 3), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
       case Direction.west:
         canvas.drawRect(Rect.fromPoints(
           Offset(-size / 1.7, -size / 3),
           Offset(-size / 3, size / 3)
-        ), Paint()..color = Colors.grey);
+        ), Paint()..color = theme.rollerDividersColor);
         for(int i = 0; i < 3; i++){
           double _xOffset = i * (size / 8);
-          canvas.drawLine(Offset(_xOffset - size / 1.7, size / 3), Offset(_xOffset - size / 1.7, -size / 3), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+          canvas.drawLine(Offset(_xOffset - size / 1.7, size / 3), Offset(_xOffset - size / 1.7, -size / 3), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
       case Direction.south:
         canvas.drawRect(Rect.fromPoints(
           Offset(size / 3, -size / 3),
           Offset(-size / 3, -size / 1.7)
-        ), Paint()..color = Colors.grey);
+        ), Paint()..color = theme.rollerDividersColor);
         for(int i = 0; i < 3; i++){
           double _yOffset = i * (size / 8);
-          canvas.drawLine(Offset(size / 3, _yOffset - size / 1.7), Offset(-size / 3, _yOffset - size / 1.7), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+          canvas.drawLine(Offset(size / 3, _yOffset - size / 1.7), Offset(-size / 3, _yOffset - size / 1.7), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
       case Direction.north:
         canvas.drawRect(Rect.fromPoints(
           Offset(size / 3, size / 3),
           Offset(-size / 3, size / 1.7)
-        ), Paint()..color = Colors.grey);
+        ), Paint()..color = theme.rollerDividersColor);
         for(int i = 0; i < 3; i++){
           double _yOffset = i * (size / 8);
-          canvas.drawLine(Offset(size / 3, size / 1.7 - _yOffset), Offset(-size / 3, size / 1.7 - _yOffset), Paint()..color = Colors.grey.shade800..strokeWidth = 2.2);
+          canvas.drawLine(Offset(size / 3, size / 1.7 - _yOffset), Offset(-size / 3, size / 1.7 - _yOffset), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
     }
   }
 
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+  /// Draw material that is leaving the equipment
+  /// TODO: Save directions to temp variable that will only change on tick?
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;
 
@@ -184,7 +217,8 @@ abstract class FactoryEquipmentModel{
     });
   }
 
-  void paintInfo(Offset offset, Canvas canvas, double size, double progress){
+  /// Show equipment info (arrows) and other useful information
+  void paintInfo(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     double x = offset.dx;
     double y = offset.dy;
 
@@ -276,7 +310,8 @@ abstract class FactoryEquipmentModel{
       'position': coordinates.toMap(),
       'direction': direction.index,
       'tick_duration': tickDuration,
-      'material': objects.map((FactoryMaterialModel fmm) => fmm.toMap()).toList()
+      'is_mutable': isMutable,
+      'material': objects.getRange(max(0, objects.length - 50), objects.length).map((FactoryMaterialModel fmm) => fmm.toMap()).toList()
     };
   }
 }
@@ -286,7 +321,7 @@ enum Direction{
 }
 
 enum EquipmentType{
-  dispenser, roller, freeRoller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter, portal
+  dispenser, roller, freeRoller, crafter, splitter, sorter, seller, hydraulic_press, wire_bender, cutter, melter, rotatingFreeRoller, portal
 }
 
 String directionToString(Direction d){
@@ -317,7 +352,6 @@ String equipmentTypeToString(EquipmentType type){
     case EquipmentType.wire_bender: return 'Wire bender';
     case EquipmentType.cutter: return 'Cutter';
     case EquipmentType.melter: return 'Melter';
-    case EquipmentType.portal: return 'Portal';
   }
 
   return '';
@@ -336,7 +370,6 @@ String equipmentDescriptionFromType(EquipmentType type){
     case EquipmentType.wire_bender: return 'Bend raw material to make springs.';
     case EquipmentType.cutter: return 'Cut raw material to make gears.';
     case EquipmentType.melter: return 'Melt raw material to get liquid.';
-    case EquipmentType.portal: return 'Underground roller tunnel entry/exit.';
   }
 
   return '';

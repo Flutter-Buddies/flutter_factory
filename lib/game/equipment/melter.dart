@@ -59,7 +59,7 @@ class Melter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawEquipment(Offset offset, Canvas canvas, double size, double progress) {
+  void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
@@ -74,22 +74,22 @@ class Melter extends FactoryEquipmentModel{
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Colors.white);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.6, size / 2.6), Offset(-size / 2.6, -size / 2.6)), Radius.circular(size / 2.6 / 2)), Paint()..color = Color.lerp(Colors.white, Colors.red, _machineProgress));
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = theme.machineAccentLightColor);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.6, size / 2.6), Offset(-size / 2.6, -size / 2.6)), Radius.circular(size / 2.6 / 2)), Paint()..color = Color.lerp(theme.machineAccentLightColor, theme.melterActiveColor, _machineProgress));
 
     canvas.restore();
   }
 
   @override
-  void drawTrack(Offset offset, Canvas canvas, double size, double progress) {
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    drawRoller(direction, canvas, size, progress);
+    drawRoller(theme, direction, canvas, size, progress);
     canvas.restore();
   }
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
     double _moveX = 0.0;
     double _moveY = 0.0;
 
