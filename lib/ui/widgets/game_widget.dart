@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
@@ -137,6 +138,10 @@ class _GameWidgetState extends State<GameWidget> {
         final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
         final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
 
+        if(_se != null && _se is UndergroundPortal){
+          print(_se.toMap());
+        }
+
         if(_se != null && _tapTime - _lastTap < doubleTapDuration && _se.isMutable && _lastTapLocation == _coordinate && _movingEquipment.isEmpty){
           Scaffold.of(context).showSnackBar(SnackBar(
             content: Text('${equipmentTypeToString(_se.type)} copied!',
@@ -178,6 +183,11 @@ class _GameWidgetState extends State<GameWidget> {
             ));
           }
         }else if(_selected.contains(_coordinate)){
+          FactoryEquipmentModel _e = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+          if(_e != null && _e is UndergroundPortal && _e.connectingPortal != null && _selected.contains(_e.connectingPortal)){
+            _selected.remove(_e.connectingPortal);
+          }
+
           _selected.remove(_coordinate);
         }else{
           final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _selected.contains(fe.coordinates)).toList();
@@ -188,9 +198,16 @@ class _GameWidgetState extends State<GameWidget> {
           }
 
           if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
+            FactoryEquipmentModel _e = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+            if(_e != null && _e is UndergroundPortal && _e.connectingPortal != null && !_selected.contains(_e.connectingPortal)){
+              _selected.add(_e.connectingPortal);
+            }
+
             _selected.add(_coordinate);
           }
         }
+
+        _findPortalPartner();
 
         _lastTapLocation = _coordinate;
         _lastTap = _tapTime;
@@ -208,6 +225,77 @@ class _GameWidgetState extends State<GameWidget> {
         },
       ),
     );
+  }
+
+  void _findPortalPartner(){
+    List<UndergroundPortal> _portals = _bloc.equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).toList();
+
+    _portals.forEach((UndergroundPortal up){
+      if(up.connectingPortal != null){
+        UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+
+        if(_portal != null && (_portal.coordinates.x == up.coordinates.x || _portal.coordinates.y == up.coordinates.y)){
+          return;
+        }
+
+        print('Portal ${up.coordinates.toMap()} lost it\'s partner!');
+        up.connectingPortal = null;
+      }
+
+      print('Building portal!');
+      final List<UndergroundPortal> _connectingPortal = _portals.where((UndergroundPortal fem){
+        if(fem.coordinates == up.coordinates){
+          return false;
+        }
+
+        bool _hasPartner = false;
+
+        for(int i = 0; i < 32; i++){
+          _hasPartner = _hasPartner || (fem.coordinates.y == up.coordinates.y - i && fem.coordinates.x == up.coordinates.x);
+          _hasPartner = _hasPartner || (fem.coordinates.y == up.coordinates.y + i && fem.coordinates.x == up.coordinates.x);
+          _hasPartner = _hasPartner || fem.coordinates.x == up.coordinates.x - i && fem.coordinates.y == up.coordinates.y;
+          _hasPartner = _hasPartner || fem.coordinates.x == up.coordinates.x + i && fem.coordinates.y == up.coordinates.y;
+        }
+
+        return _hasPartner;
+      }).toList();
+
+      if(_connectingPortal != null){
+        _connectingPortal.firstWhere((UndergroundPortal fem){
+          if(fem.coordinates == up.coordinates){
+            return false;
+          }
+
+          final UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == fem.connectingPortal, orElse: () => null);
+
+          if(_portal != null && (_portal.coordinates.x == fem.coordinates.x || _portal.coordinates.y == fem.coordinates.y)){
+            print('Candidate is already connected! ${up.coordinates.toMap()} - ${fem.coordinates.toMap()}');
+            return false;
+          }
+
+          print('Connecting portal is: ${fem}');
+          print('Connection length: ${up.toMap()} - ${fem.coordinates.toMap()}');
+          print('Connection length: ${up.coordinates.x - fem.coordinates.x}');
+
+          fem.connectingPortal = up.coordinates;
+          up.connectingPortal = fem.coordinates;
+          fem.isReceiver = true;
+
+          print('Portal ${up.coordinates.toMap()} FOUND it\'s partner!');
+
+          if(!_selected.contains(fem.coordinates)){
+            _selected.add(fem.coordinates);
+          }
+
+          return true;
+        }, orElse: (){
+          print('Passed all candidates ${_connectingPortal.length} but no connecting portal was found!');
+          return null;
+        });
+      }else{
+        print('No connecting portal!');
+      }
+    });
   }
 }
 

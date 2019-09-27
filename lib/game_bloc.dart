@@ -133,6 +133,17 @@ class GameBloc{
       return _fem;
     }));
 
+    List<UndergroundPortal> _portals = _equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).toList();
+
+    _portals.forEach((UndergroundPortal up){
+      UndergroundPortal _connectingPortal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+
+      if(_connectingPortal != null){
+        _connectingPortal.connectingPortal = up.coordinates;
+        up.connectingPortal = _connectingPortal.coordinates;
+      }
+    });
+
     print(_result);
   }
 
@@ -205,27 +216,11 @@ class GameBloc{
               return false;
             }
 
-            switch(e.direction){
-              case Direction.north:
-                for(int i = 0; i < 32; i++){
-                  _hasPartner = _hasPartner || (fem.coordinates.y == c.y - i && fem.coordinates.x == c.x);
-                }
-                break;
-              case Direction.south:
-                for(int i = 0; i < 32; i++){
-                  _hasPartner = _hasPartner || (fem.coordinates.y == c.y + i && fem.coordinates.x == c.x);
-                }
-                break;
-              case Direction.east:
-                for(int i = 0; i < 32; i++){
-                  _hasPartner = _hasPartner || fem.coordinates.x == c.x - i && fem.coordinates.y == c.y;
-                }
-                break;
-              case Direction.west:
-                for(int i = 0; i < 32; i++){
-                  _hasPartner = _hasPartner || fem.coordinates.x == c.x + i && fem.coordinates.y == c.y;
-                }
-                break;
+            for(int i = 0; i < 32; i++){
+              _hasPartner = _hasPartner || (fem.coordinates.y == c.y - i && fem.coordinates.x == c.x);
+              _hasPartner = _hasPartner || (fem.coordinates.y == c.y + i && fem.coordinates.x == c.x);
+              _hasPartner = _hasPartner || fem.coordinates.x == c.x - i && fem.coordinates.y == c.y;
+              _hasPartner = _hasPartner || fem.coordinates.x == c.x + i && fem.coordinates.y == c.y;
             }
 
             return _hasPartner;
@@ -236,9 +231,10 @@ class GameBloc{
             print('Connection length: ${c.toMap()} - ${_connectingPortal.coordinates.toMap()}');
             print('Connection length: ${c.x - _connectingPortal.coordinates.x}');
 
-            _connectingPortal.connectingPortal = fem;
             if(fem is UndergroundPortal){
-              fem.connectingPortal = _connectingPortal;
+              _connectingPortal.connectingPortal = fem.coordinates;
+              fem.connectingPortal = _connectingPortal.coordinates;
+              _connectingPortal.isReceiver = true;
             }
           }else{
             print('No connecting portal!');
@@ -456,7 +452,13 @@ class GameBloc{
       case EquipmentType.rotatingFreeRoller:
         return RotatingFreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
       case EquipmentType.portal:
-        return UndergroundPortal(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']]);
+        Coordinates _portal;
+
+        if(map['connecting_portal'] != null){
+          _portal = Coordinates(map['connecting_portal']['x'], map['connecting_portal']['y']);
+        }
+
+        return UndergroundPortal(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], connectingPortal: _portal, isReceiver: map['receiver'] ?? false);
     }
 
     return null;

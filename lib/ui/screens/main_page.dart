@@ -15,6 +15,7 @@ import 'package:flutter_factory/ui/widgets/info_widgets/build_equipment_widget.d
 import 'package:flutter_factory/ui/widgets/info_widgets/crafter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/dispenser_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/free_roller_info.dart';
+import 'package:flutter_factory/ui/widgets/info_widgets/portal_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_footer.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
@@ -683,6 +684,7 @@ class InfoWindow extends StatelessWidget {
         _options.add(FreeRollerInfo(equipment: _equipment));
         break;
       case EquipmentType.portal:
+        _options.add(PortalInfo(equipment: _equipment, connectingPortal: _bloc.equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == (_equipment as UndergroundPortal).connectingPortal, orElse: () => null),));
         break;
     }
 
