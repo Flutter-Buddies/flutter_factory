@@ -37,15 +37,19 @@ class GameCameraPosition{
 class GameBloc{
   GameBloc(){
     _waitForTick();
-
-    _loadHive().then((_){
-      _loadFactoryFloor();
-    });
+    _loadHive();
   }
+
+  bool _didLoad = false;
 
   Future<void> _loadHive() async {
     final Directory _path = await getApplicationDocumentsDirectory();
     Hive.init(_path.path);
+
+    if(!_didLoad){
+      _didLoad = true;
+      _loadFactoryFloor();
+    }
   }
 
   Box _hiveBox;
@@ -139,7 +143,7 @@ class GameBloc{
   Duration _duration = Duration();
   int _lastTrigger = -1;
   
-  int _tickSpeed = 1024;
+  int _tickSpeed = 1200;
   bool showArrows = false;
 
   GameWindows currentWindow = GameWindows.buy;

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
-import 'package:flutter_factory/ui/theme/dark_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/dark_game_theme.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
-import 'package:flutter_factory/ui/theme/light_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_ticker.dart';
@@ -47,6 +47,8 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
   }
 
   Widget _showSettings(){
+    Color _textColor = DynamicTheme.of(context).data.textColor;
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
       color: Colors.white,
@@ -62,20 +64,22 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 FloatingActionButton(
+                  backgroundColor:  DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: _bloc.increaseGameSpeed,
-                  child: Icon(Icons.remove),
+                  child: Icon(Icons.chevron_left, color:  DynamicTheme.of(context).data.neutralActionIconColor,),
                 ),
-                Text('Tick speed: ${_bloc.gameSpeed} ms', style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor)),
+                Text('Tick speed: ${_bloc.gameSpeed} ms', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor)),
                 FloatingActionButton(
+                  backgroundColor:  DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: _bloc.decreaseGameSpeed,
-                  child: Icon(Icons.add),
+                  child: Icon(Icons.chevron_right, color:  DynamicTheme.of(context).data.neutralActionIconColor,),
                 ),
               ],
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text('Show arrows', style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),),
-              subtitle: Text('Visual representation on equipment', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor),),
+              title: Text('Show arrows', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor),),
+              subtitle: Text('Visual representation on equipment', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor),),
               onChanged: (bool value){
                 setState(() {
                   _bloc.showArrows = value;
@@ -90,13 +94,13 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   width: MediaQuery.of(context).size.width,
                   height: 60.0,
                   child: RaisedButton(
-                    color: Colors.green.shade400,
+                    color:  DynamicTheme.of(context).data.positiveActionButtonColor,
                     onPressed: (){
                       _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
                         d.isWorking = true;
                       });
                     },
-                    child: Text('Turn on all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+                    child: Text('Turn on all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.positiveActionIconColor),),
                   ),
                 ),
                 SizedBox(height: 8.0,),
@@ -104,28 +108,43 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   width: MediaQuery.of(context).size.width,
                   height: 60.0,
                   child: RaisedButton(
-                    color: Colors.red.shade400,
+                    color:  DynamicTheme.of(context).data.negativeActionButtonColor,
                     onPressed: (){
                       _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
                         d.isWorking = false;
                       });
                     },
-                    child: Text('Turn off all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+                    child: Text('Turn off all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
                   ),
                 ),
 
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 80.0,
-                  child: SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    value: DynamicTheme.of(context).brightness == Brightness.light,
-                    onChanged: (bool value){
-                      DynamicTheme.of(context).setBrightness(value ? Brightness.light : Brightness.dark);
-                    },
-                    title: Text('Theme', style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor)),
-                    subtitle: Text(DynamicTheme.of(context).brightness == Brightness.light ? 'Light' : 'Dark', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor)),
-                  )
+                SizedBox(height: 24.0,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Theme:', style: Theme.of(context).textTheme.button.copyWith(color: _textColor),),
+                    Stack(
+                      children: <Widget>[
+                        DropdownButton<ThemeType>(
+                          onChanged: (ThemeType tt){
+                            DynamicTheme.of(context).setThemeType(tt);
+                          },
+                          style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
+                          value: DynamicTheme.of(context).data.type,
+                          items: ThemeType.values.map((ThemeType tt){
+                            TextStyle _style = Theme.of(context).textTheme.button;
+
+                            return DropdownMenuItem<ThemeType>(
+                              value: tt,
+                              child: Text(getThemeName(tt),
+                                style: _style,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -136,10 +155,10 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
                 ],
               ),
             ),
@@ -152,7 +171,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                     fem.objects.clear();
                   });
                 },
-                child: Text('Vaporize all material on this floor', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.red, fontWeight: FontWeight.w400),),
+                child: Text('Vaporize all material on this floor', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionButtonColor, fontWeight: FontWeight.w400),),
               ),
             ),
             SizedBox(height: 28.0),
@@ -160,9 +179,9 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               width: MediaQuery.of(context).size.width,
               height: 80.0,
               child: RaisedButton(
-                color: Colors.red,
+                color:  DynamicTheme.of(context).data.negativeActionButtonColor,
                 onPressed: _bloc.clearLine,
-                child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
+                child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
               ),
             ),
           ],
@@ -272,7 +291,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               children: <Widget>[
                 FloatingActionButton(
                   key: Key('rotate_ccw'),
-                  backgroundColor: Colors.blue,
+                  backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: (){
                     _selectedEquipment.forEach((FactoryEquipmentModel fem){
                       fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
@@ -283,7 +302,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 SizedBox(width: 12.0,),
                 FloatingActionButton(
                   key: Key('rotate_cw'),
-                  backgroundColor: Colors.blue,
+                  backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: (){
                     _selectedEquipment.forEach((FactoryEquipmentModel fem){
                       fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
@@ -300,7 +319,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: FloatingActionButton(
                   key: Key('move_fab'),
-                  backgroundColor: Colors.blue,
+                  backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: (){
                     _bloc.copyMode = _bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
                   },
@@ -311,11 +330,11 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: FloatingActionButton(
                   key: Key('delete_fab'),
-                  backgroundColor: Colors.red,
+                  backgroundColor:  DynamicTheme.of(context).data.negativeActionButtonColor,
                   onPressed: (){
                     _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
                   },
-                  child: Icon(Icons.clear),
+                  child: Icon(Icons.clear, color:  DynamicTheme.of(context).data.negativeActionIconColor,),
                 ),
               ),
             ],
@@ -329,7 +348,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
     if(_equipment == null){
       return FloatingActionButton(
         key: Key('build_fab'),
-        backgroundColor: Colors.green,
+        backgroundColor:  DynamicTheme.of(context).data.positiveActionButtonColor,
         onPressed: (){
           showModalBottomSheet<void>(
             context: context,
@@ -347,7 +366,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
           SizedBox(width: 12.0,),
           FloatingActionButton(
             key: Key('info_fab'),
-            backgroundColor: Colors.yellow.shade700,
+            backgroundColor: DynamicTheme.of(context).data.modifyActionButtonColor,
             onPressed: (){
               showModalBottomSheet<void>(
                 context: context,
@@ -373,24 +392,24 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
           children: <Widget>[
             FloatingActionButton(
               key: Key('rotate_ccw'),
-              backgroundColor: Colors.blue,
+              backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
               onPressed: (){
                 _selectedEquipment.forEach((FactoryEquipmentModel fem){
                   fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
                 });
               },
-              child: Icon(Icons.rotate_right),
+              child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
             ),
             SizedBox(width: 12.0,),
             FloatingActionButton(
               key: Key('rotate_cw'),
-              backgroundColor: Colors.blue,
+              backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
               onPressed: (){
                 _selectedEquipment.forEach((FactoryEquipmentModel fem){
                   fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
                 });
               },
-              child: Icon(Icons.rotate_left),
+              child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
             ),
           ],
         ),
@@ -404,16 +423,16 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             children: <Widget>[
               FloatingActionButton(
                 key: Key('move_fab'),
-                backgroundColor: Colors.blue,
+                backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
                   _bloc.copyMode = _bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
                 },
-                child: Icon((_bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy),
+                child: Icon((_bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy, color: DynamicTheme.of(context).data.neutralActionIconColor,),
               ),
               SizedBox(width: 12.0,),
               FloatingActionButton(
                 key: Key('delete_fab'),
-                backgroundColor: Colors.red,
+                backgroundColor:  DynamicTheme.of(context).data.negativeActionButtonColor,
                 onPressed: (){
                   _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
 
@@ -421,7 +440,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                     _bloc.selectedTiles.clear();
                   }
                 },
-                child: Icon(Icons.clear),
+                child: Icon(Icons.clear, color:  DynamicTheme.of(context).data.negativeActionIconColor,),
               ),
               _showModify
             ],

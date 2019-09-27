@@ -7,7 +7,7 @@ class GameProvider extends InheritedWidget {
   final GameBloc bloc;
 
   static GameBloc of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(GameProvider) as GameProvider).bloc;
+    return (context.inheritFromWidgetOfExactType(GameProvider) as GameProvider)?.bloc;
   }
 
   @override

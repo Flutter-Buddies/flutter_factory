@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/screens/challenges_page.dart';
 import 'package:flutter_factory/ui/screens/main_page.dart';
-import 'package:flutter_factory/ui/theme/dark_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/dark_game_theme.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
-import 'package:flutter_factory/ui/theme/light_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
@@ -30,10 +30,10 @@ void main(){
 }
 
 class MyApp extends StatelessWidget {
-   @override
+  @override
   Widget build(BuildContext context) {
     return DynamicTheme(
-      data: (Brightness b) => b == Brightness.dark ? DarkGameTheme() : LightGameTheme(),
+      data: (ThemeType b) => b == ThemeType.dark ? DarkGameTheme() : LightGameTheme(),
       themedWidgetBuilder: (BuildContext context, GameTheme theme){
         return AnimatedThemeProvider(
           duration: Duration(milliseconds: 450),
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
                 return Stack(
                   children: <Widget>[
                     GameProvider(
-                      bloc: GameBloc(),
+                      bloc: GameProvider.of(context) ?? GameBloc(),
                       child: Stack(
                         children: <Widget>[
                           GameWidget(),

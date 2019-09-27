@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
-import 'package:flutter_factory/ui/theme/light_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 
 class ObjectPainter extends CustomPainter{
   ObjectPainter(this.progress, {this.theme = const LightGameTheme(), this.objectSize = 48.0, this.scale = 1.0, this.equipment, this.material});

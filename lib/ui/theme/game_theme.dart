@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/ui/theme/light_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
+
+import 'dynamic_theme.dart';
 
 abstract class GameTheme{
   GameTheme({
+    this.type,
     this.floorColor,
     this.voidColor,
     this.selectedTileColor,
@@ -19,8 +22,18 @@ abstract class GameTheme{
     this.machineWarningColor,
     this.rollerDividersColor,
     this.rollersColor,
-    this.melterActiveColor
+    this.melterActiveColor,
+    this.positiveActionButtonColor,
+    this.positiveActionIconColor,
+    this.neutralActionButtonColor,
+    this.neutralActionIconColor,
+    this.negativeActionButtonColor,
+    this.negativeActionIconColor,
+    this.modifyActionButtonColor,
+    this.modifyActionIconColor
   });
+
+  final ThemeType type;
 
   final Color selectedTileColor;
 
@@ -45,6 +58,18 @@ abstract class GameTheme{
   final Color rollersColor;
   final Color rollerDividersColor;
 
+  final Color positiveActionButtonColor;
+  final Color positiveActionIconColor;
+
+  final Color neutralActionButtonColor;
+  final Color neutralActionIconColor;
+
+  final Color negativeActionButtonColor;
+  final Color negativeActionIconColor;
+
+  final Color modifyActionButtonColor;
+  final Color modifyActionIconColor;
+
   static GameTheme lerp(GameTheme begin, GameTheme end, double t){
     return _GameTheme(
       floorColor: Color.lerp(begin.floorColor, end.floorColor, t),
@@ -64,12 +89,21 @@ abstract class GameTheme{
       rollersColor: Color.lerp(begin.rollersColor, end.rollersColor, t),
       textColor: Color.lerp(begin.textColor, end.textColor, t),
       machineWarningColor: Color.lerp(begin.machineWarningColor, end.machineWarningColor, t),
+      positiveActionButtonColor: Color.lerp(begin.positiveActionButtonColor, end.positiveActionButtonColor, t),
+      positiveActionIconColor: Color.lerp(begin.positiveActionIconColor, end.positiveActionIconColor, t),
+      negativeActionButtonColor: Color.lerp(begin.negativeActionButtonColor, end.negativeActionButtonColor, t),
+      negativeActionIconColor: Color.lerp(begin.negativeActionIconColor, end.negativeActionIconColor, t),
+      neutralActionButtonColor: Color.lerp(begin.neutralActionButtonColor, end.neutralActionButtonColor, t),
+      neutralActionIconColor: Color.lerp(begin.neutralActionIconColor, end.neutralActionIconColor, t),
+      modifyActionButtonColor: Color.lerp(begin.modifyActionButtonColor, end.modifyActionButtonColor, t),
+      modifyActionIconColor: Color.lerp(begin.modifyActionIconColor, end.modifyActionIconColor, t),
     );
   }
 }
 
 class _GameTheme implements GameTheme{
   _GameTheme({
+    @required this.type,
     @required this.floorColor,
     @required this.voidColor,
     @required this.textColor,
@@ -87,8 +121,17 @@ class _GameTheme implements GameTheme{
     @required this.rollerDividersColor,
     @required this.rollersColor,
     @required this.melterActiveColor,
+    @required this.positiveActionButtonColor,
+    @required this.positiveActionIconColor,
+    @required this.neutralActionButtonColor,
+    @required this.neutralActionIconColor,
+    @required this.negativeActionButtonColor,
+    @required this.negativeActionIconColor,
+    @required this.modifyActionButtonColor,
+    @required this.modifyActionIconColor,
   });
 
+  @override final ThemeType type;
   @override final Color floorColor;
   @override final Color textColor;
   @override final Color machineAccentColor;
@@ -106,4 +149,13 @@ class _GameTheme implements GameTheme{
   @override final Color selectedTileColor;
   @override final Color separatorsColor;
   @override final Color voidColor;
+
+  @override final Color positiveActionIconColor;
+  @override final Color positiveActionButtonColor;
+  @override final Color neutralActionIconColor;
+  @override final Color neutralActionButtonColor;
+  @override final Color negativeActionIconColor;
+  @override final Color negativeActionButtonColor;
+  @override final Color modifyActionIconColor;
+  @override final Color modifyActionButtonColor;
 }

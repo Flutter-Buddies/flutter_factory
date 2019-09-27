@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 
-import 'game_theme.dart';
+import '../game_theme.dart';
 
 class LightGameTheme implements GameTheme{
   const LightGameTheme();
@@ -30,4 +31,15 @@ class LightGameTheme implements GameTheme{
   @override Color get rollersColor => Colors.grey.shade800;
 
   @override Color get selectedTileColor => Colors.orange;
+
+  @override ThemeType get type => ThemeType.light;
+
+  @override Color get negativeActionButtonColor => Colors.red;
+  @override Color get negativeActionIconColor => Colors.white;
+  @override Color get neutralActionButtonColor => Colors.blue;
+  @override Color get neutralActionIconColor => Colors.white;
+  @override Color get positiveActionButtonColor => Colors.green;
+  @override Color get positiveActionIconColor => Colors.white;
+  @override Color get modifyActionButtonColor => Colors.yellow.shade600;
+  @override Color get modifyActionIconColor => Colors.white;
 }
