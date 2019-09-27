@@ -143,7 +143,7 @@ class GameBloc{
   Duration _duration = Duration();
   int _lastTrigger = -1;
   
-  int _tickSpeed = 1024;
+  int _tickSpeed = 1200;
   bool showArrows = false;
 
   GameWindows currentWindow = GameWindows.buy;

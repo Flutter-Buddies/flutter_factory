@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'dynamic_theme.dart';
-import 'game_theme.dart';
+import '../dynamic_theme.dart';
+import '../game_theme.dart';
 
 class DarkGameTheme implements GameTheme{
   const DarkGameTheme();
@@ -34,4 +34,13 @@ class DarkGameTheme implements GameTheme{
   @override Color get selectedTileColor => Colors.green.shade800;
 
   @override ThemeType get type => ThemeType.dark;
+
+  @override Color get negativeActionButtonColor => Colors.red.shade900;
+  @override Color get negativeActionIconColor => Colors.white;
+  @override Color get neutralActionButtonColor => Colors.grey.shade600;
+  @override Color get neutralActionIconColor => Colors.white;
+  @override Color get positiveActionButtonColor => Colors.green.shade600;
+  @override Color get positiveActionIconColor => Colors.white;
+  @override Color get modifyActionButtonColor => Colors.orange.shade600;
+  @override Color get modifyActionIconColor => Colors.white;
 }

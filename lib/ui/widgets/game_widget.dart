@@ -8,7 +8,7 @@ import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
-import 'package:flutter_factory/ui/theme/light_game_theme.dart';
+import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 
@@ -276,6 +276,9 @@ class GamePainter extends CustomPainter{
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawMaterial(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
+    });
+
+    bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawEquipment(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
 
       if(bloc.showArrows){
