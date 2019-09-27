@@ -68,7 +68,7 @@ class _GameWidgetState extends State<GameWidget> {
         }
       },
       onScaleEnd: (ScaleEndDetails sed){
-        if(_isMoving){
+        if(_movingEquipment.isNotEmpty){
           _initialMovingEquipment.clear();
 
           _selected.clear();
@@ -86,6 +86,10 @@ class _GameWidgetState extends State<GameWidget> {
       onScaleUpdate: (ScaleUpdateDetails sud){
         final Offset _s = (sud.focalPoint - _bloc.gameCameraPosition.position) / _bloc.gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
         final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
+
+        if(sud.scale != 1.0){
+          _isMoving = false;
+        }
 
         if(_isMoving){
           print((_coordinate - _startMovingLocation).toMap());
@@ -168,7 +172,7 @@ class _GameWidgetState extends State<GameWidget> {
             }
 
             Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text(_snackbarText, style: Theme.of(context).textTheme.button.copyWith(color: Colors.red),),
+              content: Text(_snackbarText, style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.machineInActiveColor),),
               duration: Duration(milliseconds: 550),
               behavior: SnackBarBehavior.floating,
             ));
@@ -196,6 +200,8 @@ class _GameWidgetState extends State<GameWidget> {
         stream: _bloc.gameUpdate,
         builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot){
           return CustomPaint(
+            isComplex: true,
+            willChange: true,
             painter: GamePainter(_bloc, _bloc.mapWidth, _bloc.mapHeight, _bloc.gameCameraPosition, _cubeSize, selectedTiles: _selected, copyMaterial: _movingEquipment, theme: ThemeProvider.of(context)),
             child: const SizedBox.expand(),
           );
@@ -222,9 +228,6 @@ class GamePainter extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
     final Paint _basePaint = Paint()..color = theme.voidColor;
-
-    canvas.saveLayer(null, _basePaint);
-
     canvas.drawPaint(_basePaint);
 
     final Matrix4 _transformMatrix = Matrix4.identity()
@@ -273,9 +276,6 @@ class GamePainter extends CustomPainter{
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawMaterial(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
-    });
-
-    bloc.equipment.forEach((FactoryEquipmentModel fe){
       fe.drawEquipment(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
 
       if(bloc.showArrows){
@@ -305,8 +305,6 @@ class GamePainter extends CustomPainter{
         fm.drawMaterial(Offset(fm.offsetX + fm.x * cubeSize, fm.offsetY + fm.y * cubeSize), canvas, bloc.progress);
       }
     });
-
-    canvas.restore();
   }
 
   @override

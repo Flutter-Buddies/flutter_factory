@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 
 import 'game_theme.dart';
 
@@ -30,4 +31,6 @@ class LightGameTheme implements GameTheme{
   @override Color get rollersColor => Colors.grey.shade800;
 
   @override Color get selectedTileColor => Colors.orange;
+
+  @override ThemeType get type => ThemeType.light;
 }

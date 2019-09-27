@@ -30,10 +30,10 @@ void main(){
 }
 
 class MyApp extends StatelessWidget {
-   @override
+  @override
   Widget build(BuildContext context) {
     return DynamicTheme(
-      data: (Brightness b) => b == Brightness.dark ? DarkGameTheme() : LightGameTheme(),
+      data: (ThemeType b) => b == ThemeType.dark ? DarkGameTheme() : LightGameTheme(),
       themedWidgetBuilder: (BuildContext context, GameTheme theme){
         return AnimatedThemeProvider(
           duration: Duration(milliseconds: 450),
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
                 return Stack(
                   children: <Widget>[
                     GameProvider(
-                      bloc: GameBloc(),
+                      bloc: GameProvider.of(context) ?? GameBloc(),
                       child: Stack(
                         children: <Widget>[
                           GameWidget(),

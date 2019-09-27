@@ -25,23 +25,22 @@ class Splitter extends FactoryEquipmentModel{
   void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    final Direction _myDir = Direction.values[(direction.index + 2) % Direction.values.length];
+    final List<Direction> _myDir = inputDirections.keys.toList();
 
     directions.forEach((Direction d){
-      if(d == _myDir){
+      if(_myDir.contains(d)){
         drawRoller(theme, d, canvas, size, progress);
       }else{
         drawSplitter(theme, d, canvas, size, progress);
       }
     });
 
-    if(directions.contains(_myDir)){
-      canvas.save();
-//      canvas.translate(0.0, -size / 4);
-      drawRoller(theme, _myDir, canvas, size, progress);
-      canvas.restore();
-    }else{
-      drawSplitter(theme, _myDir, canvas, size, progress, entry: true);
+    if(_myDir.isNotEmpty){
+      if(directions.contains(_myDir.first)){
+        drawRoller(theme, _myDir.first, canvas, size, progress);
+      }else{
+        drawSplitter(theme, _myDir.first, canvas, size, progress, entry: true);
+      }
     }
 
     canvas.restore();

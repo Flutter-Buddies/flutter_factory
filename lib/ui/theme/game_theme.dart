@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/ui/theme/light_game_theme.dart';
 
+import 'dynamic_theme.dart';
+
 abstract class GameTheme{
   GameTheme({
+    this.type,
     this.floorColor,
     this.voidColor,
     this.selectedTileColor,
@@ -21,6 +24,8 @@ abstract class GameTheme{
     this.rollersColor,
     this.melterActiveColor
   });
+
+  final ThemeType type;
 
   final Color selectedTileColor;
 
@@ -70,6 +75,7 @@ abstract class GameTheme{
 
 class _GameTheme implements GameTheme{
   _GameTheme({
+    @required this.type,
     @required this.floorColor,
     @required this.voidColor,
     @required this.textColor,
@@ -89,6 +95,7 @@ class _GameTheme implements GameTheme{
     @required this.melterActiveColor,
   });
 
+  @override final ThemeType type;
   @override final Color floorColor;
   @override final Color textColor;
   @override final Color machineAccentColor;

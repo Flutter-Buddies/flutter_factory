@@ -37,15 +37,19 @@ class GameCameraPosition{
 class GameBloc{
   GameBloc(){
     _waitForTick();
-
-    _loadHive().then((_){
-      _loadFactoryFloor();
-    });
+    _loadHive();
   }
+
+  bool _didLoad = false;
 
   Future<void> _loadHive() async {
     final Directory _path = await getApplicationDocumentsDirectory();
     Hive.init(_path.path);
+
+    if(!_didLoad){
+      _didLoad = true;
+      _loadFactoryFloor();
+    }
   }
 
   Box _hiveBox;

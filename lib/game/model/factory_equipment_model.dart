@@ -37,13 +37,7 @@ abstract class FactoryEquipmentModel{
   void input(FactoryMaterialModel m){
     final Direction d = Direction.values[(m.direction.index + 2) % Direction.values.length];
 
-    if(!inputDirections.containsKey(d)){
-      inputDirections[d] = counter;
-    }else{
-      inputDirections.addAll(<Direction, int>{
-        d: 0
-      });
-    }
+    inputDirections[d] = counter;
 
     if(inputDirections[d] < (counter - 100)){
       inputDirections.remove(d);

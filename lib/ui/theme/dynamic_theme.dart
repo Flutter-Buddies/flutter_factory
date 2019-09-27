@@ -3,20 +3,32 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
 
+enum ThemeType{
+  light,
+  dark
+}
+
+String getThemeName(ThemeType type){
+  switch(type){
+    case ThemeType.light: return 'Light';
+    case ThemeType.dark: return 'Dark';
+  }
+}
+
 typedef ThemedWidgetBuilder = Widget Function(
   BuildContext context, GameTheme data);
 
-typedef ThemeDataWithBrightnessBuilder = GameTheme Function(
-  Brightness brightness);
+typedef ThemeDataWithThemeTypeBuilder = GameTheme Function(
+  ThemeType brightness);
 
 class DynamicTheme extends StatefulWidget {
   const DynamicTheme(
-    {Key key, this.data, this.themedWidgetBuilder, this.defaultBrightness})
+    {Key key, this.data, this.themedWidgetBuilder, this.defaultThemeType})
     : super(key: key);
 
   final ThemedWidgetBuilder themedWidgetBuilder;
-  final ThemeDataWithBrightnessBuilder data;
-  final Brightness defaultBrightness;
+  final ThemeDataWithThemeTypeBuilder data;
+  final ThemeType defaultThemeType;
 
   @override
   DynamicThemeState createState() => DynamicThemeState();
@@ -29,19 +41,19 @@ class DynamicTheme extends StatefulWidget {
 class DynamicThemeState extends State<DynamicTheme> {
   GameTheme _data;
 
-  Brightness _brightness;
+  ThemeType _brightness;
 
   GameTheme get data => _data;
 
-  Brightness get brightness => _brightness;
+  ThemeType get brightness => _brightness;
 
   @override
   void initState() {
     super.initState();
-    _brightness = widget.defaultBrightness;
+    _brightness = widget.defaultThemeType;
     _data = widget.data(_brightness);
 
-    _brightness = Brightness.dark;
+    _brightness = ThemeType.light;
     _data = widget.data(_brightness);
     if (mounted) {
       setState(() {});
@@ -60,7 +72,7 @@ class DynamicThemeState extends State<DynamicTheme> {
     _data = widget.data(_brightness);
   }
 
-  Future<void> setBrightness(Brightness brightness) async {
+  Future<void> setThemeType(ThemeType brightness) async {
     setState(() {
       _data = widget.data(brightness);
       _brightness = brightness;

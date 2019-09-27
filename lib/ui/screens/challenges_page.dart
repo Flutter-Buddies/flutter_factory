@@ -153,12 +153,12 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                 height: 80.0,
                 child: SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  value: DynamicTheme.of(context).brightness == Brightness.light,
+                  value: DynamicTheme.of(context).brightness == ThemeType.light,
                   onChanged: (bool value){
-                    DynamicTheme.of(context).setBrightness(value ? Brightness.light : Brightness.dark);
+                    DynamicTheme.of(context).setThemeType(value ? ThemeType.light : ThemeType.dark);
                   },
                   title: Text('Theme'),
-                  subtitle: Text(DynamicTheme.of(context).brightness == Brightness.light ? 'Light' : 'Dark'),
+                  subtitle: Text(DynamicTheme.of(context).brightness == ThemeType.light ? 'Light' : 'Dark'),
                 )
               ),
             ],

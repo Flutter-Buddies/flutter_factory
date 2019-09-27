@@ -47,6 +47,8 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
   }
 
   Widget _showSettings(){
+    Color _textColor = DynamicTheme.of(context).data.textColor;
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
       color: Colors.white,
@@ -65,7 +67,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   onPressed: _bloc.increaseGameSpeed,
                   child: Icon(Icons.remove),
                 ),
-                Text('Tick speed: ${_bloc.gameSpeed} ms', style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor)),
+                Text('Tick speed: ${_bloc.gameSpeed} ms', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor)),
                 FloatingActionButton(
                   onPressed: _bloc.decreaseGameSpeed,
                   child: Icon(Icons.add),
@@ -74,8 +76,8 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text('Show arrows', style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),),
-              subtitle: Text('Visual representation on equipment', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor),),
+              title: Text('Show arrows', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor),),
+              subtitle: Text('Visual representation on equipment', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor),),
               onChanged: (bool value){
                 setState(() {
                   _bloc.showArrows = value;
@@ -114,18 +116,38 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   ),
                 ),
 
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 80.0,
-                  child: SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    value: DynamicTheme.of(context).brightness == Brightness.light,
-                    onChanged: (bool value){
-                      DynamicTheme.of(context).setBrightness(value ? Brightness.light : Brightness.dark);
-                    },
-                    title: Text('Theme', style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor)),
-                    subtitle: Text(DynamicTheme.of(context).brightness == Brightness.light ? 'Light' : 'Dark', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor)),
-                  )
+                SizedBox(height: 24.0,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Theme:', style: Theme.of(context).textTheme.button.copyWith(color: _textColor),),
+                    Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: Container(
+                            color: DynamicTheme.of(context).data.separatorsColor,
+                          ),
+                        ),
+                        DropdownButton<ThemeType>(
+                          onChanged: (ThemeType tt){
+                            DynamicTheme.of(context).setThemeType(tt);
+                          },
+                          style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
+                          value: DynamicTheme.of(context).data.type,
+                          items: ThemeType.values.map((ThemeType tt){
+                            TextStyle _style = Theme.of(context).textTheme.button;
+
+                            return DropdownMenuItem<ThemeType>(
+                              value: tt,
+                              child: Text(getThemeName(tt),
+                                style: _style,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -136,10 +158,10 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
                 ],
               ),
             ),
