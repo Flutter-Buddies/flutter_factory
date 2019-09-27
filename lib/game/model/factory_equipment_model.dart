@@ -352,6 +352,8 @@ String equipmentTypeToString(EquipmentType type){
     case EquipmentType.wire_bender: return 'Wire bender';
     case EquipmentType.cutter: return 'Cutter';
     case EquipmentType.melter: return 'Melter';
+    case EquipmentType.rotatingFreeRoller: return 'Rotating free roller';
+    case EquipmentType.portal: return 'Portal';
   }
 
   return '';
@@ -370,6 +372,8 @@ String equipmentDescriptionFromType(EquipmentType type){
     case EquipmentType.wire_bender: return 'Bend raw material to make springs.';
     case EquipmentType.cutter: return 'Cut raw material to make gears.';
     case EquipmentType.melter: return 'Melt raw material to get liquid.';
+    case EquipmentType.rotatingFreeRoller: return 'Will rotate any material that comes in for 90 deg';
+    case EquipmentType.portal: return 'Will transfer material underground, automatically connects to other portal enterance';
   }
 
   return '';

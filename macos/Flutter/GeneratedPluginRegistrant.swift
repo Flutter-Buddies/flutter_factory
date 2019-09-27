@@ -1,9 +1,8 @@
 //
 //  Generated file. Do not edit.
 //
-
-import FlutterMacOS
 import Foundation
+import FlutterMacOS
 
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
