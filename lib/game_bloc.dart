@@ -133,6 +133,17 @@ class GameBloc{
       return _fem;
     }));
 
+    List<UndergroundPortal> _portals = _equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).toList();
+
+    _portals.forEach((UndergroundPortal up){
+      UndergroundPortal _connectingPortal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+
+      if(_connectingPortal != null){
+        _connectingPortal.connectingPortal = up.coordinates;
+        up.connectingPortal = _connectingPortal.coordinates;
+      }
+    });
+
     print(_result);
   }
 
@@ -190,8 +201,47 @@ class GameBloc{
 
   void buildSelected(){
     void _addEquipment(FactoryEquipmentModel e){
+      print('Building equipment! ${e.type}');
+
+
       selectedTiles.forEach((Coordinates c){
-        _equipment.add(e.copyWith(coordinates: c));
+        FactoryEquipmentModel fem = e.copyWith(coordinates: c);
+
+        if(e.type == EquipmentType.portal){
+          print('Building portal!');
+          final UndergroundPortal _connectingPortal = _equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).firstWhere((FactoryEquipmentModel fem){
+            bool _hasPartner = false;
+
+            if(fem is UndergroundPortal && fem.connectingPortal != null){
+              return false;
+            }
+
+            for(int i = 0; i < 32; i++){
+              _hasPartner = _hasPartner || (fem.coordinates.y == c.y - i && fem.coordinates.x == c.x);
+              _hasPartner = _hasPartner || (fem.coordinates.y == c.y + i && fem.coordinates.x == c.x);
+              _hasPartner = _hasPartner || fem.coordinates.x == c.x - i && fem.coordinates.y == c.y;
+              _hasPartner = _hasPartner || fem.coordinates.x == c.x + i && fem.coordinates.y == c.y;
+            }
+
+            return _hasPartner;
+          }, orElse: () => null);
+
+          if(_connectingPortal != null){
+            print('Connecting portal is: ${_connectingPortal}');
+            print('Connection length: ${c.toMap()} - ${_connectingPortal.coordinates.toMap()}');
+            print('Connection length: ${c.x - _connectingPortal.coordinates.x}');
+
+            if(fem is UndergroundPortal){
+              _connectingPortal.connectingPortal = fem.coordinates;
+              fem.connectingPortal = _connectingPortal.coordinates;
+              _connectingPortal.isReceiver = true;
+            }
+          }else{
+            print('No connecting portal!');
+          }
+        }
+
+        _equipment.add(fem);
       });
     }
 
@@ -232,6 +282,9 @@ class GameBloc{
       case EquipmentType.rotatingFreeRoller:
         _addEquipment(RotatingFreeRoller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
+      case EquipmentType.portal:
+        _addEquipment(UndergroundPortal(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        break;
     }
 
     _saveFactory();
@@ -263,6 +316,8 @@ class GameBloc{
         return FreeRoller(selectedTiles.first, buildSelectedEquipmentDirection);
       case EquipmentType.rotatingFreeRoller:
         return RotatingFreeRoller(selectedTiles.first, buildSelectedEquipmentDirection);
+      case EquipmentType.portal:
+        return UndergroundPortal(selectedTiles.first, buildSelectedEquipmentDirection);
     }
 
     return null;
@@ -396,6 +451,14 @@ class GameBloc{
         return FreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
       case EquipmentType.rotatingFreeRoller:
         return RotatingFreeRoller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], tickDuration: map['tick_duration']);
+      case EquipmentType.portal:
+        Coordinates _portal;
+
+        if(map['connecting_portal'] != null){
+          _portal = Coordinates(map['connecting_portal']['x'], map['connecting_portal']['y']);
+        }
+
+        return UndergroundPortal(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], connectingPortal: _portal, isReceiver: map['receiver'] ?? false);
     }
 
     return null;

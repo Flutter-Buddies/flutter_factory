@@ -9,8 +9,6 @@ class SplitterOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    splitter.directions.sort((Direction d, Direction dd) => d.index.compareTo(dd.index));
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(

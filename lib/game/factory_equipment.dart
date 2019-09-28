@@ -21,4 +21,5 @@ part 'equipment/seller.dart';
 part 'equipment/sorter.dart';
 part 'equipment/splitter.dart';
 part 'equipment/wire_bender.dart';
+part 'equipment/underground_portal.dart';
 part 'equipment/rotating_free_roller.dart';

@@ -542,6 +542,8 @@ class InfoWindow extends StatelessWidget {
         break;
       case EquipmentType.rotatingFreeRoller:
         break;
+      case EquipmentType.portal:
+        break;
     }
 
     if(_equipment.isMutable){

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class BuildEquipmentWidget extends StatefulWidget {
@@ -104,8 +106,8 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                         duration: Duration(milliseconds: 250),
                                         padding: const EdgeInsets.symmetric(horizontal: 18.0),
                                         foregroundDecoration: BoxDecoration(
-                                          color: widget._bloc.buildSelectedEquipmentType == et ? Colors.blue.withOpacity(0.2) : Colors.transparent,
-                                          border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: Colors.blue) : null,
+                                          color: widget._bloc.buildSelectedEquipmentType == et ? DynamicTheme.of(context).data.neutralActionButtonColor.withOpacity(0.2) : Colors.transparent,
+                                          border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: DynamicTheme.of(context).data.neutralActionButtonColor) : null,
                                         ),
                                         decoration: BoxDecoration(
                                           color: et.index % 2 == 0 ? Colors.grey.shade200 : Colors.transparent,
