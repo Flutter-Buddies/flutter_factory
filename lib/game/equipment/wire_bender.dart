@@ -30,7 +30,7 @@ class WireBender extends FactoryEquipmentModel{
 
       _fm.map((FactoryMaterialModel fm){
         fm.direction = direction;
-        fm.moveMaterial();
+        fm.moveMaterial(type);
       }).toList();
 
       return _fm;
@@ -46,7 +46,7 @@ class WireBender extends FactoryEquipmentModel{
 
     _material.map((FactoryMaterialModel fm){
       fm.direction = direction;
-      fm.moveMaterial();
+      fm.moveMaterial(type);
     }).toList();
 
     return _material;
@@ -82,9 +82,9 @@ class WireBender extends FactoryEquipmentModel{
 
     _linesPaint.strokeWidth = 0.6;
     _linesPaint.strokeJoin = StrokeJoin.round;
-    _linesPaint.color = theme.machinePrimaryColor;
+    _linesPaint.color = theme.machinePrimaryDarkColor;
     canvas.drawLine(Offset(0.0, 0.0), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
-    _linesPaint.color = theme.machinePrimaryColor.withOpacity(0.2);
+    _linesPaint.color = theme.machinePrimaryLightColor.withOpacity(0.4);
     canvas.drawLine(Offset(-size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
     canvas.drawLine(Offset(size / 4, size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);
     canvas.drawLine(Offset(size / 4, -size / 4), Offset(cos(_change) * _size, sin(_change) * _size), _linesPaint);

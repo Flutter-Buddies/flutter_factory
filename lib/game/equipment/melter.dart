@@ -30,7 +30,7 @@ class Melter extends FactoryEquipmentModel{
 
       _fm.map((FactoryMaterialModel fm){
         fm.direction = direction;
-        fm.moveMaterial();
+        fm.moveMaterial(type);
       }).toList();
 
       return _fm;
@@ -46,7 +46,7 @@ class Melter extends FactoryEquipmentModel{
 
     _material.map((FactoryMaterialModel fm){
       fm.direction = direction;
-      fm.moveMaterial();
+      fm.moveMaterial(type);
     }).toList();
 
     return _material;

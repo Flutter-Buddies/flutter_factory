@@ -10,7 +10,9 @@ import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:random_color/random_color.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:hive/hive.dart';
 
@@ -141,6 +143,11 @@ class GameBloc{
       if(_connectingPortal != null){
         _connectingPortal.connectingPortal = up.coordinates;
         up.connectingPortal = _connectingPortal.coordinates;
+
+        final Color _lineColor = RandomColor().randomColor();
+
+        _connectingPortal.lineColor = _lineColor;
+        up.lineColor = _lineColor;
       }
     });
 
@@ -173,6 +180,8 @@ class GameBloc{
   int _frameRate = 0;
   int _tickStart = 0;
 
+  bool _isGameRunning = true;
+
   List<int> _averageFrameRate = <int>[];
 
   int get frameRate => _averageFrameRate.fold(0, (int _rate, int _value) => _rate += _value) ~/ _averageFrameRate.length;
@@ -180,6 +189,10 @@ class GameBloc{
   double get progress => _duration.inMilliseconds ~/ _tickSpeed == _lastTrigger ~/ _tickSpeed ? (_duration.inMilliseconds / _tickSpeed) % 1 : 1.0;
 
   void _waitForTick() async {
+    if(!_isGameRunning){
+      return;
+    }
+
     _frameRate = _tickSpeed ~/ (DateTime.now().millisecondsSinceEpoch - _tickStart);
     _averageFrameRate.add(_frameRate);
 
@@ -199,49 +212,134 @@ class GameBloc{
     _gameUpdate.add(GameUpdate.addEquipment);
   }
 
+  void _findPortalPartner(UndergroundPortal up){
+    final List<UndergroundPortal> _portals = _equipment.where((FactoryEquipmentModel fmm) => fmm is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fmm) => fmm).toList();
+
+    if(up.connectingPortal != null){
+      UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+
+      if(_portal != null && (_portal.coordinates.x == up.coordinates.x || _portal.coordinates.y == up.coordinates.y)){
+
+        if(_portal.coordinates.x == up.coordinates.x){
+          if(_portal.coordinates.y < up.coordinates.y){
+            _portal.direction = Direction.south;
+            up.direction = Direction.north;
+          }else{
+            _portal.direction = Direction.north;
+            up.direction = Direction.south;
+          }
+        }else{
+          if(_portal.coordinates.x < up.coordinates.x){
+            _portal.direction = Direction.west;
+            up.direction = Direction.east;
+          }else{
+            _portal.direction = Direction.east;
+            up.direction = Direction.west;
+          }
+        }
+        return;
+      }
+
+      print('Portal ${up.coordinates.toMap()} lost it\'s partner!');
+      up.connectingPortal = null;
+    }
+
+    print('Building portal!');
+    final List<UndergroundPortal> _connectingPortal = _portals.where((UndergroundPortal fem){
+      if(fem.coordinates == up.coordinates){
+        return false;
+      }
+
+      bool _hasPartner = false;
+
+      for(int i = 0; i < 32; i++){
+        _hasPartner = _hasPartner || (fem.coordinates.y == up.coordinates.y - i && fem.coordinates.x == up.coordinates.x);
+        _hasPartner = _hasPartner || (fem.coordinates.y == up.coordinates.y + i && fem.coordinates.x == up.coordinates.x);
+        _hasPartner = _hasPartner || fem.coordinates.x == up.coordinates.x - i && fem.coordinates.y == up.coordinates.y;
+        _hasPartner = _hasPartner || fem.coordinates.x == up.coordinates.x + i && fem.coordinates.y == up.coordinates.y;
+      }
+
+      return _hasPartner;
+    }).toList();
+
+    if(_connectingPortal == null || _connectingPortal.isEmpty){
+      print('No connecting portal!');
+      return;
+    }
+
+    _connectingPortal.firstWhere((UndergroundPortal fem){
+      if(fem.coordinates == up.coordinates){
+        return false;
+      }
+
+      final UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == fem.connectingPortal, orElse: () => null);
+
+      if(_portal != null && (_portal.coordinates.x == fem.coordinates.x || _portal.coordinates.y == fem.coordinates.y)){
+        print('Candidate is already connected! ${_portal.coordinates.toMap()} - ${fem.coordinates.toMap()}');
+        return false;
+      }
+
+      print('Connecting portal is: ${fem.coordinates.toMap()}');
+      print('Connection length: ${up.toMap()} - ${fem.coordinates.toMap()}');
+      print('Connection length: ${up.coordinates.x - fem.coordinates.x}');
+
+      fem.connectingPortal = up.coordinates;
+      up.connectingPortal = fem.coordinates;
+
+      final Color _lineColor = RandomColor().randomColor();
+
+      fem.lineColor = _lineColor;
+      up.lineColor = _lineColor;
+
+      print('Portal ${up.coordinates.toMap()} FOUND it\'s partner!');
+
+      if(fem.coordinates.x == up.coordinates.x){
+        if(fem.coordinates.y < up.coordinates.y){
+          fem.direction = Direction.south;
+          up.direction = Direction.north;
+        }else{
+          fem.direction = Direction.north;
+          up.direction = Direction.south;
+        }
+      }else{
+        if(fem.coordinates.x < up.coordinates.x){
+          fem.direction = Direction.west;
+          up.direction = Direction.east;
+        }else{
+          fem.direction = Direction.east;
+          up.direction = Direction.west;
+        }
+      }
+      return true;
+    }, orElse: (){
+      print('Passed all candidates ${_connectingPortal.length} but no connecting portal was found!');
+      return null;
+    });
+  }
+
   void buildSelected(){
     void _addEquipment(FactoryEquipmentModel e){
       print('Building equipment! ${e.type}');
-
+      List<Coordinates> addSelect = <Coordinates>[];
 
       selectedTiles.forEach((Coordinates c){
         FactoryEquipmentModel fem = e.copyWith(coordinates: c);
 
         if(e.type == EquipmentType.portal){
-          print('Building portal!');
-          final UndergroundPortal _connectingPortal = _equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).firstWhere((FactoryEquipmentModel fem){
-            bool _hasPartner = false;
+          _findPortalPartner(fem);
 
-            if(fem is UndergroundPortal && fem.connectingPortal != null){
-              return false;
-            }
-
-            for(int i = 0; i < 32; i++){
-              _hasPartner = _hasPartner || (fem.coordinates.y == c.y - i && fem.coordinates.x == c.x);
-              _hasPartner = _hasPartner || (fem.coordinates.y == c.y + i && fem.coordinates.x == c.x);
-              _hasPartner = _hasPartner || fem.coordinates.x == c.x - i && fem.coordinates.y == c.y;
-              _hasPartner = _hasPartner || fem.coordinates.x == c.x + i && fem.coordinates.y == c.y;
-            }
-
-            return _hasPartner;
-          }, orElse: () => null);
-
-          if(_connectingPortal != null){
-            print('Connecting portal is: ${_connectingPortal}');
-            print('Connection length: ${c.toMap()} - ${_connectingPortal.coordinates.toMap()}');
-            print('Connection length: ${c.x - _connectingPortal.coordinates.x}');
-
-            if(fem is UndergroundPortal){
-              _connectingPortal.connectingPortal = fem.coordinates;
-              fem.connectingPortal = _connectingPortal.coordinates;
-              _connectingPortal.isReceiver = true;
-            }
-          }else{
-            print('No connecting portal!');
+          if(fem is UndergroundPortal && fem.connectingPortal != null && !addSelect.contains(fem.connectingPortal)){
+            addSelect.add(fem.connectingPortal);
           }
         }
 
         _equipment.add(fem);
+      });
+
+      addSelect.forEach((Coordinates c){
+        if(!selectedTiles.contains(c)){
+          selectedTiles.add(c);
+        }
       });
     }
 
@@ -400,6 +498,8 @@ class GameBloc{
   final PublishSubject<GameUpdate> _gameUpdate = PublishSubject<GameUpdate>();
 
   void dispose(){
+    _isGameRunning = false;
+
     _saveFactory();
     _hiveBox.close();
     _gameUpdate.close();
@@ -458,7 +558,7 @@ class GameBloc{
           _portal = Coordinates(map['connecting_portal']['x'], map['connecting_portal']['y']);
         }
 
-        return UndergroundPortal(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], connectingPortal: _portal, isReceiver: map['receiver'] ?? false);
+        return UndergroundPortal(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], connectingPortal: _portal);
     }
 
     return null;
@@ -570,7 +670,7 @@ class ChallengesBloc extends GameBloc{
   
   @override
   bool _tick(){
-    bool _realTick = super._tick();
+    final bool _realTick = super._tick();
 
     if(_realTick && challengeGoal != null){
       int soldItems = 0;

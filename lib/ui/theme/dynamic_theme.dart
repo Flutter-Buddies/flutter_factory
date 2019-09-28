@@ -5,13 +5,15 @@ import 'package:flutter_factory/ui/theme/game_theme.dart';
 
 enum ThemeType{
   light,
-  dark
+  dark,
+  oledDark
 }
 
 String getThemeName(ThemeType type){
   switch(type){
     case ThemeType.light: return 'Light';
     case ThemeType.dark: return 'Dark';
+    case ThemeType.oledDark: return 'OLED Dark';
   }
 }
 

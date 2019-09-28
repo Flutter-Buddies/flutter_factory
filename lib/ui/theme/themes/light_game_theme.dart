@@ -30,7 +30,7 @@ class LightGameTheme implements GameTheme{
   @override Color get rollerDividersColor => Colors.grey;
   @override Color get rollersColor => Colors.grey.shade800;
 
-  @override Color get selectedTileColor => Colors.orange;
+  @override Color get selectedTileColor => Colors.orange.withOpacity(0.6);
 
   @override ThemeType get type => ThemeType.light;
 

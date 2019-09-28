@@ -10,7 +10,7 @@ class Roller extends FactoryEquipmentModel{
 
     _fm.map((FactoryMaterialModel fm){
       fm.direction = direction;
-      fm.moveMaterial();
+      fm.moveMaterial(type);
     }).toList();
 
     return _fm;

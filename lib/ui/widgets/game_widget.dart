@@ -12,6 +12,7 @@ import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
+import 'package:random_color/random_color.dart';
 
 class GameWidget extends StatefulWidget {
   GameWidget({Key key}) : super(key: key);
@@ -83,6 +84,8 @@ class _GameWidgetState extends State<GameWidget> {
 
           _isMoving = false;
         }
+
+        _findPortalPartner();
       },
       onScaleUpdate: (ScaleUpdateDetails sud){
         final Offset _s = (sud.focalPoint - _bloc.gameCameraPosition.position) / _bloc.gameCameraPosition.scale + Offset(_cubeSize / 2, _cubeSize / 2);
@@ -235,6 +238,24 @@ class _GameWidgetState extends State<GameWidget> {
         UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
         if(_portal != null && (_portal.coordinates.x == up.coordinates.x || _portal.coordinates.y == up.coordinates.y)){
+
+          if(_portal.coordinates.x == up.coordinates.x){
+            if(_portal.coordinates.y < up.coordinates.y){
+              _portal.direction = Direction.south;
+              up.direction = Direction.north;
+            }else{
+              _portal.direction = Direction.north;
+              up.direction = Direction.south;
+            }
+          }else{
+            if(_portal.coordinates.x < up.coordinates.x){
+              _portal.direction = Direction.west;
+              up.direction = Direction.east;
+            }else{
+              _portal.direction = Direction.east;
+              up.direction = Direction.west;
+            }
+          }
           return;
         }
 
@@ -279,9 +300,31 @@ class _GameWidgetState extends State<GameWidget> {
 
           fem.connectingPortal = up.coordinates;
           up.connectingPortal = fem.coordinates;
-          fem.isReceiver = true;
+
+          final Color _lineColor = RandomColor().randomColor();
+
+          fem.lineColor = _lineColor;
+          up.lineColor = _lineColor;
 
           print('Portal ${up.coordinates.toMap()} FOUND it\'s partner!');
+
+          if(fem.coordinates.x == up.coordinates.x){
+            if(fem.coordinates.y < up.coordinates.y){
+              fem.direction = Direction.south;
+              up.direction = Direction.north;
+            }else{
+              fem.direction = Direction.north;
+              up.direction = Direction.south;
+            }
+          }else{
+            if(fem.coordinates.x < up.coordinates.x){
+              fem.direction = Direction.west;
+              up.direction = Direction.east;
+            }else{
+              fem.direction = Direction.east;
+              up.direction = Direction.west;
+            }
+          }
 
           if(!_selected.contains(fem.coordinates)){
             _selected.add(fem.coordinates);
@@ -347,6 +390,42 @@ class GamePainter extends CustomPainter{
         Paint()..color = theme.separatorsColor..strokeWidth = 0.4
       );
     }
+
+    List<Coordinates> _didConnect = <Coordinates>[];
+
+    bloc.equipment.where((FactoryEquipmentModel fe) => fe is UndergroundPortal && fe.connectingPortal != null && fe.distance != null).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).forEach((UndergroundPortal up){
+      if(_didConnect.contains(up.coordinates)){
+        return;
+      }
+
+      if(up.coordinates.x == up.connectingPortal.x){
+        bool _goUp = up.coordinates.y > up.connectingPortal.y;
+
+        for(int i = 0; i < (up.distance + 1); i++){
+          canvas.drawRect(
+            Rect.fromCircle(
+              center: Offset(up.coordinates.x * cubeSize, (up.coordinates.y + (_goUp ? -i : i)) * cubeSize),
+              radius: cubeSize / 2
+            ),
+            Paint()..color = up.lineColor.withOpacity(0.25)
+          );
+        }
+      }else{
+        bool _goRight = up.coordinates.x > up.connectingPortal.x;
+
+        for(int i = 0; i < (up.distance + 1); i++){
+          canvas.drawRect(
+            Rect.fromCircle(
+              center: Offset((up.coordinates.x + (_goRight ? -i : i)) * cubeSize, up.coordinates.y * cubeSize),
+              radius: cubeSize / 2
+            ),
+            Paint()..color = up.lineColor.withOpacity(0.25)
+          );
+        }
+      }
+
+      _didConnect.add(up.connectingPortal);
+    });
 
     selectedTiles.forEach((Coordinates c){
       canvas.drawRect(

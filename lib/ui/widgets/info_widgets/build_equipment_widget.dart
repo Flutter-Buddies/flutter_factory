@@ -7,9 +7,10 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class BuildEquipmentWidget extends StatefulWidget {
-  BuildEquipmentWidget(this._bloc, {Key key}) : super(key: key);
+  BuildEquipmentWidget(this._bloc, {Key key, this.isChallenge = false}) : super(key: key);
 
   final GameBloc _bloc;
+  final bool isChallenge;
 
   @override
   _BuildEquipmentWidgetState createState() => _BuildEquipmentWidgetState();
@@ -93,7 +94,13 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                   );
                                 },
                                 body: Column(
-                                  children: EquipmentType.values.map((EquipmentType et){
+                                  children: EquipmentType.values.where((EquipmentType et){
+                                    if(widget.isChallenge){
+                                      return et != EquipmentType.dispenser && et != EquipmentType.seller;
+                                    }
+
+                                    return true;
+                                  }).map((EquipmentType et){
                                     return InkWell(
                                       onTap: (){
                                         widget._bloc.buildSelectedEquipmentType = et;

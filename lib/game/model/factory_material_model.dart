@@ -24,6 +24,7 @@ abstract class FactoryMaterialModel{
   final FactoryMaterialType type;
 
   FactoryMaterialState state;
+  EquipmentType lastEquipment;
 
   FactoryMaterialModel copyWith({
     double x,
@@ -169,7 +170,9 @@ abstract class FactoryMaterialModel{
     }
   }
 
-  void moveMaterial(){
+  void moveMaterial(EquipmentType equipment){
+    lastEquipment = equipment;
+
     switch(direction){
       case Direction.west:
         x -= 1.0;

@@ -148,18 +148,32 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                 value: _bloc.showArrows,
               ),
               SizedBox(height: 28.0),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 80.0,
-                child: SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: DynamicTheme.of(context).brightness == ThemeType.light,
-                  onChanged: (bool value){
-                    DynamicTheme.of(context).setThemeType(value ? ThemeType.light : ThemeType.dark);
-                  },
-                  title: Text('Theme'),
-                  subtitle: Text(DynamicTheme.of(context).brightness == ThemeType.light ? 'Light' : 'Dark'),
-                )
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('Theme:', style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.textColor),),
+                  Stack(
+                    children: <Widget>[
+                      DropdownButton<ThemeType>(
+                        onChanged: (ThemeType tt){
+                          DynamicTheme.of(context).setThemeType(tt);
+                        },
+                        style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.textColor),
+                        value: DynamicTheme.of(context).data.type,
+                        items: ThemeType.values.map((ThemeType tt){
+                          TextStyle _style = Theme.of(context).textTheme.button;
+
+                          return DropdownMenuItem<ThemeType>(
+                            value: tt,
+                            child: Text(getThemeName(tt),
+                              style: _style,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -168,7 +182,38 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
             height: 80.0,
             child: RaisedButton(
               color: Colors.red,
-              onPressed: _bloc.restart,
+              onPressed: () async {
+                bool _clear = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context){
+                    return AlertDialog(
+                      title: Text('Clear?'),
+                      content: Text('Are you sure you want to restart this challenge?'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('CLEAR', style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.negativeActionButtonColor),),
+                          onPressed: (){
+                            Navigator.pop(context, true);
+                          },
+                        ),
+
+                        SizedBox(width: 12.0,),
+
+                        FlatButton(
+                          child: Text('CANCEL'),
+                          onPressed: (){
+                            Navigator.pop(context, false);
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                ) ?? false;
+
+                if(_clear){
+                  _bloc.restart();
+                }
+              },
               child: Text('Restart challenge', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
             ),
           ),
@@ -186,50 +231,18 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
     final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
 
     if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
-      return FloatingActionButton(
-        key: Key('delete_fab'),
-        backgroundColor: Colors.red,
-        onPressed: (){
-          _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates) && fe.isMutable).toList().forEach(_bloc.removeEquipment);
-        },
-        child: Icon(Icons.clear),
-      );
-    }
-
-    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
-
-    if(_equipment == null){
-      return FloatingActionButton(
-        key: Key('build_fab'),
-        backgroundColor: Colors.green,
-        onPressed: (){
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (BuildContext context){
-              return BuildEquipmentWidget(_bloc);
-            }
-          );
-        },
-        child: Icon(Icons.build),
-      );
-    }else if(!_equipment.isMutable){
-      return Container(
-        color: Colors.white,
-        child: InfoWindow(_bloc)
-      );
-    }else{
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          _selectedEquipment.isEmpty ? SizedBox.shrink() : Container(
+          Container(
             padding: EdgeInsets.only(left: 36.0),
             child: Row(
               children: <Widget>[
                 FloatingActionButton(
                   key: Key('rotate_ccw'),
-                  backgroundColor: Colors.blue.shade700,
+                  backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: (){
-                    _selectedEquipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach((FactoryEquipmentModel fem){
+                    _selectedEquipment.forEach((FactoryEquipmentModel fem){
                       fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
                     });
                   },
@@ -238,9 +251,9 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                 SizedBox(width: 12.0,),
                 FloatingActionButton(
                   key: Key('rotate_cw'),
-                  backgroundColor: Colors.blue.shade700,
+                  backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                   onPressed: (){
-                    _selectedEquipment.where((FactoryEquipmentModel fem) => fem.isMutable).forEach((FactoryEquipmentModel fem){
+                    _selectedEquipment.forEach((FactoryEquipmentModel fem){
                       fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
                     });
                   },
@@ -251,37 +264,134 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
           ),
           Row(
             children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: FloatingActionButton(
+                  key: Key('move_fab'),
+                  backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
+                  onPressed: (){
+                    _bloc.copyMode = _bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
+                  },
+                  child: Icon((_bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: FloatingActionButton(
+                  key: Key('delete_fab'),
+                  backgroundColor:  DynamicTheme.of(context).data.negativeActionButtonColor,
+                  onPressed: (){
+                    _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
+                  },
+                  child: Icon(Icons.clear, color:  DynamicTheme.of(context).data.negativeActionIconColor,),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
+
+    if(_equipment == null){
+      return FloatingActionButton(
+        key: Key('build_fab'),
+        backgroundColor:  DynamicTheme.of(context).data.positiveActionButtonColor,
+        onPressed: (){
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context){
+              return BuildEquipmentWidget(_bloc, isChallenge: true,);
+            }
+          );
+        },
+        child: Icon(Icons.build),
+      );
+    }else{
+      bool _isBasic = _equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.roller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.wire_bender || _equipment.type == EquipmentType.cutter || _equipment.type == EquipmentType.hydraulic_press || _equipment.type == EquipmentType.melter || _equipment.type == EquipmentType.rotatingFreeRoller;
+      Widget _showModify = _isBasic ? SizedBox.shrink() : Row(
+        children: <Widget>[
+          SizedBox(width: 12.0,),
+          FloatingActionButton(
+            key: Key('info_fab'),
+            backgroundColor: DynamicTheme.of(context).data.modifyActionButtonColor,
+            onPressed: (){
+              showModalBottomSheet<void>(
+                context: context,
+                builder: (BuildContext context){
+                  return StreamBuilder<GameUpdate>(
+                    stream: _bloc.gameUpdate,
+                    builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
+                      return InfoWindow(_bloc);
+                    }
+                  );
+                }
+              );
+            },
+            child: Icon(Icons.developer_mode),
+          ),
+        ],
+      );
+
+      bool _isNotRotatable = _equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller;
+      Widget _showRotate = !_isNotRotatable ? Container(
+        padding: EdgeInsets.only(left: 36.0),
+        child: Row(
+          children: <Widget>[
+            FloatingActionButton(
+              key: Key('rotate_ccw'),
+              backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
+              onPressed: (){
+                _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                  fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
+                });
+              },
+              child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+            ),
+            SizedBox(width: 12.0,),
+            FloatingActionButton(
+              key: Key('rotate_cw'),
+              backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
+              onPressed: (){
+                _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                  fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
+                });
+              },
+              child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+            ),
+          ],
+        ),
+      ) : SizedBox.shrink();
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          _showRotate,
+          Row(
+            children: <Widget>[
+              FloatingActionButton(
+                key: Key('move_fab'),
+                backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
+                onPressed: (){
+                  _bloc.copyMode = _bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
+                },
+                child: Icon((_bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+              ),
+              SizedBox(width: 12.0,),
               FloatingActionButton(
                 key: Key('delete_fab'),
-                backgroundColor: Colors.red,
+                backgroundColor:  DynamicTheme.of(context).data.negativeActionButtonColor,
                 onPressed: (){
-                  _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates) && fe.isMutable).toList().forEach(_bloc.removeEquipment);
+                  _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
 
                   if(_bloc.selectedTiles.length > 1){
                     _bloc.selectedTiles.clear();
                   }
                 },
-                child: Icon(Icons.clear),
+                child: Icon(Icons.clear, color:  DynamicTheme.of(context).data.negativeActionIconColor,),
               ),
-              SizedBox(width: 12.0,),
-              FloatingActionButton(
-                key: Key('info_fab'),
-                backgroundColor: Colors.yellow.shade700,
-                onPressed: (){
-                  showModalBottomSheet<void>(
-                    context: context,
-                    builder: (BuildContext context){
-                      return StreamBuilder<GameUpdate>(
-                        stream: _bloc.gameUpdate,
-                        builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
-                          return InfoWindow(_bloc);
-                        }
-                      );
-                    }
-                  );
-                },
-                child: Icon(Icons.developer_mode),
-              ),
+              _showModify
             ],
           ),
         ],
@@ -475,7 +585,7 @@ class InfoWindow extends StatelessWidget {
     final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
 
     Widget _buildNoEquipment(){
-      return BuildEquipmentWidget(_bloc);
+      return BuildEquipmentWidget(_bloc, isChallenge: true,);
     }
 
     Widget _showSellerOptions(){

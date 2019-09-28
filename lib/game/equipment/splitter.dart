@@ -14,7 +14,7 @@ class Splitter extends FactoryEquipmentModel{
 
     _fm.map((FactoryMaterialModel fm){
       fm.direction = directions[splitCounter % directions.length];
-      fm.moveMaterial();
+      fm.moveMaterial(type);
       splitCounter++;
     }).toList();
 
@@ -40,6 +40,12 @@ class Splitter extends FactoryEquipmentModel{
         drawRoller(theme, _myDir.first, canvas, size, progress);
       }else{
         drawSplitter(theme, _myDir.first, canvas, size, progress, entry: true);
+      }
+    }else{
+      if(directions.contains(Direction.values[(direction.index + 2) % Direction.values.length])){
+        drawRoller(theme, Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress);
+      }else{
+        drawSplitter(theme, Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress, entry: true);
       }
     }
 

@@ -33,6 +33,7 @@ class Crafter extends FactoryEquipmentModel{
       _craft();
 
       _craftedMaterial.direction = direction;
+      _craftedMaterial.lastEquipment = type;
 
       return <FactoryMaterialModel>[_craftedMaterial];
     }

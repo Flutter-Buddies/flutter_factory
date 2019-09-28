@@ -24,7 +24,7 @@ class Dispenser extends FactoryEquipmentModel{
       _materials.clear();
 
       if(tickDuration == 1){
-        _materials = List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
+        _materials = List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction..lastEquipment = type);
       }
 
       return _fml;

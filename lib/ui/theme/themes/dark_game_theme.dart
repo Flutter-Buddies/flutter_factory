@@ -31,7 +31,7 @@ class DarkGameTheme implements GameTheme{
   @override Color get rollerDividersColor => Colors.grey.shade700;
   @override Color get rollersColor => Colors.grey.shade900;
 
-  @override Color get selectedTileColor => Colors.green.shade800;
+  @override Color get selectedTileColor => Colors.green.shade800.withOpacity(0.6);
 
   @override ThemeType get type => ThemeType.dark;
 

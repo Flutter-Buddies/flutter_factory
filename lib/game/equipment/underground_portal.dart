@@ -1,59 +1,62 @@
 part of factory_equipment;
 
 class UndergroundPortal extends FactoryEquipmentModel{
-  UndergroundPortal(Coordinates coordinates, Direction direction, {int portalTickDuration = 1, this.connectingPortal, this.isReceiver = false}) : super(coordinates, direction, EquipmentType.portal, tickDuration: portalTickDuration);
+  UndergroundPortal(Coordinates coordinates, Direction direction, {int portalTickDuration = 1, this.connectingPortal}) : super(coordinates, direction, EquipmentType.portal, tickDuration: portalTickDuration);
 
   Coordinates connectingPortal;
-
-  bool isReceiver;
   int distance;
+
+  Color lineColor;
 
   final List<List<FactoryMaterialModel>> _backlog = <List<FactoryMaterialModel>>[];
 
   @override
   List<FactoryMaterialModel> tick() {
-    final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(objects);
-    objects.clear();
+    final List<FactoryMaterialModel> _inputMaterial = objects.where((FactoryMaterialModel fmm) => fmm.lastEquipment != EquipmentType.portal).toList();
+    final List<FactoryMaterialModel> _outputMaterial = <FactoryMaterialModel>[];
 
     if(connectingPortal != null){
-      distance ??= (coordinates.x - connectingPortal.x).abs() + (coordinates.y - connectingPortal.y).abs();
+      _outputMaterial.addAll(objects.where((FactoryMaterialModel fmm) => fmm.lastEquipment == EquipmentType.portal));
+      distance = (coordinates.x - connectingPortal.x).abs() + (coordinates.y - connectingPortal.y).abs();
     }
 
-    if(isReceiver){
-      _backlog.add(_fm);
+    final List<FactoryMaterialModel> _returnList = <FactoryMaterialModel>[];
 
-      if(_backlog.length > (distance ?? 0)){
-        List<FactoryMaterialModel> _list = <FactoryMaterialModel>[]..addAll(_backlog.first);
-        _backlog.removeAt(0);
-
-        _list.forEach((FactoryMaterialModel fmm){
-          fmm.direction = direction;
-          fmm.moveMaterial();
-        });
-        return _list;
-      }
-
-      return <FactoryMaterialModel>[];
-    }
-
-    if(connectingPortal != null){
-      _fm.map((FactoryMaterialModel fm){
+    if(_inputMaterial.isNotEmpty && connectingPortal != null){
+      _returnList.addAll(_inputMaterial.map((FactoryMaterialModel fm){
         fm.direction = direction;
         fm.x = connectingPortal.x.toDouble();
         fm.y = connectingPortal.y.toDouble();
-      }).toList();
-    }else{
-      _fm.clear();
+        fm.lastEquipment = type;
+
+        return fm;
+      }));
     }
 
-    return _fm;
+    if(_outputMaterial.isNotEmpty){
+      _backlog.add(_outputMaterial);
+
+      if(_backlog.length >= (distance ?? 0)){
+        List<FactoryMaterialModel> _list = <FactoryMaterialModel>[]..addAll(_backlog.first);
+        _backlog.remove(_backlog.first);
+
+        _list.forEach((FactoryMaterialModel fmm){
+          fmm.direction = direction;
+          fmm.moveMaterial(null);
+        });
+
+        _returnList.addAll(_list);
+      }
+    }
+
+    objects.clear();
+
+    return _returnList;
   }
 
   @override
   void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
-    if(isReceiver){
-      super.drawTrack(theme, offset, canvas, size, progress);
-    }
+    super.drawTrack(theme, offset, canvas, size, progress);
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -103,7 +106,7 @@ class UndergroundPortal extends FactoryEquipmentModel{
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(_backlog.isEmpty || _backlog.first.isEmpty || _backlog.length < distance){
+    if(_backlog.isEmpty || _backlog.first.isEmpty || _backlog.length < (distance - 1)){
       return;
     }
 
@@ -138,11 +141,11 @@ class UndergroundPortal extends FactoryEquipmentModel{
     canvas.drawRRect(
       RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.8, size / 2.8), Offset(-size / 2.8, -size / 2.8)),
         Radius.circular(size / 2.8 / 2)
-      ), Paint()..color = connectingPortal != null ? isReceiver ? theme.machineActiveColor : theme.machineWarningColor : theme.machineInActiveColor);
+      ), Paint()..color = connectingPortal != null ? lineColor != null ? lineColor : theme.machineActiveColor : theme.machineInActiveColor);
 
     canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 4.0, size / 4.0), Offset(-size / 4.0, -size / 4.0)),
-        Radius.circular(size / 4.0 / 2)
+      RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 3.4, size / 3.4), Offset(-size / 3.4, -size / 3.4)),
+        Radius.circular(size / 3.4 / 2)
       ), Paint()..color = theme.machineAccentDarkColor);
 
     canvas.restore();
@@ -154,7 +157,6 @@ class UndergroundPortal extends FactoryEquipmentModel{
       coordinates ?? this.coordinates,
       direction ?? this.direction,
       portalTickDuration: tickDuration ?? this.tickDuration,
-      isReceiver: isReceiver ?? this.isReceiver,
     );
   }
 
@@ -168,8 +170,9 @@ class UndergroundPortal extends FactoryEquipmentModel{
       });
     }
 
+    _myMap.remove('material');
     _myMap.addAll(<String, dynamic>{
-      'receiver': isReceiver
+      'material': <Map<String, dynamic>>[]
     });
 
     return _myMap;

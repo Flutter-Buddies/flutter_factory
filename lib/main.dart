@@ -11,6 +11,7 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
+import 'package:flutter_factory/ui/theme/themes/oled_dark_game_theme.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,11 +30,38 @@ void main(){
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  GameBloc _bloc;
+
+  GameTheme _getTheme(ThemeType tt){
+    switch(tt){
+      case ThemeType.light:
+        return LightGameTheme();
+      case ThemeType.dark:
+        return DarkGameTheme();
+      case ThemeType.oledDark:
+        return VeryDarkGameTheme();
+    }
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    _bloc ??= GameProvider.of(context) ?? GameBloc();
+
     return DynamicTheme(
-      data: (ThemeType b) => b == ThemeType.dark ? DarkGameTheme() : LightGameTheme(),
+      data: _getTheme,
       themedWidgetBuilder: (BuildContext context, GameTheme theme){
         return AnimatedThemeProvider(
           duration: Duration(milliseconds: 450),
@@ -44,7 +72,7 @@ class MyApp extends StatelessWidget {
                 return Stack(
                   children: <Widget>[
                     GameProvider(
-                      bloc: GameProvider.of(context) ?? GameBloc(),
+                      bloc: _bloc,
                       child: Stack(
                         children: <Widget>[
                           GameWidget(),

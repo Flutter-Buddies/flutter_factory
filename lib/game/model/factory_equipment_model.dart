@@ -39,9 +39,9 @@ abstract class FactoryEquipmentModel{
 
     inputDirections[d] = counter;
 
-    if(inputDirections[d] < (counter - 100)){
-      inputDirections.remove(d);
-    }
+    inputDirections.removeWhere((Direction _d, int _count) => _count < (counter - 10));
+
+//    print('Input: ${equipmentTypeToString(type)} - ${inputDirections.keys.fold('', (String s, Direction d) => s += directionToString(d))}');
 
     if(objects.length > 1000){
       objects.removeRange(0, objects.length - 900);

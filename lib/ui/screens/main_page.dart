@@ -392,7 +392,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
         child: Icon(Icons.build),
       );
     }else{
-      bool _isBasic = _equipment.type == EquipmentType.roller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.wire_bender || _equipment.type == EquipmentType.cutter || _equipment.type == EquipmentType.hydraulic_press || _equipment.type == EquipmentType.melter || _equipment.type == EquipmentType.rotatingFreeRoller;
+      bool _isBasic = _equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.roller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.wire_bender || _equipment.type == EquipmentType.cutter || _equipment.type == EquipmentType.hydraulic_press || _equipment.type == EquipmentType.melter;
       Widget _showModify = _isBasic ? SizedBox.shrink() : Row(
         children: <Widget>[
           SizedBox(width: 12.0,),
@@ -417,7 +417,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
         ],
       );
 
-      bool _isNotRotatable = _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller;
+      bool _isNotRotatable = _equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller;
       Widget _showRotate = !_isNotRotatable ? Container(
         padding: EdgeInsets.only(left: 36.0),
         child: Row(

@@ -12,7 +12,7 @@ class FreeRoller extends FactoryEquipmentModel{
 
     _fm.map((FactoryMaterialModel fm){
 //      fm.direction = Direction.values[(fm.direction.index + rotation) % Direction.values.length];
-      fm.moveMaterial();
+      fm.moveMaterial(type);
     }).toList();
 
     return _fm;
