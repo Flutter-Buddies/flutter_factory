@@ -181,7 +181,38 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               height: 80.0,
               child: RaisedButton(
                 color:  DynamicTheme.of(context).data.negativeActionButtonColor,
-                onPressed: _bloc.clearLine,
+                onPressed: () async {
+                  bool _clear = await showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context){
+                      return AlertDialog(
+                        title: Text('Clear?'),
+                        content: Text('Are you sure you want to clear this whole floor?'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('CLEAR', style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.negativeActionButtonColor),),
+                            onPressed: (){
+                              Navigator.pop(context, true);
+                            },
+                          ),
+
+                          SizedBox(width: 12.0,),
+
+                          FlatButton(
+                            child: Text('CANCEL'),
+                            onPressed: (){
+                              Navigator.pop(context, false);
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                  ) ?? false;
+
+                  if(_clear){
+                    _bloc.clearLine();
+                  }
+                },
                 child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
               ),
             ),
