@@ -163,7 +163,7 @@ class Dispenser extends FactoryEquipmentModel{
     _map.addAll(<String, dynamic>{
       'dispense_material': dispenseMaterial.index,
       'dispense_amount': dispenseAmount,
-//      'is_working': isWorking
+      'is_working': isWorking
     });
     return _map;
   }

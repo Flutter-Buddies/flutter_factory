@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum ThemeType{
   light,
@@ -49,17 +52,21 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   ThemeType get brightness => _brightness;
 
+  Box _themeData;
+
   @override
   void initState() {
     super.initState();
     _brightness = widget.defaultThemeType;
     _data = widget.data(_brightness);
 
-    _brightness = ThemeType.light;
-    _data = widget.data(_brightness);
-    if (mounted) {
-      setState(() {});
-    }
+    loadBrightness().then((ThemeType type) {
+      _brightness = type;
+      _data = widget.data(_brightness);
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -79,6 +86,9 @@ class DynamicThemeState extends State<DynamicTheme> {
       _data = widget.data(brightness);
       _brightness = brightness;
     });
+
+    print('Saving theme!');
+    _themeData.putAll(<String, dynamic>{'theme': brightness.index});
   }
 
   void setThemeData(GameTheme data) {
@@ -89,5 +99,25 @@ class DynamicThemeState extends State<DynamicTheme> {
   @override
   Widget build(BuildContext context) {
     return widget.themedWidgetBuilder(context, _data);
+  }
+
+  Future<ThemeType> loadBrightness() async {
+    if(_themeData == null){
+      final Directory _path = await getApplicationDocumentsDirectory();
+
+      Hive.init(_path.path);
+      _themeData = await Hive.openBox('theme_settings');
+    }
+
+    print('Loading theme: ${_themeData.get('theme')}');
+
+    return ThemeType.values[_themeData.get('theme', defaultValue: widget.defaultThemeType.index)];
+  }
+
+  @override
+  void dispose() async {
+    await _themeData.close();
+
+    super.dispose();
   }
 }

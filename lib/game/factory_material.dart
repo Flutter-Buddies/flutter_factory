@@ -42,3 +42,8 @@ part 'craftables/electric_board.dart';
 part 'craftables/generator.dart';
 part 'craftables/smart_watch.dart';
 part 'craftables/water_heater.dart';
+part 'craftables/advanced_engine.dart';
+part 'craftables/electric_engine.dart';
+part 'craftables/laser.dart';
+part 'craftables/oven.dart';
+part 'craftables/super_computer.dart';

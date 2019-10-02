@@ -192,7 +192,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                   onChanged: (int fmt){
                     widget.crafter.forEach((Crafter c) => c.tickDuration = fmt);
                   },
-                  items: List<int>.generate(8, (int i) => i + 1).map((int fmt){
+                  items: List<int>.generate(12, (int i) => i + 1).map((int fmt){
                     return DropdownMenuItem<int>(
                       value: fmt,
                       child: Container(

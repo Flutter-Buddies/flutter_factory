@@ -9,9 +9,9 @@ class VeryDarkGameTheme implements GameTheme{
   const VeryDarkGameTheme();
 
   @override Color get floorColor => Colors.black;
-  @override Color get voidColor => Colors.grey.shade900;
+  @override Color get voidColor => Colors.black;
   @override Color get textColor => Colors.white60;
-  @override Color get separatorsColor => Colors.grey.shade800;
+  @override Color get separatorsColor => Colors.deepOrange.shade400.withOpacity(0.6);
 
   @override Color get machineAccentDarkColor => Colors.grey.shade900;
   @override Color get machineAccentColor => Colors.grey.shade800;
@@ -31,7 +31,7 @@ class VeryDarkGameTheme implements GameTheme{
   @override Color get rollerDividersColor => Colors.grey.shade700;
   @override Color get rollersColor => Colors.grey.shade900;
 
-  @override Color get selectedTileColor => Colors.blue.shade800.withOpacity(0.6);
+  @override Color get selectedTileColor => Colors.green.shade600.withOpacity(0.6);
 
   @override ThemeType get type => ThemeType.oledDark;
 

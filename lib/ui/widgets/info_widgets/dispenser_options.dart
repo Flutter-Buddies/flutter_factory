@@ -127,7 +127,7 @@ class DispenserOptionsWidget extends StatelessWidget {
               onChanged: (int fmt){
                 dispenser.forEach((Dispenser d) => d.tickDuration = fmt);
               },
-              items: List<int>.generate(8, (int i) => i + 1).map((int fmt){
+              items: List<int>.generate(12, (int i) => i + 1).map((int fmt){
                 return DropdownMenuItem<int>(
                   value: fmt,
                   child: Text('${fmt.toString()}'),
@@ -147,7 +147,7 @@ class DispenserOptionsWidget extends StatelessWidget {
               onChanged: (int fmt){
                 dispenser.forEach((Dispenser d) => d.dispenseAmount = fmt);
               },
-              items: List<int>.generate(8, (int i) => i + 1).map((int fmt){
+              items: List<int>.generate(12, (int i) => i + 1).map((int fmt){
                 return DropdownMenuItem<int>(
                   value: fmt,
                   child: Text('${fmt.toString()}'),

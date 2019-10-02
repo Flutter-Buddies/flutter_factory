@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game_bloc.dart';
@@ -56,12 +59,21 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
+  void _goOnFloor(){
+    _bloc.changeFloor(Random().nextInt(4));
+  }
+
   @override
   Widget build(BuildContext context) {
     _bloc ??= GameProvider.of(context) ?? GameBloc();
 
+    _bloc.gameCameraPosition.scale = 1.0 + Random().nextDouble() * 0.5;
+    _bloc.gameCameraPosition.position = Offset(Random().nextDouble() * -200.0 * _bloc.gameCameraPosition.scale, Random().nextDouble() * -200.0 * _bloc.gameCameraPosition.scale);
+    _goOnFloor();
+
     return DynamicTheme(
       data: _getTheme,
+      defaultThemeType: ThemeType.light,
       themedWidgetBuilder: (BuildContext context, GameTheme theme){
         return AnimatedThemeProvider(
           duration: Duration(milliseconds: 450),
@@ -80,11 +92,10 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ),
 
-
                     BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+                      filter: ImageFilter.blur(sigmaX: 3.2, sigmaY: 3.2),
                       child: Container(
-                        color: Colors.white24,
+                        color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 36.0),
                           child: Column(
@@ -96,12 +107,15 @@ class _MyAppState extends State<MyApp> {
                                   children: <Widget>[
                                     RaisedButton(
                                       child: Container(
+                                        height: 60.0,
                                         margin: const EdgeInsets.all(24.0),
-                                        child: Text('Play',
-                                          style: Theme.of(context).textTheme.title.copyWith(color: Colors.white),
+                                        child: Center(
+                                          child: Text('Play',
+                                            style: Theme.of(context).textTheme.title.copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
+                                          ),
                                         ),
                                       ),
-                                      color: Colors.blue,
+                                      color: DynamicTheme.of(context).data.positiveActionButtonColor,
                                       onPressed: (){
                                         Navigator.push(context, MaterialPageRoute<void>(
                                           builder: (BuildContext context) => MainPage()
@@ -111,9 +125,15 @@ class _MyAppState extends State<MyApp> {
                                     SizedBox(height: 24.0),
                                     RaisedButton(
                                       child: Container(
+                                        height: 40.0,
                                         margin: const EdgeInsets.all(24.0),
-                                        child: Text('Challenges')
+                                        child: Center(
+                                          child: Text('Challenges',
+                                            style: Theme.of(context).textTheme.title.copyWith(fontSize: 14.0, color: DynamicTheme.of(context).data.neutralActionIconColor),
+                                          ),
+                                        )
                                       ),
+                                      color: DynamicTheme.of(context).data.neutralActionButtonColor,
                                       onPressed: (){
                                         Navigator.push(context, MaterialPageRoute<void>(
                                           builder: (BuildContext context) => ChallengesListPage()

@@ -375,6 +375,16 @@ class GamePainter extends CustomPainter{
       Paint()..color = theme.floorColor
     );
 
+    selectedTiles.forEach((Coordinates c){
+      canvas.drawRect(
+        Rect.fromCircle(
+          center: Offset(c.x * cubeSize, c.y * cubeSize),
+          radius: cubeSize / 2
+        ),
+        Paint()..color = theme.selectedTileColor
+      );
+    });
+
     for(int i = 0; i < columns; i++){
       canvas.drawLine(
         Offset(-cubeSize / 2, cubeSize * i + cubeSize / 2),
@@ -425,16 +435,6 @@ class GamePainter extends CustomPainter{
       }
 
       _didConnect.add(up.connectingPortal);
-    });
-
-    selectedTiles.forEach((Coordinates c){
-      canvas.drawRect(
-        Rect.fromCircle(
-          center: Offset(c.x * cubeSize, c.y * cubeSize),
-          radius: cubeSize / 2
-        ),
-        Paint()..color = theme.selectedTileColor
-      );
     });
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){

@@ -640,6 +640,16 @@ class GameBloc{
         return SmartWatch.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
       case FactoryMaterialType.waterHeater:
         return WaterHeater.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.advancedEngine:
+        return AdvancedEngine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.electricEngine:
+        return ElectricEngine.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.laser:
+        return Laser.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.oven:
+        return Oven.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.superComputer:
+        return SuperComputer.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
     }
 
     return null;

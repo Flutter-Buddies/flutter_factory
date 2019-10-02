@@ -121,6 +121,16 @@ abstract class FactoryMaterialModel{
         return SmartWatch.fromOffset(offset);
       case FactoryMaterialType.waterHeater:
         return WaterHeater.fromOffset(offset);
+      case FactoryMaterialType.advancedEngine:
+        return AdvancedEngine.fromOffset(offset);
+      case FactoryMaterialType.electricEngine:
+        return ElectricEngine.fromOffset(offset);
+      case FactoryMaterialType.laser:
+        return Laser.fromOffset(offset);
+      case FactoryMaterialType.oven:
+        return Oven.fromOffset(offset);
+      case FactoryMaterialType.superComputer:
+        return SuperComputer.fromOffset(offset);
     }
 
     return null;
@@ -396,7 +406,12 @@ enum FactoryMaterialType{
   electricBoard,
   generator,
   smartWatch,
-  waterHeater
+  waterHeater,
+  advancedEngine,
+  electricEngine,
+  laser,
+  oven,
+  superComputer
 }
 
 class FactoryRecipe{
@@ -458,6 +473,11 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.generator: return 'Generator';
     case FactoryMaterialType.smartWatch: return 'Smart Watch';
     case FactoryMaterialType.electricBoard: return 'Electric Board';
+    case FactoryMaterialType.advancedEngine: return 'Advanced Engine';
+    case FactoryMaterialType.electricEngine: return 'Electric Engine';
+    case FactoryMaterialType.laser: return 'Laser';
+    case FactoryMaterialType.oven: return 'Oven';
+    case FactoryMaterialType.superComputer: return 'Super Computer';
   }
 
   return '';

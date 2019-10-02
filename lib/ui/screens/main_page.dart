@@ -722,11 +722,15 @@ class InfoWindow extends StatelessWidget {
     _options.add(_showRotationOptions());
 
     return Container(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: _options,
+      color: Colors.white,
+      child: Container(
+        color: ThemeProvider.of(context).machineAccentLightColor.withOpacity(0.8),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: _options,
+          ),
         ),
       ),
     );
