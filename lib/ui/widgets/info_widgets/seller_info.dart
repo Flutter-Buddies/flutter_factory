@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class SellerInfo extends StatelessWidget {
@@ -76,6 +77,7 @@ class SellerInfo extends StatelessWidget {
                                 painter: ObjectPainter(
                                   0.0,
                                   scale: 2.0,
+                                  theme: DynamicTheme.of(context).data,
                                   material: FactoryMaterialModel.getFromType(frmt.materialType)..state = frmt.state,
                                 ),
                               ),

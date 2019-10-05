@@ -8,6 +8,8 @@ import '../game_theme.dart';
 class LightGameTheme implements GameTheme{
   const LightGameTheme();
 
+  @override Color get menuColor => Colors.white;
+
   @override Color get floorColor => Colors.grey;
   @override Color get textColor => Colors.black87;
   @override Color get voidColor => Colors.white;

@@ -70,7 +70,7 @@ class _GameWidgetState extends State<GameWidget> {
         }
       },
       onScaleEnd: (ScaleEndDetails sed){
-        if(_movingEquipment.isNotEmpty){
+        if(_isMoving && _movingEquipment.isNotEmpty){
           _initialMovingEquipment.clear();
 
           _selected.clear();

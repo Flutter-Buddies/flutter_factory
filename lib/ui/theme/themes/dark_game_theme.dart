@@ -8,6 +8,8 @@ import '../game_theme.dart';
 class DarkGameTheme implements GameTheme{
   const DarkGameTheme();
 
+  @override Color get menuColor => Colors.grey.shade800;
+
   @override Color get floorColor => Colors.grey.shade700;
   @override Color get voidColor => Colors.black;
   @override Color get textColor => Colors.white60;

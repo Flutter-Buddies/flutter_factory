@@ -7,6 +7,7 @@ abstract class GameTheme{
   GameTheme({
     this.type,
     this.floorColor,
+    this.menuColor,
     this.voidColor,
     this.selectedTileColor,
     this.separatorsColor,
@@ -37,6 +38,7 @@ abstract class GameTheme{
 
   final Color selectedTileColor;
 
+  final Color menuColor;
   final Color floorColor;
   final Color textColor;
   final Color voidColor;
@@ -97,6 +99,8 @@ abstract class GameTheme{
       neutralActionIconColor: Color.lerp(begin.neutralActionIconColor, end.neutralActionIconColor, t),
       modifyActionButtonColor: Color.lerp(begin.modifyActionButtonColor, end.modifyActionButtonColor, t),
       modifyActionIconColor: Color.lerp(begin.modifyActionIconColor, end.modifyActionIconColor, t),
+      menuColor: Color.lerp(begin.menuColor, end.menuColor, t),
+      type: end.type
     );
   }
 }
@@ -105,6 +109,7 @@ class _GameTheme implements GameTheme{
   _GameTheme({
     @required this.type,
     @required this.floorColor,
+    @required this.menuColor,
     @required this.voidColor,
     @required this.textColor,
     @required this.selectedTileColor,
@@ -133,6 +138,7 @@ class _GameTheme implements GameTheme{
 
   @override final ThemeType type;
   @override final Color floorColor;
+  @override final Color menuColor;
   @override final Color textColor;
   @override final Color machineAccentColor;
   @override final Color machineAccentDarkColor;

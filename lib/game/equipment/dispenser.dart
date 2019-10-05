@@ -63,6 +63,10 @@ class Dispenser extends FactoryEquipmentModel{
       _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
     }
 
+    if(!isWorking){
+      _machineProgress = 0.0;
+    }
+
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = theme.machineAccentColor);

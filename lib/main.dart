@@ -79,6 +79,7 @@ class _MyAppState extends State<MyApp> {
           duration: Duration(milliseconds: 450),
           data: theme,
           child: MaterialApp(
+            theme: theme.type == ThemeType.light ? ThemeData.light() : ThemeData.dark(),
             home: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return Stack(

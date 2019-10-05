@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class SorterOptionsWidget extends StatelessWidget {
@@ -39,6 +40,7 @@ class SorterOptionsWidget extends StatelessWidget {
                                 child: CustomPaint(
                                   painter: ObjectPainter(
                                     progress,
+                                    theme: DynamicTheme.of(context).data,
                                     material: FactoryMaterialModel.getFromType(fmt.materialType)..state = fmt.state
                                   ),
                                 ),

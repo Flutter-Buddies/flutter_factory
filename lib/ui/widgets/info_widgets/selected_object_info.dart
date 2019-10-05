@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class SelectedObjectInfoWidget extends StatelessWidget {
@@ -30,6 +31,7 @@ class SelectedObjectInfoWidget extends StatelessWidget {
                 child: CustomPaint(
                   painter: ObjectPainter(
                     progress,
+                    theme: DynamicTheme.of(context).data,
                     objectSize: 32.0,
                     equipment: equipment
                   ),

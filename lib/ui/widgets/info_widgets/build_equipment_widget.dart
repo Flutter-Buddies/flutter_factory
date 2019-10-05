@@ -62,6 +62,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                           child: CustomPaint(
                                             painter: ObjectPainter(
                                               widget._bloc.progress,
+                                              theme: DynamicTheme.of(context).data,
                                               equipment: widget._bloc.previewEquipment(widget._bloc.buildSelectedEquipmentType),
                                               objectSize: 32.0,
                                               scale: 1.6
@@ -127,6 +128,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                               child: CustomPaint(
                                                 painter: ObjectPainter(
                                                   widget._bloc.progress,
+                                                  theme: DynamicTheme.of(context).data,
                                                   equipment: widget._bloc.previewEquipment(et),
                                                   objectSize: 32.0
                                                 ),

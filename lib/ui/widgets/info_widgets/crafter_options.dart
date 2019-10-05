@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class CrafterOptionsWidget extends StatefulWidget {
@@ -60,6 +61,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                           child: CustomPaint(
                                             painter: ObjectPainter(
                                               widget.progress,
+                                              theme: DynamicTheme.of(context).data,
                                               material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
                                               scale: 4.0
                                             ),
@@ -80,6 +82,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                             child: CustomPaint(
                               painter: ObjectPainter(
                                 widget.progress,
+                                theme: DynamicTheme.of(context).data,
                                 scale: 6.0,
                                 material: FactoryMaterialModel.getFromType(_showFirst.craftMaterial),
                               ),
@@ -108,11 +111,11 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                           padding: const EdgeInsets.all(8.0),
                           height: 80.0,
                           foregroundDecoration: BoxDecoration(
-                            color: fmt == widget.crafter.first.craftMaterial ? Colors.blue.withOpacity(0.2) : Colors.transparent,
-                            border: fmt == widget.crafter.first.craftMaterial ? Border.all(color: Colors.blue) : null
+                            color: fmt == widget.crafter.first.craftMaterial ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
+                            border: fmt == widget.crafter.first.craftMaterial ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null
                           ),
                           decoration: BoxDecoration(
-                            color: fmt.index % 2 == 0 ? Colors.white : Colors.grey.shade100,
+                            color: fmt.index % 2 == 0 ? Colors.transparent : DynamicTheme.of(context).data.textColor.withOpacity(0.1),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -125,7 +128,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                     children: <Widget>[
                                       Container(
                                         child: Text('${factoryMaterialToString(fmt)}',
-                                          style: Theme.of(context).textTheme.subtitle,
+                                          style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),
                                         ),
                                       ),
                                       SizedBox(height: 12.0,),
@@ -139,6 +142,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                   child: CustomPaint(
                                                     painter: ObjectPainter(
                                                       widget.progress,
+                                                      theme: DynamicTheme.of(context).data,
                                                       material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
                                                       scale: 2.5
                                                     ),
@@ -146,7 +150,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                 ),
 
                                                 SizedBox(width: 16.0,),
-                                                Text('x ${_recepie[fmrt]}', style: Theme.of(context).textTheme.caption,)
+                                                Text('x ${_recepie[fmrt]}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor),)
                                               ],
                                             ),
                                           );
@@ -160,6 +164,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                     child: CustomPaint(
                                       painter: ObjectPainter(
                                         widget.progress,
+                                        theme: DynamicTheme.of(context).data,
                                         material: FactoryMaterialModel.getFromType(fmt),
                                         scale: 3.0
                                       ),
@@ -186,7 +191,9 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text('Craft speed:'),
+                Text('Craft speed:',
+                  style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.textColor),
+                ),
                 DropdownButton<int>(
                   value: _showFirst.tickDuration,
                   onChanged: (int fmt){
@@ -197,7 +204,9 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                       value: fmt,
                       child: Container(
                         margin: const EdgeInsets.all(12.0),
-                        child: Text('$fmt')
+                        child: Text('$fmt',
+                          style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.textColor),
+                        )
                       ),
                     );
                   }).toList(),
@@ -219,7 +228,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                   children: <Widget>[
                     Text('Craft queue:'),
                     Text('${_showFirst.objects.length}',
-                      style: Theme.of(context).textTheme.caption.copyWith(color: Colors.black87, fontWeight: FontWeight.w400, fontSize: 22.0),
+                      style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontWeight: FontWeight.w400, fontSize: 22.0),
                     ),
                   ],
                 ),
@@ -243,18 +252,19 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                   child: CustomPaint(
                                     painter: ObjectPainter(
                                       widget.progress,
+                                      theme: DynamicTheme.of(context).data,
                                       scale: 2.5,
                                       material: FactoryMaterialModel.getFromType(fmt)
                                     ),
                                   ),
                                 ),
                                 Text('${factoryMaterialToString(fmt)}',
-                                  style: Theme.of(context).textTheme.caption.copyWith(color: Colors.black87, fontWeight: FontWeight.w400),
+                                  style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor, fontWeight: FontWeight.w400),
                                 ),
                               ],
                             ),
                             Container(
-                              child: Center(child: Text('${_showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == fmt).length}', style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.w900),))
+                              child: Center(child: Text('${_showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == fmt).length}', style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.w900, color: DynamicTheme.of(context).data.textColor),))
                             ),
                           ],
                         ),
@@ -263,8 +273,8 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                       FactoryMaterialModel.isRaw(fmt) ? Column(
                         children: FactoryMaterialState.values.where((FactoryMaterialState fms) => fms.index < 4 && _showFirst.objects.firstWhere((FactoryMaterialModel fmm) => fmm.type == fmt && fmm.state == fms, orElse: () => null) != null).map((FactoryMaterialState states){
                           return Container(
-                            color: states.index % 2 == 0 ? Colors.grey.shade200 : Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                            color: states.index % 2 == 0 ? DynamicTheme.of(context).data.textColor.withOpacity(0.1) : Colors.transparent,
+                            padding: const EdgeInsets.only(top: 12.0,  bottom: 12.0, left: 48.0, right: 24.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
@@ -275,18 +285,19 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                       child: CustomPaint(
                                         painter: ObjectPainter(
                                           widget.progress,
+                                          theme: DynamicTheme.of(context).data,
                                           scale: 2.5,
                                           material: FactoryMaterialModel.getFromType(fmt)..state = states
                                         ),
                                       ),
                                     ),
                                     Text('${factoryMaterialStateToString(states)}',
-                                      style: Theme.of(context).textTheme.caption.copyWith(color: Colors.grey.shade400),
+                                      style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor.withOpacity(0.4)),
                                     ),
                                   ],
                                 ),
                                 Text('${_showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == fmt && _fm.state == states).length}',
-                                  style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.w900, color: Colors.grey.shade400),
+                                  style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.w900, color: DynamicTheme.of(context).data.textColor.withOpacity(0.4)),
                                 ),
                               ],
                             ),

@@ -51,173 +51,169 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
     Color _textColor = DynamicTheme.of(context).data.textColor;
 
     return Container(
+      padding: const EdgeInsets.all(12.0),
       width: MediaQuery.of(context).size.width * 0.8,
-      color: Colors.white,
-      child: Container(
-        padding: const EdgeInsets.all(12.0),
-        width: MediaQuery.of(context).size.width * 0.8,
-        color: ThemeProvider.of(context).floorColor.withOpacity(0.8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SizedBox(height: 40.0,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FloatingActionButton(
-                  backgroundColor:  DynamicTheme.of(context).data.neutralActionButtonColor,
-                  onPressed: _bloc.increaseGameSpeed,
-                  child: Icon(Icons.chevron_left, color:  DynamicTheme.of(context).data.neutralActionIconColor,),
-                ),
-                Text('Tick speed: ${_bloc.gameSpeed} ms', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor)),
-                FloatingActionButton(
-                  backgroundColor:  DynamicTheme.of(context).data.neutralActionButtonColor,
-                  onPressed: _bloc.decreaseGameSpeed,
-                  child: Icon(Icons.chevron_right, color:  DynamicTheme.of(context).data.neutralActionIconColor,),
-                ),
-              ],
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text('Show arrows', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor),),
-              subtitle: Text('Visual representation on equipment', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor),),
-              onChanged: (bool value){
-                setState(() {
-                  _bloc.showArrows = value;
-                });
-              },
-              value: _bloc.showArrows,
-            ),
+      color: ThemeProvider.of(context).menuColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          SizedBox(height: 40.0,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FloatingActionButton(
+                backgroundColor:  DynamicTheme.of(context).data.neutralActionButtonColor,
+                onPressed: _bloc.increaseGameSpeed,
+                child: Icon(Icons.chevron_left, color:  DynamicTheme.of(context).data.neutralActionIconColor,),
+              ),
+              Text('Tick speed: ${_bloc.gameSpeed} ms', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor)),
+              FloatingActionButton(
+                backgroundColor:  DynamicTheme.of(context).data.neutralActionButtonColor,
+                onPressed: _bloc.decreaseGameSpeed,
+                child: Icon(Icons.chevron_right, color:  DynamicTheme.of(context).data.neutralActionIconColor,),
+              ),
+            ],
+          ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text('Show arrows', style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor),),
+            subtitle: Text('Visual representation on equipment', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor),),
+            onChanged: (bool value){
+              setState(() {
+                _bloc.showArrows = value;
+              });
+            },
+            value: _bloc.showArrows,
+          ),
 
-            Column(
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 60.0,
-                  child: RaisedButton(
-                    color:  DynamicTheme.of(context).data.positiveActionButtonColor,
-                    onPressed: (){
-                      _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
-                        d.isWorking = true;
-                      });
-                    },
-                    child: Text('Turn on all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.positiveActionIconColor),),
-                  ),
+          Column(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 60.0,
+                child: RaisedButton(
+                  color:  DynamicTheme.of(context).data.positiveActionButtonColor,
+                  onPressed: (){
+                    _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
+                      d.isWorking = true;
+                    });
+                  },
+                  child: Text('Turn on all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.positiveActionIconColor),),
                 ),
-                SizedBox(height: 8.0,),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 60.0,
-                  child: RaisedButton(
-                    color:  DynamicTheme.of(context).data.negativeActionButtonColor,
-                    onPressed: (){
-                      _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
-                        d.isWorking = false;
-                      });
-                    },
-                    child: Text('Turn off all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
-                  ),
+              ),
+              SizedBox(height: 8.0,),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 60.0,
+                child: RaisedButton(
+                  color:  DynamicTheme.of(context).data.negativeActionButtonColor,
+                  onPressed: (){
+                    _bloc.equipment.where((FactoryEquipmentModel fem) => fem is Dispenser).map<Dispenser>((FactoryEquipmentModel fem) => fem).forEach((Dispenser d){
+                      d.isWorking = false;
+                    });
+                  },
+                  child: Text('Turn off all dispensers', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
                 ),
+              ),
 
-                SizedBox(height: 24.0,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Theme:', style: Theme.of(context).textTheme.button.copyWith(color: _textColor),),
-                    Stack(
-                      children: <Widget>[
-                        DropdownButton<ThemeType>(
-                          onChanged: (ThemeType tt){
-                            DynamicTheme.of(context).setThemeType(tt);
-                          },
-                          style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
-                          value: DynamicTheme.of(context).data.type,
-                          items: ThemeType.values.map((ThemeType tt){
-                            TextStyle _style = Theme.of(context).textTheme.button;
-
-                            return DropdownMenuItem<ThemeType>(
-                              value: tt,
-                              child: Text(getThemeName(tt),
-                                style: _style,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.max,
+              SizedBox(height: 24.0,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
-                  Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  Text('Theme:', style: Theme.of(context).textTheme.button.copyWith(color: _textColor),),
+                  Stack(
+                    children: <Widget>[
+                      DropdownButton<ThemeType>(
+                        onChanged: (ThemeType tt){
+                          DynamicTheme.of(context).setThemeType(tt);
+                        },
+                        style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
+                        value: DynamicTheme.of(context).data.type,
+                        items: ThemeType.values.map((ThemeType tt){
+                          TextStyle _style = Theme.of(context).textTheme.button;
+
+                          return DropdownMenuItem<ThemeType>(
+                            value: tt,
+                            child: Text(getThemeName(tt),
+                              style: _style,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ],
               ),
+            ],
+          ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Text('Machines: ${_bloc.equipment.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                Text('Materials: ${_bloc.material.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                Text('Excess Materials: ${_bloc.getExcessMaterial.length}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+                Text('FPT: ${_bloc.frameRate}', style: Theme.of(context).textTheme.caption.copyWith(color: _textColor, fontSize: 18.0, fontWeight: FontWeight.w300)),
+              ],
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 80.0,
-              child: FlatButton(
-                onPressed: (){
-                  _bloc.equipment.forEach((FactoryEquipmentModel fem){
-                    fem.objects.clear();
-                  });
-                },
-                child: Text('Vaporize all material on this floor', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionButtonColor, fontWeight: FontWeight.w400),),
-              ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80.0,
+            child: FlatButton(
+              onPressed: (){
+                _bloc.equipment.forEach((FactoryEquipmentModel fem){
+                  fem.objects.clear();
+                });
+              },
+              child: Text('Vaporize all material on this floor', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionButtonColor, fontWeight: FontWeight.w400),),
             ),
-            SizedBox(height: 28.0),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 80.0,
-              child: RaisedButton(
-                color:  DynamicTheme.of(context).data.negativeActionButtonColor,
-                onPressed: () async {
-                  bool _clear = await showDialog<bool>(
-                    context: context,
-                    builder: (BuildContext context){
-                      return AlertDialog(
-                        title: Text('Clear?'),
-                        content: Text('Are you sure you want to clear this whole floor?'),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: Text('CLEAR', style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.negativeActionButtonColor),),
-                            onPressed: (){
-                              Navigator.pop(context, true);
-                            },
-                          ),
+          ),
+          SizedBox(height: 28.0),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80.0,
+            child: RaisedButton(
+              color:  DynamicTheme.of(context).data.negativeActionButtonColor,
+              onPressed: () async {
+                bool _clear = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context){
+                    return AlertDialog(
+                      title: Text('Clear?'),
+                      content: Text('Are you sure you want to clear this whole floor?'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('CLEAR', style: Theme.of(context).textTheme.button.copyWith(color: DynamicTheme.of(context).data.negativeActionButtonColor),),
+                          onPressed: (){
+                            Navigator.pop(context, true);
+                          },
+                        ),
 
-                          SizedBox(width: 12.0,),
+                        SizedBox(width: 12.0,),
 
-                          FlatButton(
-                            child: Text('CANCEL'),
-                            onPressed: (){
-                              Navigator.pop(context, false);
-                            },
-                          ),
-                        ],
-                      );
-                    }
-                  ) ?? false;
-
-                  if(_clear){
-                    _bloc.clearLine();
+                        FlatButton(
+                          child: Text('CANCEL'),
+                          onPressed: (){
+                            Navigator.pop(context, false);
+                          },
+                        ),
+                      ],
+                    );
                   }
-                },
-                child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
-              ),
+                ) ?? false;
+
+                if(_clear){
+                  _bloc.clearLine();
+                }
+              },
+              child: Text('CLEAR LINE', style: Theme.of(context).textTheme.subhead.copyWith(color:  DynamicTheme.of(context).data.negativeActionIconColor),),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -225,7 +221,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
   Widget _showFloors(){
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
-      color: Colors.white,
+      color: DynamicTheme.of(context).data.menuColor,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +325,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                       fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
                     });
                   },
-                  child: Icon(Icons.rotate_right),
+                  child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
                 ),
                 SizedBox(width: 12.0,),
                 FloatingActionButton(
@@ -340,7 +336,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                       fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
                     });
                   },
-                  child: Icon(Icons.rotate_left),
+                  child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
                 ),
               ],
             ),
@@ -355,7 +351,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   onPressed: (){
                     _bloc.copyMode = _bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
                   },
-                  child: Icon((_bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy),
+                  child: Icon((_bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy, color: DynamicTheme.of(context).data.neutralActionIconColor,),
                 ),
               ),
               Padding(
@@ -389,7 +385,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             }
           );
         },
-        child: Icon(Icons.build),
+        child: Icon(Icons.build, color: DynamicTheme.of(context).data.neutralActionIconColor,),
       );
     }else{
       bool _isBasic = _equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.roller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.wire_bender || _equipment.type == EquipmentType.cutter || _equipment.type == EquipmentType.hydraulic_press || _equipment.type == EquipmentType.melter;
@@ -412,7 +408,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 }
               );
             },
-            child: Icon(Icons.developer_mode),
+            child: Icon(Icons.developer_mode, color: DynamicTheme.of(context).data.modifyActionIconColor,),
           ),
         ],
       );
@@ -496,79 +492,76 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
           drawer: _showFloors(),
           endDrawer: _showSettings(),
           floatingActionButton: _showFab(),
-          body: Theme(
-            data: DynamicTheme.of(context).brightness == Brightness.light ? ThemeData.light() : ThemeData.dark(),
-            child: GameProvider(
-              bloc: _bloc,
-              child: Stack(
-                children: <Widget>[
-                  GameWidget(),
-                  Positioned(
-                    bottom: 0.0,
-                    right: 0.0,
+          body: GameProvider(
+            bloc: _bloc,
+            child: Stack(
+              children: <Widget>[
+                GameWidget(),
+                Positioned(
+                  bottom: 0.0,
+                  right: 0.0,
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
+                    child: Text('${_bloc.frameRate}',
+                      style: Theme.of(context).textTheme.headline.copyWith(color: DynamicTheme.of(context).data.textColor, fontWeight: FontWeight.w200),
+                    ),
+                  ),
+                ),
+                ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
                     child: Container(
-                      padding: const EdgeInsets.all(8.0),
+                      height: 80.0,
                       color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
-                      child: Text('${_bloc.frameRate}',
-                        style: Theme.of(context).textTheme.headline.copyWith(color: DynamicTheme.of(context).data.textColor, fontWeight: FontWeight.w200),
-                      ),
-                    ),
-                  ),
-                  ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-                      child: Container(
-                        height: 80.0,
-                        color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
-                        padding: const EdgeInsets.only(top: 24.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Container(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  InkWell(
-                                    onTap: (){
-                                      _key.currentState.openDrawer();
-                                    },
-                                    child: Icon(Icons.menu,
-                                      color: DynamicTheme.of(context).data.textColor,
-                                    ),
+                      padding: const EdgeInsets.only(top: 24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: (){
+                                    _key.currentState.openDrawer();
+                                  },
+                                  child: Icon(Icons.menu,
+                                    color: DynamicTheme.of(context).data.textColor,
                                   ),
-                                  Text(_bloc.floor,
-                                    style: Theme.of(context).textTheme.title.copyWith(color: DynamicTheme.of(context).data.textColor),
+                                ),
+                                Text(_bloc.floor,
+                                  style: Theme.of(context).textTheme.title.copyWith(color: DynamicTheme.of(context).data.textColor),
+                                ),
+                                InkWell(
+                                  onTap: (){
+                                    _key.currentState.openEndDrawer();
+                                  },
+                                  child: Icon(Icons.settings,
+                                    color: DynamicTheme.of(context).data.textColor,
                                   ),
-                                  InkWell(
-                                    onTap: (){
-                                      _key.currentState.openEndDrawer();
-                                    },
-                                    child: Icon(Icons.settings,
-                                      color: DynamicTheme.of(context).data.textColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
+                          ),
+                          SizedBox(
+                            height: 4.0,
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width  * _bloc.progress,
                               height: 4.0,
+                              color: DynamicTheme.of(context).data.textColor,
                             ),
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width  * _bloc.progress,
-                                height: 4.0,
-                                color: DynamicTheme.of(context).data.textColor,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -722,15 +715,12 @@ class InfoWindow extends StatelessWidget {
     _options.add(_showRotationOptions());
 
     return Container(
-      color: Colors.white,
-      child: Container(
-        color: ThemeProvider.of(context).machineAccentLightColor.withOpacity(0.8),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: _options,
-          ),
+      color: ThemeProvider.of(context).menuColor,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: _options,
         ),
       ),
     );
