@@ -131,6 +131,20 @@ abstract class FactoryMaterialModel{
         return Oven.fromOffset(offset);
       case FactoryMaterialType.superComputer:
         return SuperComputer.fromOffset(offset);
+      case FactoryMaterialType.robot:
+        return AiRobot.fromOffset(offset);
+      case FactoryMaterialType.robotHead:
+        return AiRobotHead.fromOffset(offset);
+      case FactoryMaterialType.robotBody:
+        return AiRobotBody.fromOffset(offset);
+      case FactoryMaterialType.aiProcessor:
+        return AiProcessor.fromOffset(offset);
+      case FactoryMaterialType.drill:
+        return Drill.fromOffset(offset);
+      case FactoryMaterialType.jackHammer:
+        return JackHammer.fromOffset(offset);
+      case FactoryMaterialType.electricGenerator:
+        return ElectricGenerator.fromOffset(offset);
     }
 
     return null;
@@ -377,41 +391,48 @@ enum FactoryMaterialType{
   aluminium,
 
   computerChip,
-  processor,
   engine,
   heaterPlate,
   coolerPlate,
   lightBulb,
   clock,
-  railway,
-  battery,
-  drone,
   antenna,
   grill,
-  airCondition,
-  washingMachine,
   toaster,
+  airCondition,
+  battery,
+  washingMachine,
   solarPanel,
-  serverRack,
   headphones,
+  processor,
+  drill,
   powerSupply,
-  radio,
   speakers,
+  radio,
+  jackHammer,
   tv,
   smartphone,
   fridge,
   tablet,
   microwave,
-  computer,
-  electricBoard,
-  generator,
+  railway,
   smartWatch,
+  serverRack,
+  computer,
+  generator,
   waterHeater,
+  drone,
+  electricBoard,
+  oven,
+  laser,
+  superComputer,
   advancedEngine,
   electricEngine,
-  laser,
-  oven,
-  superComputer
+  electricGenerator,
+  aiProcessor,
+  robotHead,
+  robotBody,
+  robot,
 }
 
 class FactoryRecipe{
@@ -478,6 +499,13 @@ String factoryMaterialToString(FactoryMaterialType fmt){
     case FactoryMaterialType.laser: return 'Laser';
     case FactoryMaterialType.oven: return 'Oven';
     case FactoryMaterialType.superComputer: return 'Super Computer';
+    case FactoryMaterialType.drill: return 'Drill';
+    case FactoryMaterialType.jackHammer: return 'Jackhammer';
+    case FactoryMaterialType.electricGenerator: return 'Electric generator';
+    case FactoryMaterialType.aiProcessor: return 'AI Processor';
+    case FactoryMaterialType.robotHead: return 'AI Robot Head';
+    case FactoryMaterialType.robotBody: return 'AI Robot Body';
+    case FactoryMaterialType.robot: return 'AI Robot';
   }
 
   return '';

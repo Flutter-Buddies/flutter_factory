@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 
 class SplitterOptionsWidget extends StatelessWidget {
   SplitterOptionsWidget({@required this.splitter, Key key}) : super(key: key);
@@ -9,6 +10,8 @@ class SplitterOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    splitter.directions.sort((Direction d, Direction dd) => d.index.compareTo(dd.index));
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -37,44 +40,174 @@ class SplitterOptionsWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Add split direction: '),
               Flexible(
                 child: Container(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      FlatButton(
-                        padding: EdgeInsets.zero,
-                        child: Text('↑ [${splitter.directions.where((Direction _d) => _d == Direction.south).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                        onPressed: (){
-                          splitter.directions.add(Direction.south);
-                        },
-                      ),
                       Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          FlatButton(
-                            padding: EdgeInsets.zero,
-                            child: Text('← [${splitter.directions.where((Direction _d) => _d == Direction.west).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                            onPressed: (){
-                                splitter.directions.add(Direction.west);
-                            },
+                          Material(
+                            color: DynamicTheme.of(context).data.negativeActionButtonColor,
+                            child: Container(
+                              child: InkWell(
+                                onTap: (){
+                                  splitter.directions.remove(Direction.south);
+                                },
+                                child: Container(
+                                  width: 56.0,
+                                  height: 56.0,
+                                  child: Icon(Icons.remove, color: DynamicTheme.of(context).data.negativeActionIconColor,),
+                                ),
+                              ),
+                            ),
                           ),
-                          FlatButton(
-                            padding: EdgeInsets.zero,
-                            child: Text('→ [${splitter.directions.where((Direction _d) => _d == Direction.east).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                            onPressed: (){
-                                splitter.directions.add(Direction.east);
-                            },
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Text('↑\n[${splitter.directions.where((Direction _d) => _d == Direction.south).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                          ),
+                          Material(
+                            color: DynamicTheme.of(context).data.positiveActionButtonColor,
+                            child: Container(
+                              child: InkWell(
+                                onTap: (){
+                                  splitter.directions.add(Direction.south);
+                                },
+                                child: Container(
+                                  width: 56.0,
+                                  height: 56.0,
+                                  child: Icon(Icons.add, color: DynamicTheme.of(context).data.positiveActionIconColor,),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      FlatButton(
-                        padding: EdgeInsets.zero,
-                        child: Text('↓ [${splitter.directions.where((Direction _d) => _d == Direction.north).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                        onPressed: (){
-                            splitter.directions.add(Direction.north);
-                        },
+                      SizedBox(height: 24.0,),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Material(
+                                color: DynamicTheme.of(context).data.negativeActionButtonColor,
+                                child: Container(
+                                  child: InkWell(
+                                    onTap: (){
+                                      splitter.directions.remove(Direction.west);
+                                    },
+                                    child: Container(
+                                      width: 56.0,
+                                      height: 56.0,
+                                      child: Icon(Icons.remove, color: DynamicTheme.of(context).data.negativeActionIconColor,),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                child: Text('←\n[${splitter.directions.where((Direction _d) => _d == Direction.west).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                              ),
+                              Material(
+                                color: DynamicTheme.of(context).data.positiveActionButtonColor,
+                                child: Container(
+                                  child: InkWell(
+                                    onTap: (){
+                                      splitter.directions.add(Direction.west);
+                                    },
+                                    child: Container(
+                                      width: 56.0,
+                                      height: 56.0,
+                                      child: Icon(Icons.add, color: DynamicTheme.of(context).data.positiveActionIconColor,),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(width: 24.0,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Material(
+                                color: DynamicTheme.of(context).data.negativeActionButtonColor,
+                                child: Container(
+                                  child: InkWell(
+                                    onTap: (){
+                                      splitter.directions.remove(Direction.east);
+                                    },
+                                    child: Container(
+                                      width: 56.0,
+                                      height: 56.0,
+                                      child: Icon(Icons.remove, color: DynamicTheme.of(context).data.negativeActionIconColor,),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                child: Text('→\n[${splitter.directions.where((Direction _d) => _d == Direction.east).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                              ),
+                              Material(
+                                color: DynamicTheme.of(context).data.positiveActionButtonColor,
+                                child: Container(
+                                  child: InkWell(
+                                    onTap: (){
+                                      splitter.directions.add(Direction.east);
+                                    },
+                                    child: Container(
+                                      width: 56.0,
+                                      height: 56.0,
+                                      child: Icon(Icons.add, color: DynamicTheme.of(context).data.positiveActionIconColor,),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 24.0,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Material(
+                            color: DynamicTheme.of(context).data.negativeActionButtonColor,
+                            child: Container(
+                              child: InkWell(
+                                onTap: (){
+                                  splitter.directions.remove(Direction.north);
+                                },
+                                child: Container(
+                                  width: 56.0,
+                                  height: 56.0,
+                                  child: Icon(Icons.remove, color: DynamicTheme.of(context).data.negativeActionIconColor,),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Text('↓\n[${splitter.directions.where((Direction _d) => _d == Direction.north).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                          ),
+                          Material(
+                            color: DynamicTheme.of(context).data.positiveActionButtonColor,
+                            child: Container(
+                              child: InkWell(
+                                onTap: (){
+                                  splitter.directions.add(Direction.north);
+                                },
+                                child: Container(
+                                  width: 56.0,
+                                  height: 56.0,
+                                  child: Icon(Icons.add, color: DynamicTheme.of(context).data.positiveActionIconColor,),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

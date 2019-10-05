@@ -143,43 +143,31 @@ abstract class FactoryEquipmentModel{
   void drawRoller(GameTheme theme, Direction d, Canvas canvas, double size, double progress){
     switch(d){
       case Direction.east:
-        canvas.drawRect(Rect.fromPoints(
-          Offset(size / 1.7, -size / 3),
-          Offset(size / 3, size / 3)
-        ), Paint()..color = theme.rollerDividersColor);
-        for(int i = 0; i < 3; i++){
+//        canvas.drawRect(Rect.fromPoints(Offset(0.0, -size / 3), Offset(size / 2 + size / 6, size / 3)), Paint()..color = theme.rollerDividersColor);
+        for(int i = 0; i < 6; i++){
           final double _xOffset = i * (size / 8);
-          canvas.drawLine(Offset(size / 1.7 - _xOffset, size / 3), Offset(size / 1.7 - _xOffset, -size / 3), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
+          canvas.drawLine(Offset(size / 2 + size / 6 - _xOffset, size / 3), Offset(size / 2 + size / 6 - _xOffset, -size / 3), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
       case Direction.west:
-        canvas.drawRect(Rect.fromPoints(
-          Offset(-size / 1.7, -size / 3),
-          Offset(-size / 3, size / 3)
-        ), Paint()..color = theme.rollerDividersColor);
-        for(int i = 0; i < 3; i++){
+//        canvas.drawRect(Rect.fromPoints(Offset(0.0, -size / 3), Offset(-size / 2 - size / 6, size / 3)), Paint()..color = theme.rollerDividersColor);
+        for(int i = 0; i < 6; i++){
           double _xOffset = i * (size / 8);
-          canvas.drawLine(Offset(_xOffset - size / 1.7, size / 3), Offset(_xOffset - size / 1.7, -size / 3), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
+          canvas.drawLine(Offset(-size / 2 - size / 6 + _xOffset, size / 3), Offset(-size / 2 - size / 6 + _xOffset, -size / 3), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
       case Direction.south:
-        canvas.drawRect(Rect.fromPoints(
-          Offset(size / 3, -size / 3),
-          Offset(-size / 3, -size / 1.7)
-        ), Paint()..color = theme.rollerDividersColor);
-        for(int i = 0; i < 3; i++){
+//        canvas.drawRect(Rect.fromPoints(Offset(-size / 3, 0.0), Offset(size / 3, -size / 2 - size / 6)), Paint()..color = theme.rollerDividersColor);
+        for(int i = 0; i < 6; i++){
           double _yOffset = i * (size / 8);
-          canvas.drawLine(Offset(size / 3, _yOffset - size / 1.7), Offset(-size / 3, _yOffset - size / 1.7), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
+          canvas.drawLine(Offset(size / 3, _yOffset - size / 2 - size / 6), Offset(-size / 3, _yOffset - size / 2 - size / 6), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
       case Direction.north:
-        canvas.drawRect(Rect.fromPoints(
-          Offset(size / 3, size / 3),
-          Offset(-size / 3, size / 1.7)
-        ), Paint()..color = theme.rollerDividersColor);
-        for(int i = 0; i < 3; i++){
+//        canvas.drawRect(Rect.fromPoints(Offset(-size / 3, 0.0), Offset(size / 3, size / 2 + size / 6)), Paint()..color = theme.rollerDividersColor);
+        for(int i = 0; i < 6; i++){
           double _yOffset = i * (size / 8);
-          canvas.drawLine(Offset(size / 3, size / 1.7 - _yOffset), Offset(-size / 3, size / 1.7 - _yOffset), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
+          canvas.drawLine(Offset(size / 3, size / 2 + size / 6 - _yOffset), Offset(-size / 3, size / 2 + size / 6 - _yOffset), Paint()..color = theme.rollersColor..strokeWidth = 2.2);
         }
         break;
     }

@@ -650,6 +650,20 @@ class GameBloc{
         return Oven.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
       case FactoryMaterialType.superComputer:
         return SuperComputer.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.robot:
+        return AiRobot.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.robotHead:
+        return AiRobotHead.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.robotBody:
+        return AiRobotBody.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.aiProcessor:
+        return AiProcessor.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.drill:
+        return Drill.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.jackHammer:
+        return JackHammer.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
+      case FactoryMaterialType.electricGenerator:
+        return ElectricGenerator.fromOffset(Offset(map['position']['x'], map['position']['y']))..direction = (map['direction'] != null ? Direction.values[map['direction']] : null);
     }
 
     return null;

@@ -33,7 +33,7 @@ class Generator extends FactoryMaterialModel{
 
 
     _p.style = PaintingStyle.fill;
-    _p.color = Colors.grey.shade500.withOpacity(opacity);
+    _p.color = Colors.yellow.shade900.withOpacity(opacity);
     canvas.drawRRect(RRect.fromRectAndRadius(
       Rect.fromPoints(
         Offset(_size * 0.8, -_size * 0.2),

@@ -26,28 +26,32 @@ class Splitter extends FactoryEquipmentModel{
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     final List<Direction> _myDir = inputDirections.keys.toList();
+    final List<Direction> _candidates = <Direction>[]..addAll(directions);
 
-    directions.forEach((Direction d){
-      if(_myDir.contains(d)){
-        drawRoller(theme, d, canvas, size, progress);
+    if(_myDir.isEmpty){
+      final Direction _defaultDirection = Direction.values[(direction.index + 2) % Direction.values.length];
+
+      if(directions.contains(_defaultDirection)){
+        drawRoller(theme, _defaultDirection, canvas, size, progress);
       }else{
-        drawSplitter(theme, d, canvas, size, progress);
+        drawSplitter(theme, _defaultDirection, canvas, size, progress, entry: true);
       }
+
+      _candidates.remove(_defaultDirection);
+    }else{
+      _myDir.forEach((Direction d){
+        if(directions.contains(d)){
+          drawRoller(theme, d, canvas, size, progress);
+        }else{
+          drawSplitter(theme, d, canvas, size, progress, entry: true);
+        }
+      });
+    }
+
+    _candidates.forEach((Direction d){
+      drawSplitter(theme, d, canvas, size, progress);
     });
 
-    if(_myDir.isNotEmpty){
-      if(directions.contains(_myDir.first)){
-        drawRoller(theme, _myDir.first, canvas, size, progress);
-      }else{
-        drawSplitter(theme, _myDir.first, canvas, size, progress, entry: true);
-      }
-    }else{
-      if(directions.contains(Direction.values[(direction.index + 2) % Direction.values.length])){
-        drawRoller(theme, Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress);
-      }else{
-        drawSplitter(theme, Direction.values[(direction.index + 2) % Direction.values.length], canvas, size, progress, entry: true);
-      }
-    }
 
     canvas.restore();
   }
