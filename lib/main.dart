@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/screens/challenges_page.dart';
 import 'package:flutter_factory/ui/screens/main_page.dart';
@@ -60,7 +61,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _goOnFloor(){
-    _bloc.changeFloor(Random().nextInt(4));
+    _bloc.randomMainScreenFloor(Random().nextInt(4));
   }
 
   @override
@@ -75,6 +76,7 @@ class _MyAppState extends State<MyApp> {
       data: _getTheme,
       defaultThemeType: ThemeType.light,
       themedWidgetBuilder: (BuildContext context, GameTheme theme){
+        SystemChrome.setSystemUIOverlayStyle(theme.type == ThemeType.light ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
         return AnimatedThemeProvider(
           duration: Duration(milliseconds: 450),
           data: theme,

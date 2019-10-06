@@ -43,6 +43,10 @@ class RotationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(equipment.first.type == EquipmentType.splitter){
+      return SizedBox.shrink();
+    }
+
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

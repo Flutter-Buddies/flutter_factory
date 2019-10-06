@@ -22,7 +22,9 @@ class _SplitterOptionsWidgetState extends State<SplitterOptionsWidget> {
         if(_addMode){
           widget.splitter.directions.add(d);
         }else{
-          widget.splitter.directions.remove(d);
+          if(widget.splitter.directions.length > 1){
+            widget.splitter.directions.remove(d);
+          }
         }
       },
       child: Container(
@@ -36,17 +38,7 @@ class _SplitterOptionsWidgetState extends State<SplitterOptionsWidget> {
   Widget build(BuildContext context) {
     widget.splitter.directions.sort((Direction d, Direction dd) => d.index.compareTo(dd.index));
 
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 150),
-      decoration: BoxDecoration(
-        gradient: RadialGradient(
-          colors: <Color>[
-            (_addMode ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor).withOpacity(0.0),
-            (_addMode ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor).withOpacity(0.4),
-          ],
-          radius: 1.2,
-        )
-      ),
+    return Container(
       padding: const EdgeInsets.all(24.0),
       child: Center(
         child: Container(

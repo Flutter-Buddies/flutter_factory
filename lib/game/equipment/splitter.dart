@@ -1,9 +1,27 @@
 part of factory_equipment;
 
 class Splitter extends FactoryEquipmentModel{
-  Splitter(Coordinates coordinates, Direction equipmentDirection, this.directions) : super(coordinates, equipmentDirection, EquipmentType.splitter);
+  Splitter(Coordinates coordinates, Direction equipmentDirection, this.directions) : _direction = equipmentDirection, super(coordinates, equipmentDirection, EquipmentType.splitter);
 
   final List<Direction> directions;
+
+  Direction _direction;
+
+  @override
+  set direction(Direction d){
+    _direction ??= d;
+
+    final int _difference = d.index - _direction.index;
+    _direction = d;
+
+    final List<Direction> _dir = <Direction>[]..addAll(directions);
+
+    directions.clear();
+    directions.addAll(_dir.map((Direction d) => Direction.values[(d.index + _difference) % Direction.values.length]));
+  }
+
+  @override
+  Direction get direction => _direction;
 
   int splitCounter = 0;
 
@@ -29,7 +47,7 @@ class Splitter extends FactoryEquipmentModel{
     final List<Direction> _candidates = <Direction>[]..addAll(directions);
 
     if(_myDir.isEmpty){
-      final Direction _defaultDirection = Direction.values[(direction.index + 2) % Direction.values.length];
+      final Direction _defaultDirection = Direction.values[(_direction.index + 2) % Direction.values.length];
 
       if(directions.contains(_defaultDirection)){
         drawRoller(theme, _defaultDirection, canvas, size, progress);

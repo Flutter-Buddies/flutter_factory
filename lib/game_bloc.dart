@@ -94,6 +94,21 @@ class GameBloc{
     _loadFactoryFloor();
   }
 
+  void randomMainScreenFloor(int factoryFloor) async {
+    if(factoryFloor == _factoryFloor){
+      return;
+    }
+
+    if(_hiveBox == null){
+      await _loadHive();
+    }else{
+      await _hiveBox.close();
+    }
+
+    _factoryFloor = factoryFloor;
+    _loadFactoryFloor();
+  }
+
   Future<void> _loadFactoryFloor() async {
     mapHeight = 31;
     mapWidth = 31;
