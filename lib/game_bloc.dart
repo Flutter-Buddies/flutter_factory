@@ -18,8 +18,8 @@ import 'package:hive/hive.dart';
 
 import 'game/factory_material.dart';
 
-enum GameWindows{
-  buy, settings
+enum GameMenuState{
+  none, multipleSelected, multipleSameTypeSelected, singleSelected, inMutableSelected, emptySelected
 }
 
 enum CopyMode{
@@ -58,6 +58,12 @@ class GameBloc{
 
   int mapWidth = 31;
   int mapHeight = 31;
+
+  List<FactoryEquipmentModel> get _selectedEquipment => equipment.where((FactoryEquipmentModel fe) => selectedTiles.contains(fe.coordinates)).toList();
+  bool get _isSameEquipment => _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length;
+  bool get hasModify => _selectedEquipment.first.type == EquipmentType.portal || _selectedEquipment.first.type == EquipmentType.roller || _selectedEquipment.first.type == EquipmentType.freeRoller || _selectedEquipment.first.type == EquipmentType.wire_bender || _selectedEquipment.first.type == EquipmentType.cutter || _selectedEquipment.first.type == EquipmentType.hydraulic_press || _selectedEquipment.first.type == EquipmentType.melter;
+
+  bool get isDraggable => (_selectedEquipment.isEmpty && selectedTiles.isNotEmpty) || (_selectedEquipment.isNotEmpty && hasModify);
 
   final GameCameraPosition gameCameraPosition = GameCameraPosition();
   int _factoryFloor = 0;
@@ -179,7 +185,6 @@ class GameBloc{
   int _tickSpeed = 1200;
   bool showArrows = false;
 
-  GameWindows currentWindow = GameWindows.buy;
   EquipmentType buildSelectedEquipmentType = EquipmentType.roller;
   Direction buildSelectedEquipmentDirection = Direction.south;
 
@@ -496,11 +501,6 @@ class GameBloc{
     _gameUpdate.add(GameUpdate.tick);
 
     return _realTick;
-  }
-
-  void changeWindow(GameWindows window){
-    currentWindow = window;
-    _gameUpdate.add(GameUpdate.windowChange);
   }
 
   final List<FactoryEquipmentModel> _equipment = <FactoryEquipmentModel>[];

@@ -19,9 +19,12 @@ class ObjectPainter extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
     canvas.save();
+
+    canvas.translate(objectSize / 2, objectSize / 2);
     canvas.scale(scale);
 
     if(material != null){
+      material.size = objectSize;
       material.drawMaterial(Offset.zero, canvas, progress);
     }
 

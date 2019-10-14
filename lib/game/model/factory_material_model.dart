@@ -263,7 +263,7 @@ abstract class FactoryMaterialModel{
             _gear.lineTo(sin((i/28) * pi * 2) * _size, cos((i/28) * pi * 2) * _size);
           }
 
-          canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = 1.6..style = PaintingStyle.stroke..strokeJoin = StrokeJoin.round);
+          canvas.drawPath(_gear, Paint()..color = getColor().withOpacity(opacity)..strokeWidth = _bigCircleSize / 2..style = PaintingStyle.stroke..strokeJoin = StrokeJoin.round);
 
           canvas.restore();
 

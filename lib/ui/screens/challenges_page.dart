@@ -569,7 +569,6 @@ class InfoWindow extends StatelessWidget {
                 _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
 
                 _bloc.selectedTiles.clear();
-                _bloc.changeWindow(GameWindows.buy);
               },
               color: Colors.red,
               child: Container(

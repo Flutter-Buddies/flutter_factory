@@ -21,6 +21,7 @@ import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dar
 import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/sorter_options.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
+import 'package:flutter_factory/ui/widgets/slide_game_panel.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({Key key}) : super(key: key);
@@ -491,12 +492,13 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
           key: _key,
           drawer: _showFloors(),
           endDrawer: _showSettings(),
-          floatingActionButton: _showFab(),
+//          floatingActionButton: _showFab(),
           body: GameProvider(
             bloc: _bloc,
             child: Stack(
               children: <Widget>[
                 GameWidget(),
+                SlideGamePanel(),
                 Positioned(
                   bottom: 0.0,
                   right: 0.0,
@@ -566,163 +568,6 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
           ),
         );
       }
-    );
-  }
-}
-
-class InfoWindow extends StatelessWidget {
-  InfoWindow(this._bloc, {Key key}) : super(key: key);
-
-  final GameBloc _bloc;
-
-  @override
-  Widget build(BuildContext context) {
-    final List<Widget> _options = <Widget>[];
-    final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
-    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
-
-    if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
-      return Container(
-        height: 300.0,
-        margin: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text('Multiple selected', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w900)),
-
-            SizedBox(height: 48.0,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FlatButton(
-                  onPressed: (){
-                    print('Copy');
-                  },
-                  child: Text('Copy'),
-                ),
-                FlatButton(
-                  onPressed: (){
-                    print('Cut');
-                  },
-                  child: Text('Cut'),
-                ),
-                FlatButton(
-                  onPressed: (){
-                    print('Delete');
-                  },
-                  child: Text('Delete'),
-                ),
-              ],
-            ),
-
-            RaisedButton(
-              onPressed: (){
-                print('Delete');
-
-                _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(_bloc.removeEquipment);
-
-                _bloc.selectedTiles.clear();
-                _bloc.changeWindow(GameWindows.buy);
-              },
-              color: Colors.red,
-              child: Container(
-                margin: const EdgeInsets.all(12.0),
-                child: Text('Delete', style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
-
-    Widget _buildNoEquipment(){
-      return BuildEquipmentWidget(_bloc);
-    }
-
-    Widget _showSellerOptions(){
-      return SellerInfo(equipment: _equipment);
-    }
-
-    Widget _showSelectedInfo(){
-      return SelectedObjectInfoWidget(equipment: _equipment, progress: _bloc.progress);
-    }
-
-    Widget _showDispenserOptions(){
-      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Dispenser).map<Dispenser>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
-    }
-
-    Widget _showSplitterOptions(){
-      return SplitterOptionsWidget(splitter: _equipment);
-    }
-
-    Widget _showSorterOptions(){
-      return SorterOptionsWidget(sorter: _equipment);
-    }
-
-    Widget _showCrafterOptions(){
-      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Crafter).map<Crafter>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
-    }
-
-    Widget _showRotationOptions(){
-      return SelectedObjectFooter(_bloc, equipment: _selectedEquipment);
-    }
-
-    if(_equipment == null){
-      return _buildNoEquipment();
-    }
-
-    _options.add(_showSelectedInfo());
-
-    switch(_equipment.type){
-      case EquipmentType.dispenser:
-        _options.add(_showDispenserOptions());
-        break;
-      case EquipmentType.roller:
-        break;
-      case EquipmentType.crafter:
-        _options.add(_showCrafterOptions());
-        break;
-      case EquipmentType.splitter:
-        _options.add(_showSplitterOptions());
-        break;
-      case EquipmentType.sorter:
-        _options.add(_showSorterOptions());
-        break;
-      case EquipmentType.seller:
-        _options.add(_showSellerOptions());
-        break;
-      case EquipmentType.hydraulic_press:
-        break;
-      case EquipmentType.wire_bender:
-        break;
-      case EquipmentType.cutter:
-        break;
-      case EquipmentType.melter:
-        break;
-      case EquipmentType.freeRoller:
-        break;
-      case EquipmentType.rotatingFreeRoller:
-        _options.add(FreeRollerInfo(equipment: _equipment));
-        break;
-      case EquipmentType.portal:
-        _options.add(PortalInfo(equipment: _equipment, connectingPortal: _bloc.equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == (_equipment as UndergroundPortal).connectingPortal, orElse: () => null),));
-        break;
-    }
-
-    _options.add(_showRotationOptions());
-
-    return Container(
-      color: ThemeProvider.of(context).menuColor,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: _options,
-        ),
-      ),
     );
   }
 }
