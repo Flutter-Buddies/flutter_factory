@@ -115,16 +115,22 @@ class _GameWidgetState extends State<GameWidget> {
 
 
         if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
-          _startDragLocation ??= _coordinate;
+          if(_bloc.selectMode == SelectMode.box){
+            _startDragLocation ??= _coordinate;
 
-          _selected.clear();
+            _selected.clear();
 
-          int _moveX = _startDragLocation.x - _coordinate.x;
-          int _moveY = _startDragLocation.y - _coordinate.y;
+            int _moveX = _startDragLocation.x - _coordinate.x;
+            int _moveY = _startDragLocation.y - _coordinate.y;
 
-          for(int i = 0; i <= _moveX.abs(); i++){
-            for(int j = 0; j <= _moveY.abs(); j++){
-              _selected.add(_startDragLocation + Coordinates(_moveX.isNegative ? i : -i, _moveY.isNegative ? j : -j));
+            for(int i = 0; i <= _moveX.abs(); i++){
+              for(int j = 0; j <= _moveY.abs(); j++){
+                _selected.add(_startDragLocation + Coordinates(_moveX.isNegative ? i : -i, _moveY.isNegative ? j : -j));
+              }
+            }
+          }else if(_bloc.selectMode == SelectMode.freestyle){
+            if(!_selected.contains(_coordinate)){
+              _selected.add(_coordinate);
             }
           }
         }
@@ -141,10 +147,6 @@ class _GameWidgetState extends State<GameWidget> {
         final Coordinates _coordinate = Coordinates((_s.dx / _cubeSize).floor(),(_s.dy / _cubeSize).floor());
         final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
 
-        if(_se != null && _se is UndergroundPortal){
-          print(_se.toMap());
-        }
-
         if(_se != null && _tapTime - _lastTap < doubleTapDuration && _se.isMutable && _lastTapLocation == _coordinate && _movingEquipment.isEmpty){
           Scaffold.of(context).showSnackBar(SnackBar(
             content: Text('${equipmentTypeToString(_se.type)} copied!',
@@ -158,6 +160,8 @@ class _GameWidgetState extends State<GameWidget> {
           if(_bloc.copyMode == CopyMode.move){
             _bloc.equipment.remove(_se);
           }
+
+          _findPortalPartner();
         }else if(_movingEquipment.isNotEmpty){
           if(_se == null && _coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -171,6 +175,8 @@ class _GameWidgetState extends State<GameWidget> {
             _selected.add(_coordinate);
             _tapTime = 0;
             _movingEquipment.clear();
+
+            _findPortalPartner();
           }else{
             String _snackbarText;
             if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
@@ -194,9 +200,8 @@ class _GameWidgetState extends State<GameWidget> {
           _selected.remove(_coordinate);
         }else{
           final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _selected.contains(fe.coordinates)).toList();
-          final bool _isSameEquipment = _selectedEquipment.isEmpty || (_selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _selected.length && (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first?.type));
 
-          if(_selected.isNotEmpty && ((_selectedEquipment.isEmpty && _se != null) || (_selectedEquipment.isNotEmpty && _se == null) || !(_isSameEquipment || (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first.type)))){
+          if(_selected.isNotEmpty && ((_selectedEquipment.isEmpty && _se != null) || (_selectedEquipment.isNotEmpty && _se == null) || !(_bloc.isSameEquipment || (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first.type)))){
             _selected.clear();
           }
 
@@ -209,8 +214,6 @@ class _GameWidgetState extends State<GameWidget> {
             _selected.add(_coordinate);
           }
         }
-
-        _findPortalPartner();
 
         _lastTapLocation = _coordinate;
         _lastTap = _tapTime;
@@ -442,10 +445,10 @@ class GamePainter extends CustomPainter{
     });
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){
-      fe.drawMaterial(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
     });
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){
+      fe.drawMaterial(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
       fe.drawEquipment(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
 
       if(bloc.showArrows){

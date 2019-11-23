@@ -6,7 +6,7 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
-import 'package:sliding_panel/sliding_panel.dart';
+import 'package:flutter_factory/ui/widgets/panel/sliding_panel.dart';
 
 import '../../game_bloc.dart';
 import 'info_widgets/build_equipment_widget.dart';
@@ -32,8 +32,6 @@ class _SlideGamePanelState extends State<SlideGamePanel> {
   PanelController pc;
   GameBloc _bloc;
   EquipmentType et;
-
-  bool _draggable = true;
 
   @override
   void initState() {
@@ -61,16 +59,8 @@ class _SlideGamePanelState extends State<SlideGamePanel> {
             pc.collapse();
           }
         }
+        
         return SlidingPanel(
-          backdropConfig: BackdropConfig(
-            enabled: true,
-            closeOnTap: false,
-            effectInCollapsedMode: false
-          ),
-//          isDraggable: _bloc.isDraggable,
-          autoSizing: PanelAutoSizing(
-            autoSizeCollapsed: true
-          ),
           duration: Duration(milliseconds: 350),
           curve: Curves.easeInOut,
           isTwoStatePanel: false,
@@ -78,29 +68,39 @@ class _SlideGamePanelState extends State<SlideGamePanel> {
           backPressBehavior: BackPressBehavior.COLLAPSE_CLOSE_POP,
           content: PanelContent(
             panelContent: (BuildContext context, ScrollController controller){
-              return InfoWindow(GameProvider.of(context), scrollController: controller,);
+              return SingleChildScrollView(
+                controller: controller,
+                child: InfoWindow(_bloc)
+              );
             },
-            headerWidget: PanelHeaderWidget(
-              headerContent: Container(
+            collapsedWidget: PanelCollapsedWidget(
+              collapsedContent: Container(
                 height: MediaQuery.of(context).size.height * 0.12,
-                child: ShowAction(bloc: GameProvider.of(context),),
-              ),
+                child: ShowAction(bloc: _bloc),
+              )
             ),
           ),
           snapPanel: true,
-          initialState: InitialPanelState.collapsed,
+          initialState: InitialPanelState.closed,
           size: PanelSize(closedHeight: 0.0, collapsedHeight: 0.12, expandedHeight: 0.85),
         );
       }
     );
   }
+
+  @override
+  void dispose() {
+    pc.close();
+    _bloc.dispose();
+
+    super.dispose();
+  }
 }
 
 class InfoWindow extends StatelessWidget {
-  InfoWindow(this._bloc, {Key key, this.scrollController}) : super(key: key);
+  InfoWindow(this._bloc, {Key key}) : super(key: key);
 
   final GameBloc _bloc;
-  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -110,16 +110,15 @@ class InfoWindow extends StatelessWidget {
 
     final List<Widget> _options = <Widget>[];
     final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
-    final bool _isSameEquipment = _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == _bloc.selectedTiles.length;
 
-    if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_isSameEquipment){
+    if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_bloc.isSameEquipment){
       return Container();
     }
 
     final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
 
     Widget _buildNoEquipment(){
-      return BuildEquipmentWidget(_bloc);
+      return BuildEquipmentWidget(_bloc, isChallenge: _bloc.floor.startsWith('Challenge'));
     }
 
     Widget _showSellerOptions(){
@@ -151,10 +150,7 @@ class InfoWindow extends StatelessWidget {
     }
 
     if(_equipment == null){
-      return SingleChildScrollView(
-        controller: scrollController,
-        child: _buildNoEquipment()
-      );
+      return _buildNoEquipment();
     }
 
     _options.add(_showSelectedInfo());
@@ -195,17 +191,16 @@ class InfoWindow extends StatelessWidget {
         break;
     }
 
-    _options.add(_showRotationOptions());
+    if(_equipment.isMutable){
+      _options.add(_showRotationOptions());
+    }
 
     return Container(
       color: ThemeProvider.of(context).menuColor,
-      child: SingleChildScrollView(
-        controller: scrollController ?? ScrollController(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: _options,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: _options,
       ),
     );
   }
@@ -224,12 +219,12 @@ class ShowAction extends StatelessWidget {
 
     final List<FactoryEquipmentModel> _selectedEquipment = bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates)).toList();
     final FactoryEquipmentModel _equipment = _selectedEquipment.isEmpty ? null : _selectedEquipment.first;
+    final bool _isNotRotatable = _equipment != null && (!_equipment.isMutable || (_equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller));
 
     if(_equipment == null){
       return BuildEquipmentHeaderWidget();
     }else{
-      bool _isNotRotatable = _equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller;
-      Widget _showRotate = !_isNotRotatable ? Container(
+      final Widget _showRotate = !_isNotRotatable ? Container(
         child: Row(
           children: <Widget>[
             Container(
@@ -238,7 +233,9 @@ class ShowAction extends StatelessWidget {
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
-                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[(GameProvider.of(context).buildSelectedEquipmentDirection.index + 1) % Direction.values.length];
+                  _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                    fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
+                  });
                 },
                 child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
               ),
@@ -259,7 +256,7 @@ class ShowAction extends StatelessWidget {
                     painter: ObjectPainter(
                       GameProvider.of(context).progress,
                       theme: DynamicTheme.of(context).data,
-                      equipment: GameProvider.of(context).previewEquipment(_selectedEquipment.first.type),
+                      equipment: _selectedEquipment.first,
                       objectSize: 48.0,
                     ),
                   ),
@@ -272,7 +269,9 @@ class ShowAction extends StatelessWidget {
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
-                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[(GameProvider.of(context).buildSelectedEquipmentDirection.index - 1) % Direction.values.length];
+                  _selectedEquipment.forEach((FactoryEquipmentModel fem){
+                    fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
+                  });
                 },
                 child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
               ),
@@ -294,6 +293,29 @@ class ShowAction extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          _isNotRotatable ? Container(
+            height: 200.0,
+            color: DynamicTheme.of(context).data.floorColor,
+            child: Container(
+              margin: const EdgeInsets.only(left: 24.0, right: 24.0),
+              height: 48.0,
+              width: 48.0,
+              child: Center(
+                child: CustomPaint(
+                  child: Container(
+                    height: 48.0,
+                    width: 48.0,
+                  ),
+                  painter: ObjectPainter(
+                    GameProvider.of(context).progress,
+                    theme: DynamicTheme.of(context).data,
+                    equipment: _selectedEquipment.first,
+                    objectSize: 48.0,
+                  ),
+                ),
+              ),
+            ),
+          ) : SizedBox.shrink(),
           _showRotate,
           Expanded(
             child: Container(
@@ -301,7 +323,7 @@ class ShowAction extends StatelessWidget {
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.negativeActionButtonColor,
                 onPressed: (){
-                  bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates)).toList().forEach(bloc.removeEquipment);
+                  bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates) && fe.isMutable).toList().forEach(bloc.removeEquipment);
 
                   if(bloc.selectedTiles.length > 1){
                     bloc.selectedTiles.clear();

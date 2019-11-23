@@ -1,10 +1,10 @@
 part of factory_material;
 
 class ElectricEngine extends FactoryMaterialModel{
-  ElectricEngine.fromOffset(Offset o) : super(o.dx, o.dy, 900000.0, FactoryMaterialType.engine, state: FactoryMaterialState.crafted);
+  ElectricEngine.fromOffset(Offset o) : super(o.dx, o.dy, 900000.0, FactoryMaterialType.electricEngine, state: FactoryMaterialState.crafted);
 
   ElectricEngine.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.engine, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.electricEngine, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){

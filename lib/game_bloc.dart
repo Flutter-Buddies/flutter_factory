@@ -26,6 +26,10 @@ enum CopyMode{
   move, copy
 }
 
+enum SelectMode{
+  freestyle, box
+}
+
 class GameCameraPosition{
   double scale = 1.0;
   Offset position = Offset.zero;
@@ -60,8 +64,10 @@ class GameBloc{
   int mapHeight = 31;
 
   List<FactoryEquipmentModel> get _selectedEquipment => equipment.where((FactoryEquipmentModel fe) => selectedTiles.contains(fe.coordinates)).toList();
-  bool get _isSameEquipment => _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length;
+  bool get isSameEquipment => _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length;
   bool get hasModify => _selectedEquipment.first.type == EquipmentType.portal || _selectedEquipment.first.type == EquipmentType.roller || _selectedEquipment.first.type == EquipmentType.freeRoller || _selectedEquipment.first.type == EquipmentType.wire_bender || _selectedEquipment.first.type == EquipmentType.cutter || _selectedEquipment.first.type == EquipmentType.hydraulic_press || _selectedEquipment.first.type == EquipmentType.melter;
+
+  List<T> getAll<T extends FactoryEquipmentModel>() => _equipment.where((FactoryEquipmentModel fem) => fem is T).map<T>((FactoryEquipmentModel fem) => fem).toList();
 
   bool get isDraggable => (_selectedEquipment.isEmpty && selectedTiles.isNotEmpty) || (_selectedEquipment.isNotEmpty && hasModify);
 
@@ -69,6 +75,7 @@ class GameBloc{
   int _factoryFloor = 0;
 
   CopyMode copyMode = CopyMode.move;
+  SelectMode selectMode = SelectMode.box;
 
   String get floor => _getFloorName();
 
@@ -81,6 +88,10 @@ class GameBloc{
       return 'Second floor';
     }else if(_factoryFloor == 3){
       return 'Secret floor';
+    }else if(_factoryFloor == 4){
+      return 'Big floor';
+    }else if(_factoryFloor == 5){
+      return 'Really big floor';
     }else{
       return 'Floor $_factoryFloor';
     }
@@ -96,6 +107,7 @@ class GameBloc{
     await _saveFactory();
 
     await _hiveBox.close();
+
     _factoryFloor = factoryFloor;
     _loadFactoryFloor();
   }
@@ -116,12 +128,14 @@ class GameBloc{
   }
 
   Future<void> _loadFactoryFloor() async {
-    mapHeight = 31;
-    mapWidth = 31;
+    final int mapSize = _factoryFloor < 4 ? 31 : _factoryFloor == 4 ? 200 : 1000;
+
+    mapHeight = mapSize;
+    mapWidth = mapSize;
 
     print('Loading factory from DB!');
 
-    _hiveBox = await Hive.openBox('factory_floor_$_factoryFloor');
+    _hiveBox = await Hive.openBox<dynamic>('factory_floor_$_factoryFloor');
 
     print(_hiveBox.toMap());
     final Map<dynamic, dynamic> _result = _hiveBox.toMap();
@@ -140,8 +154,6 @@ class GameBloc{
     _equipment.clear();
     _equipment.addAll(_equipmentList.map((dynamic eq){
       final FactoryEquipmentModel _fem = _equipmentFromMap(eq);
-//      _fem.objects.add(Gold.fromOffset(Offset(_fem.coordinates.x.toDouble(), _fem.coordinates.y.toDouble())));
-
       final Map<String, dynamic> map = json.decode(eq);
 
       final List<dynamic> _materialMap = map['material'];
@@ -156,10 +168,10 @@ class GameBloc{
       return _fem;
     }));
 
-    List<UndergroundPortal> _portals = _equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).toList();
+    final List<UndergroundPortal> _portals = getAll<UndergroundPortal>();
 
     _portals.forEach((UndergroundPortal up){
-      UndergroundPortal _connectingPortal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+      final UndergroundPortal _connectingPortal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
       if(_connectingPortal != null){
         _connectingPortal.connectingPortal = up.coordinates;
@@ -177,6 +189,15 @@ class GameBloc{
 
   Future<void> _saveFactory() async {
     await _hiveBox.putAll(toMap());
+    await _hiveBox.compact();
+  }
+
+  Future<void> _autoSaveFactory() async {
+    try{
+      await _hiveBox.putAll(toMap());
+    } on HiveError {
+      print('Autosave error!');
+    }
   }
 
   Duration _duration = Duration();
@@ -236,7 +257,7 @@ class GameBloc{
     final List<UndergroundPortal> _portals = _equipment.where((FactoryEquipmentModel fmm) => fmm is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fmm) => fmm).toList();
 
     if(up.connectingPortal != null){
-      UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+      final UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
       if(_portal != null && (_portal.coordinates.x == up.coordinates.x || _portal.coordinates.y == up.coordinates.y)){
 
@@ -405,7 +426,7 @@ class GameBloc{
         break;
     }
 
-    _saveFactory();
+    _autoSaveFactory();
   }
 
   FactoryEquipmentModel previewEquipment(EquipmentType type){
@@ -449,14 +470,14 @@ class GameBloc{
   void clearLine(){
     _equipment.clear();
 
-    _saveFactory();
+    _autoSaveFactory();
   }
 
   void removeEquipment(FactoryEquipmentModel equipment){
     if(_equipment.contains(equipment)){
       _equipment.remove(equipment);
 
-      _saveFactory();
+      _autoSaveFactory();
     }
   }
 
@@ -464,12 +485,16 @@ class GameBloc{
     _equipment.clear();
     _equipment.addAll(newLine);
 
-    _saveFactory();
+    _autoSaveFactory();
   }
 
   bool _tick(){
     List<FactoryMaterialModel> _material;
     bool _realTick = false;
+
+    if(!_isGameRunning){
+      return false;
+    }
 
     if(_duration.inMilliseconds ~/ _tickSpeed == _lastTrigger ~/ _tickSpeed){
       _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.objects));
@@ -512,15 +537,15 @@ class GameBloc{
 
   final PublishSubject<GameUpdate> _gameUpdate = PublishSubject<GameUpdate>();
 
-  void dispose(){
+  void dispose() async {
     _isGameRunning = false;
-
-    _saveFactory();
-    _hiveBox.close();
     _gameUpdate.close();
+
+    await _saveFactory();
+    await _hiveBox.close();
   }
 
-  Map<String, dynamic> toMap(){
+  Map<dynamic, dynamic> toMap(){
     final List<String> _equipmentMap = equipment.map((FactoryEquipmentModel fe) => json.encode(fe.toMap())).toList();
 
     return <String, dynamic>{
@@ -771,7 +796,7 @@ class ChallengesBloc extends GameBloc{
 
     print('Loading factory from DB!');
 
-    _hiveBox = await Hive.openBox('challenge_$_factoryFloor');
+    _hiveBox = await Hive.openBox<dynamic>('challenge_$_factoryFloor');
     final Map<dynamic, dynamic> _result = _hiveBox.toMap();
 
     if(_result == null || _result.isEmpty){
