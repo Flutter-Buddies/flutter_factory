@@ -445,10 +445,10 @@ class GamePainter extends CustomPainter{
     });
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){
+      fe.drawMaterial(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
     });
 
     bloc.equipment.forEach((FactoryEquipmentModel fe){
-      fe.drawMaterial(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
       fe.drawEquipment(theme, Offset(fe.coordinates.x * cubeSize, fe.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
 
       if(bloc.showArrows){
