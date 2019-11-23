@@ -4,6 +4,7 @@ import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
+import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class BuildEquipmentWidget extends StatefulWidget {
@@ -21,229 +22,155 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: StreamBuilder<GameUpdate>(
-        stream: widget._bloc.gameUpdate,
-        builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(height: 20.0,),
-                Container(
-                  margin: const EdgeInsets.all(8.0),
-                  alignment: Alignment.centerLeft,
-                  child: Text('Build equipment:'),
-                ),
-                Column(
-                  children: <Widget>[
-                    Row(
+    return Container(
+      color: DynamicTheme.of(context).data.voidColor,
+      child: Column(
+        children: EquipmentType.values.where((EquipmentType et){
+          if(widget.isChallenge){
+            return et != EquipmentType.dispenser && et != EquipmentType.seller;
+          }
+
+          return true;
+        }).map((EquipmentType et){
+          return InkWell(
+            onTap: (){
+              widget._bloc.buildSelectedEquipmentType = et;
+
+              setState(() {
+                _isExpanded = false;
+              });
+            },
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 250),
+              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              foregroundDecoration: BoxDecoration(
+                color: widget._bloc.buildSelectedEquipmentType == et ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
+                border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null,
+              ),
+              decoration: BoxDecoration(
+                color: et.index % 2 == 0 ? DynamicTheme.of(context).data.textColor.withOpacity(0.1) : Colors.transparent,
+              ),
+              height: 80.0,
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    height: 32.0,
+                    width: 32.0,
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: CustomPaint(
+                      painter: ObjectPainter(
+                        widget._bloc.progress,
+                        theme: DynamicTheme.of(context).data,
+                        equipment: widget._bloc.previewEquipment(et),
+                        objectSize: 32.0
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.0,),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Expanded(
-                          child: ExpansionPanelList(
-                            expansionCallback: (int i, bool b){
-                              setState(() {
-                                _isExpanded = !_isExpanded;
-                              });
-                            },
-                            children: <ExpansionPanel>[
-                              ExpansionPanel(
-                                canTapOnHeader: true,
-                                isExpanded: _isExpanded,
-                                headerBuilder: (BuildContext context, bool expanded){
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                                    height: 100.0,
-                                    child: Row(
-                                      children: <Widget>[
-                                        Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 24.0),
-                                          child: CustomPaint(
-                                            painter: ObjectPainter(
-                                              widget._bloc.progress,
-                                              theme: DynamicTheme.of(context).data,
-                                              equipment: widget._bloc.previewEquipment(widget._bloc.buildSelectedEquipmentType),
-                                              objectSize: 32.0,
-                                              scale: 1.6
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 12.0,),
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Container(
-                                                margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                                child: Text('${equipmentTypeToString(widget._bloc.buildSelectedEquipmentType)}',
-                                                  style: Theme.of(context).textTheme.subtitle,
-                                                )
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                                child: Text('${equipmentDescriptionFromType(widget._bloc.buildSelectedEquipmentType)}',
-                                                  style: Theme.of(context).textTheme.caption,
-                                                )
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                body: Column(
-                                  children: EquipmentType.values.where((EquipmentType et){
-                                    if(widget.isChallenge){
-                                      return et != EquipmentType.dispenser && et != EquipmentType.seller;
-                                    }
-
-                                    return true;
-                                  }).map((EquipmentType et){
-                                    return InkWell(
-                                      onTap: (){
-                                        widget._bloc.buildSelectedEquipmentType = et;
-
-                                        setState(() {
-                                          _isExpanded = false;
-                                        });
-                                      },
-                                      child: AnimatedContainer(
-                                        duration: Duration(milliseconds: 250),
-                                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                                        foregroundDecoration: BoxDecoration(
-                                          color: widget._bloc.buildSelectedEquipmentType == et ? DynamicTheme.of(context).data.neutralActionButtonColor.withOpacity(0.2) : Colors.transparent,
-                                          border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: DynamicTheme.of(context).data.neutralActionButtonColor) : null,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: et.index % 2 == 0 ? Colors.grey.shade200 : Colors.transparent,
-                                        ),
-                                        height: 80.0,
-                                        child: Row(
-                                          children: <Widget>[
-                                            Container(
-                                              margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                              child: CustomPaint(
-                                                painter: ObjectPainter(
-                                                  widget._bloc.progress,
-                                                  theme: DynamicTheme.of(context).data,
-                                                  equipment: widget._bloc.previewEquipment(et),
-                                                  objectSize: 32.0
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 12.0,),
-                                            Flexible(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Container(
-                                                    margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                                    child: Text('${equipmentTypeToString(et)}',
-                                                      style: Theme.of(context).textTheme.subtitle,
-                                                    )
-                                                  ),
-                                                  Container(
-                                                    margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                                    child: Text('${equipmentDescriptionFromType(et)}',
-                                                      style: Theme.of(context).textTheme.caption,
-                                                    )
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                )
-                              ),
-                            ],
-                          ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Text('${equipmentTypeToString(et)}',
+                            style: Theme.of(context).textTheme.subtitle,
+                          )
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Text('${equipmentDescriptionFromType(et)}',
+                            style: Theme.of(context).textTheme.caption,
+                          )
                         ),
                       ],
                     ),
-
-                    Divider(),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('Build direction:'),
-                        Flexible(
-                          child: Container(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                FlatButton(
-                                  padding: EdgeInsets.zero,
-                                  color: widget._bloc.buildSelectedEquipmentDirection == Direction.south ? Colors.blue.shade200 : Colors.transparent,
-                                  child: Text('↑', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                                  onPressed: (){
-                                    widget._bloc.buildSelectedEquipmentDirection = Direction.south;
-                                  },
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    FlatButton(
-                                      padding: EdgeInsets.zero,
-                                      color: widget._bloc.buildSelectedEquipmentDirection == Direction.west ? Colors.blue.shade200 : Colors.transparent,
-                                      child: Text('←', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                                      onPressed: (){
-                                          widget._bloc.buildSelectedEquipmentDirection = Direction.west;
-                                      },
-                                    ),
-                                    FlatButton(
-                                      padding: EdgeInsets.zero,
-                                      color: widget._bloc.buildSelectedEquipmentDirection == Direction.east ? Colors.blue.shade200 : Colors.transparent,
-                                      child: Text('→', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                                      onPressed: (){
-                                          widget._bloc.buildSelectedEquipmentDirection = Direction.east;
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                FlatButton(
-                                  padding: EdgeInsets.zero,
-                                  color: widget._bloc.buildSelectedEquipmentDirection == Direction.north ? Colors.blue.shade200 : Colors.transparent,
-                                  child: Text('↓', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
-                                  onPressed: (){
-                                      widget._bloc.buildSelectedEquipmentDirection = Direction.north;
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 80.0,
-                  child: RaisedButton(
-                    color: Colors.blue,
-                    onPressed: (){
-                      widget._bloc.buildSelected();
-                      Navigator.pop(context);
-                    },
-                    child: Text('BUILD', style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),),
                   ),
-                ),
-
-                SizedBox(height: 20.0,),
-              ],
+                ],
+              ),
             ),
           );
-        }
+        }).toList(),
       ),
+    );
+  }
+}
+
+class BuildEquipmentHeaderWidget extends StatefulWidget {
+  BuildEquipmentHeaderWidget({Key key, this.isChallenge = false}) : super(key: key);
+
+  final bool isChallenge;
+
+  @override
+  _BuildEquipmentHeaderWidgetState createState() => _BuildEquipmentHeaderWidgetState();
+}
+
+class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              height: 200.0,
+              child: RaisedButton(
+                color: DynamicTheme.of(context).data.neutralActionButtonColor,
+                onPressed: (){
+                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[(GameProvider.of(context).buildSelectedEquipmentDirection.index + 1) % Direction.values.length];
+                },
+                child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+              ),
+            ),
+            Container(
+              height: 200.0,
+              color: DynamicTheme.of(context).data.floorColor,
+              child: Container(
+                margin: const EdgeInsets.only(left: 24.0, right: 24.0),
+                height: 48.0,
+                width: 48.0,
+                child: Center(
+                  child: CustomPaint(
+                    child: Container(
+                      height: 48.0,
+                      width: 48.0,
+                    ),
+                    painter: ObjectPainter(
+                      GameProvider.of(context).progress,
+                      theme: DynamicTheme.of(context).data,
+                      equipment: GameProvider.of(context).previewEquipment(GameProvider.of(context).buildSelectedEquipmentType),
+                      objectSize: 48.0,
+    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              height: 200.0,
+              child: RaisedButton(
+                color: DynamicTheme.of(context).data.neutralActionButtonColor,
+                onPressed: (){
+                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[(GameProvider.of(context).buildSelectedEquipmentDirection.index - 1) % Direction.values.length];
+                },
+                child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: Container(
+            height: 200.0,
+            child: RaisedButton(
+              color: DynamicTheme.of(context).data.positiveActionButtonColor,
+              onPressed: (){
+                GameProvider.of(context).buildSelected();
+              },
+              child: Text('BUILD', style: Theme.of(context).textTheme.subhead.copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

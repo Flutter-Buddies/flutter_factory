@@ -106,7 +106,7 @@ class DynamicThemeState extends State<DynamicTheme> {
       final Directory _path = await getApplicationDocumentsDirectory();
 
       Hive.init(_path.path);
-      _themeData = await Hive.openBox('theme_settings');
+      _themeData = await Hive.openBox<dynamic>('theme_settings');
     }
 
     print('Loading theme: ${_themeData.get('theme')}');
