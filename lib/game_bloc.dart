@@ -64,7 +64,7 @@ class GameBloc{
   int mapHeight = 31;
 
   List<FactoryEquipmentModel> get _selectedEquipment => equipment.where((FactoryEquipmentModel fe) => selectedTiles.contains(fe.coordinates)).toList();
-  bool get isSameEquipment => _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length;
+  bool get isSameEquipment => _selectedEquipment.isEmpty || _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length;
   bool get hasModify => _selectedEquipment.first.type == EquipmentType.portal || _selectedEquipment.first.type == EquipmentType.roller || _selectedEquipment.first.type == EquipmentType.freeRoller || _selectedEquipment.first.type == EquipmentType.wire_bender || _selectedEquipment.first.type == EquipmentType.cutter || _selectedEquipment.first.type == EquipmentType.hydraulic_press || _selectedEquipment.first.type == EquipmentType.melter;
 
   List<T> getAll<T extends FactoryEquipmentModel>() => _equipment.where((FactoryEquipmentModel fem) => fem is T).map<T>((FactoryEquipmentModel fem) => fem).toList();
