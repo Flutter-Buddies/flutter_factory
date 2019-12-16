@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_factory/game/model/unlockables_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/screens/challenges_page.dart';
 import 'package:flutter_factory/ui/screens/main_page.dart';
@@ -41,15 +42,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   GameBloc _bloc;
+  GameItems _items;
 
   GameTheme _getTheme(ThemeType tt){
     switch(tt){
-      case ThemeType.light:
-        return LightGameTheme();
       case ThemeType.dark:
         return DarkGameTheme();
       case ThemeType.oledDark:
         return VeryDarkGameTheme();
+      default:
+        return LightGameTheme();
     }
   }
 

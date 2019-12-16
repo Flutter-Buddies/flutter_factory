@@ -20,6 +20,10 @@ class Roller extends FactoryEquipmentModel{
   void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     super.drawTrack(theme, offset, canvas, size, progress);
 
+    if(!isActive){
+      progress = 0.0;
+    }
+
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 

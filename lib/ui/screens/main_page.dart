@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -399,7 +400,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
                     child: Container(
-                      height: 80.0,
+                      height: 90.0,
                       color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
                       padding: const EdgeInsets.only(top: 24.0),
                       child: Column(
@@ -418,8 +419,27 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                     color: DynamicTheme.of(context).data.textColor,
                                   ),
                                 ),
-                                Text(_bloc.floor,
-                                  style: Theme.of(context).textTheme.title.copyWith(color: DynamicTheme.of(context).data.textColor),
+                                Column(
+                                  children: <Widget>[
+                                    Text(_bloc.floor,
+                                      style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Text(_bloc.currentCredit.toString(),
+                                          style: Theme.of(context).textTheme.title.copyWith(color: DynamicTheme.of(context).data.textColor),
+                                        ),
+
+                                        SizedBox(width: 24.0,),
+                                        Icon(Icons.show_chart, size: 20.0, color: _bloc.lastTickEarnings.isNegative ? DynamicTheme.of(context).data.negativeActionButtonColor : DynamicTheme.of(context).data.positiveActionButtonColor,),
+                                        SizedBox(width: 4.0,),
+
+                                        Text(_bloc.lastTickEarnings.toString(),
+                                          style: Theme.of(context).textTheme.title.copyWith(color: _bloc.lastTickEarnings.isNegative ? DynamicTheme.of(context).data.negativeActionButtonColor : DynamicTheme.of(context).data.positiveActionButtonColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                                 InkWell(
                                   onTap: (){

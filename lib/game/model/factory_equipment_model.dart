@@ -75,6 +75,8 @@ abstract class FactoryEquipmentModel{
     return o;
   }
 
+  bool get isActive => objects.isNotEmpty;
+
   /// Tick is when one tick has passed, all equipment should return materials they want to send to next equipment.
   ///
   /// If no materials can be forwarded then pass empty array
@@ -105,6 +107,10 @@ abstract class FactoryEquipmentModel{
   }
 
   void drawSplitter(GameTheme theme, Direction d, Canvas canvas, double size, double progress, {bool entry = false}){
+    if(!isActive){
+      progress = 0.0;
+    }
+
     switch(d){
       case Direction.west:
         canvas.drawRect(Rect.fromCircle(center: Offset(-size / 3, 0.0), radius: size / 3), Paint()..color = theme.rollersColor);

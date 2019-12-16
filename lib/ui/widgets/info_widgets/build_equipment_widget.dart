@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
@@ -34,61 +36,118 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
         }).map((EquipmentType et){
           return InkWell(
             onTap: (){
-              widget._bloc.buildSelectedEquipmentType = et;
+              if(widget._bloc.items.isUnlocked(et)){
+                widget._bloc.buildSelectedEquipmentType = et;
 
-              setState(() {
-                _isExpanded = false;
-              });
+                setState((){
+                  _isExpanded = false;
+                });
+              }else{
+                if(widget._bloc.items.unlockCost(et) > widget._bloc.currentCredit){
+                  print('You dont have enough money!');
+                }else{
+                  widget._bloc.currentCredit -= widget._bloc.items.unlockCost(et);
+                  widget._bloc.items.machines[et].isUnlocked = true;
+                }
+              }
             },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 250),
-              padding: const EdgeInsets.symmetric(horizontal: 18.0),
-              foregroundDecoration: BoxDecoration(
-                color: widget._bloc.buildSelectedEquipmentType == et ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
-                border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null,
-              ),
-              decoration: BoxDecoration(
-                color: et.index % 2 == 0 ? DynamicTheme.of(context).data.textColor.withOpacity(0.1) : Colors.transparent,
-              ),
-              height: 80.0,
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    height: 32.0,
-                    width: 32.0,
-                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: CustomPaint(
-                      painter: ObjectPainter(
-                        widget._bloc.progress,
-                        theme: DynamicTheme.of(context).data,
-                        equipment: widget._bloc.previewEquipment(et),
-                        objectSize: 32.0
+            child: Stack(
+              children: <Widget>[
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 250),
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  foregroundDecoration: BoxDecoration(
+                    color: widget._bloc.buildSelectedEquipmentType == et ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
+                    border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null,
+                  ),
+                  decoration: BoxDecoration(
+                    color: et.index % 2 == 0 ? DynamicTheme.of(context).data.textColor.withOpacity(0.1) : Colors.transparent,
+                  ),
+                  height: 80.0,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        height: 32.0,
+                        width: 32.0,
+                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomPaint(
+                          painter: ObjectPainter(
+                            widget._bloc.progress,
+                            theme: DynamicTheme.of(context).data,
+                            equipment: widget._bloc.previewEquipment(et),
+                            objectSize: 32.0
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12.0,),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
+                                Text('${widget._bloc.items.cost(et)}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900, color: widget._bloc.items.cost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor))
+                              ],
+                            ),
+                            Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                            Text('Operating cost: ${widget._bloc.machineOperatingCost(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                widget._bloc.items.isUnlocked(et) ? SizedBox.shrink() : Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 0.4, color: DynamicTheme.of(context).data.rollerDividersColor)
+                  ),
+                  height: 80.0,
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+                      child: Container(
+                        color: DynamicTheme.of(context).data.floorColor.withOpacity(0.6),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    height: 16.0,
+                                    width: 16.0,
+                                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: CustomPaint(
+                                      painter: ObjectPainter(
+                                        widget._bloc.progress,
+                                        theme: DynamicTheme.of(context).data,
+                                        equipment: widget._bloc.previewEquipment(et),
+                                        objectSize: 16.0
+                                      ),
+                                    ),
+                                  ),
+                                  Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
+                                ],
+                              ),
+                              Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                              Container(
+                                alignment: Alignment.centerRight,
+                                child: Text('Unlock for: ${widget._bloc.items.unlockCost(et)}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900, color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),)
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 12.0,),
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Text('${equipmentTypeToString(et)}',
-                            style: Theme.of(context).textTheme.subtitle,
-                          )
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Text('${equipmentDescriptionFromType(et)}',
-                            style: Theme.of(context).textTheme.caption,
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         }).toList(),

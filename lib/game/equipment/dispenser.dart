@@ -12,6 +12,9 @@ class Dispenser extends FactoryEquipmentModel{
   bool isWorking;
 
   @override
+  bool get isActive => isWorking;
+
+  @override
   List<FactoryMaterialModel> tick() {
     if(!isWorking){
       return <FactoryMaterialModel>[];

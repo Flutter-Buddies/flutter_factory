@@ -10,6 +10,7 @@ import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/game/model/unlockables_model.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:random_color/random_color.dart';
@@ -48,6 +49,8 @@ class GameBloc{
 
   bool _didLoad = false;
 
+  GameItems items;
+
   Future<void> _loadHive() async {
     final Directory _path = await getApplicationDocumentsDirectory();
     Hive.init(_path.path);
@@ -56,6 +59,8 @@ class GameBloc{
       _didLoad = true;
       _loadFactoryFloor();
     }
+
+    items = GameItems();
   }
 
   Box _hiveBox;
@@ -64,7 +69,7 @@ class GameBloc{
   int mapHeight = 31;
 
   List<FactoryEquipmentModel> get _selectedEquipment => equipment.where((FactoryEquipmentModel fe) => selectedTiles.contains(fe.coordinates)).toList();
-  bool get isSameEquipment => _selectedEquipment.isEmpty || _selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length;
+  bool get isSameEquipment => _selectedEquipment.isEmpty || (_selectedEquipment.every((FactoryEquipmentModel fe) => fe.type == _selectedEquipment.first.type) && _selectedEquipment.length == selectedTiles.length);
   bool get hasModify => _selectedEquipment.first.type == EquipmentType.portal || _selectedEquipment.first.type == EquipmentType.roller || _selectedEquipment.first.type == EquipmentType.freeRoller || _selectedEquipment.first.type == EquipmentType.wire_bender || _selectedEquipment.first.type == EquipmentType.cutter || _selectedEquipment.first.type == EquipmentType.hydraulic_press || _selectedEquipment.first.type == EquipmentType.melter;
 
   List<T> getAll<T extends FactoryEquipmentModel>() => _equipment.where((FactoryEquipmentModel fem) => fem is T).map<T>((FactoryEquipmentModel fem) => fem).toList();
@@ -188,6 +193,10 @@ class GameBloc{
   }
 
   Future<void> _saveFactory() async {
+    if(!_hiveBox.isOpen){
+      _hiveBox = await Hive.openBox<dynamic>('factory_floor_$_factoryFloor');
+    }
+
     await _hiveBox.putAll(toMap());
     await _hiveBox.compact();
   }
@@ -205,6 +214,9 @@ class GameBloc{
   
   int _tickSpeed = 1200;
   bool showArrows = false;
+
+  int currentCredit = 0;
+  int lastTickEarnings = 0;
 
   EquipmentType buildSelectedEquipmentType = EquipmentType.roller;
   Direction buildSelectedEquipmentDirection = Direction.south;
@@ -462,6 +474,12 @@ class GameBloc{
     return null;
   }
 
+  int machineOperatingCost(EquipmentType type){
+    switch(type){
+      default: return 5;
+    }
+  }
+
   List<FactoryMaterialModel> get getExcessMaterial => _excessMaterial.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _folded, List<FactoryMaterialModel> _m) => _folded..addAll(_m)).toList();
   List<FactoryMaterialModel> get getLastExcessMaterial => _excessMaterial.first;
   List<FactoryEquipmentModel> get equipment => _equipment;
@@ -500,6 +518,22 @@ class GameBloc{
       _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.objects));
     }else{
       _realTick = true;
+
+      lastTickEarnings = _equipment.fold<int>(0, (int value, FactoryEquipmentModel model){
+
+        if(model.isActive){
+          value -= machineOperatingCost(model.type);
+        }
+
+        if(model is Seller){
+          value += model.soldValue.round();
+        }
+
+        return value;
+      });
+
+      currentCredit += lastTickEarnings;
+
       _material = _equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
       _lastTrigger = _duration.inMilliseconds;
 
