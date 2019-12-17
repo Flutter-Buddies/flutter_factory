@@ -8,6 +8,9 @@ class Crafter extends FactoryEquipmentModel{
 
   FactoryMaterialModel _crafted;
 
+  @override
+  int get operatingCost => isActive && canCraft ? 5 : 0;
+
   int getRecipeAmount(FactoryMaterialType fmt){
     return _recipe[fmt] ?? 0;
   }

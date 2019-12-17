@@ -20,6 +20,8 @@ abstract class FactoryEquipmentModel{
 
   final bool isMutable;
 
+  int get operatingCost => isActive ? 5 : 0;
+
   /// Directions from where new material is coming from.
   ///
   /// It will remember material for 100 ticks before dropping direction as active

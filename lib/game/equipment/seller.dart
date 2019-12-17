@@ -11,6 +11,9 @@ class Seller extends FactoryEquipmentModel{
   bool _startSelling = false;
 
   @override
+  int get operatingCost => 0;
+
+  @override
   FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction}) {
     return Seller(
       coordinates ?? this.coordinates,

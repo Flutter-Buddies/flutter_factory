@@ -8,6 +8,9 @@ class Splitter extends FactoryEquipmentModel{
   Direction _direction;
 
   @override
+  int get operatingCost => isActive ? directions.length * 5 : 0;
+
+  @override
   set direction(Direction d){
     _direction ??= d;
 

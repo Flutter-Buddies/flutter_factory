@@ -7,18 +7,11 @@ import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
-import 'package:flutter_factory/ui/widgets/game_ticker.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/build_equipment_widget.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/crafter_options.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/dispenser_options.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_footer.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/selected_object_info.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/seller_info.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/sorter_options.dart';
-import 'package:flutter_factory/ui/widgets/info_widgets/splitter_options.dart';
 import 'package:flutter_factory/ui/widgets/slide_game_panel.dart';
 import 'package:hive/hive.dart';
+
+import '../../challanges_bloc.dart';
 
 class ChallengesListPage extends StatelessWidget {
   ChallengesListPage({Key key}) : super(key: key);

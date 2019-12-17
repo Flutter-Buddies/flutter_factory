@@ -6,6 +6,9 @@ class Sorter extends FactoryEquipmentModel{
   final Map<FactoryRecipeMaterialType, Direction> directions;
 
   @override
+  int get operatingCost => isActive ? directions.length * 5 : 0;
+
+  @override
   List<FactoryMaterialModel> tick() {
     final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(objects);
     objects.clear();

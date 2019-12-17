@@ -6,6 +6,9 @@ class UndergroundPortal extends FactoryEquipmentModel{
   Coordinates connectingPortal;
   int distance;
 
+  @override
+  int get operatingCost => _backlog.isNotEmpty ? distance * 5 : 0;
+
   Color lineColor;
 
   final List<List<FactoryMaterialModel>> _backlog = <List<FactoryMaterialModel>>[];
