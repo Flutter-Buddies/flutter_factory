@@ -200,7 +200,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
                       theme: DynamicTheme.of(context).data,
                       equipment: GameProvider.of(context).previewEquipment(GameProvider.of(context).buildSelectedEquipmentType),
                       objectSize: 48.0,
-    ),
+                    ),
                   ),
                 ),
               ),
@@ -222,10 +222,17 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
             height: 200.0,
             child: RaisedButton(
               color: DynamicTheme.of(context).data.positiveActionButtonColor,
-              onPressed: (){
+              disabledColor: DynamicTheme.of(context).data.negativeActionButtonColor,
+              onPressed: GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length < GameProvider.of(context).currentCredit ? (){
                 GameProvider.of(context).buildSelected();
-              },
-              child: Text('BUILD', style: Theme.of(context).textTheme.subhead.copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),),
+              } : null,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('BUILD', style: Theme.of(context).textTheme.subhead.copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),),
+                  Text('(${GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length}\$)', style: Theme.of(context).textTheme.subhead.copyWith(color: GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length < GameProvider.of(context).currentCredit ? DynamicTheme.of(context).data.positiveActionIconColor : DynamicTheme.of(context).data.negativeActionIconColor)),
+                ],
+              ),
             ),
           ),
         ),

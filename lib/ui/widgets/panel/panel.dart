@@ -493,6 +493,9 @@ class _SlidingPanelState extends State<SlidingPanel>
 
   @override
   void dispose() {
+    _PanelAnimation.isCleared = false;
+    _PanelAnimation.clear();
+
     _scrollController?.dispose();
     super.dispose();
   }

@@ -394,6 +394,8 @@ class GameBloc{
           selectedTiles.add(c);
         }
       });
+
+      currentCredit -= selectedTiles.length * items.cost(e.type);
     }
 
     switch(buildSelectedEquipmentType){
@@ -494,6 +496,7 @@ class GameBloc{
   void removeEquipment(FactoryEquipmentModel equipment){
     if(_equipment.contains(equipment)){
       _equipment.remove(equipment);
+      currentCredit += items.cost(equipment.type) ~/ 2;
 
       _autoSaveFactory();
     }

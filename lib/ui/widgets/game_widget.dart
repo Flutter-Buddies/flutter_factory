@@ -73,6 +73,20 @@ class _GameWidgetState extends State<GameWidget> {
         if(_isMoving && _movingEquipment.isNotEmpty){
           _initialMovingEquipment.clear();
 
+          int totalCost = 0;
+
+          if(_bloc.copyMode == CopyMode.copy){
+            _movingEquipment.forEach((FactoryEquipmentModel fem){
+              totalCost += _bloc.items.cost(fem.type);
+            });
+          }
+
+          if(totalCost != 0 && totalCost > _bloc.currentCredit){
+            _movingEquipment.clear();
+            _isMoving = false;
+            return;
+          }
+
           _selected.clear();
           _movingEquipment.removeWhere((FactoryEquipmentModel fem) => fem.coordinates.x < 0 || fem.coordinates.y < 0 || fem.coordinates.x > _bloc.mapWidth || fem.coordinates.y > _bloc.mapHeight);
 
@@ -148,35 +162,90 @@ class _GameWidgetState extends State<GameWidget> {
         final FactoryEquipmentModel _se = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
 
         if(_se != null && _tapTime - _lastTap < doubleTapDuration && _se.isMutable && _lastTapLocation == _coordinate && _movingEquipment.isEmpty){
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text('${equipmentTypeToString(_se.type)} copied!',
-              style: Theme.of(context).textTheme.button.copyWith(color: Colors.white)
-            ),
-            duration: Duration(milliseconds: 350),
-            behavior: SnackBarBehavior.floating,
-          ));
-          _selected.clear();
-          _movingEquipment.add(_se);
-          if(_bloc.copyMode == CopyMode.move){
-            _bloc.equipment.remove(_se);
-          }
+          int totalCost = 0;
+          _bloc.selectedTiles.forEach((Coordinates c){
+            FactoryEquipmentModel fem = _bloc.equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == c, orElse: () => null);
 
-          _findPortalPartner();
-        }else if(_movingEquipment.isNotEmpty){
-          if(_se == null && _coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
+            if(fem == null){
+              return;
+            }
+
+            totalCost += _bloc.items.cost(fem.type);
+          });
+
+          if(totalCost > _bloc.currentCredit && _bloc.copyMode == CopyMode.copy){
             Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text('${equipmentTypeToString(_movingEquipment.first.type)} pasted!',
+              content: Text('You don\'t have enough money to copy this!',
                 style: Theme.of(context).textTheme.button.copyWith(color: Colors.white)
               ),
               duration: Duration(milliseconds: 350),
               behavior: SnackBarBehavior.floating,
             ));
-            _bloc.equipment.add(_movingEquipment.first.copyWith(coordinates: _coordinate));
-            _selected.add(_coordinate);
-            _tapTime = 0;
-            _movingEquipment.clear();
+            _selected.clear();
+          }else{
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('${equipmentTypeToString(_se.type)} copied!',
+                style: Theme
+                  .of(context)
+                  .textTheme
+                  .button
+                  .copyWith(color: Colors.white)
+              ),
+              duration: Duration(milliseconds: 350),
+              behavior: SnackBarBehavior.floating,
+            ));
+            _selected.clear();
+            _movingEquipment.add(_se);
+
+            if(_bloc.copyMode == CopyMode.move){
+              _bloc.equipment.remove(_se);
+            }
 
             _findPortalPartner();
+          }
+        }else if(_movingEquipment.isNotEmpty){
+          if(_se == null && _coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
+            if(_bloc.items.cost(_bloc.buildSelectedEquipmentType) * _bloc.selectedTiles.length > _bloc.currentCredit && _bloc.copyMode == CopyMode.copy){
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('You don\'t have enough money to copy ${equipmentTypeToString(_bloc.buildSelectedEquipmentType)}!',
+                  style: Theme.of(context).textTheme.button.copyWith(color: Colors.white)
+                ),
+                duration: Duration(milliseconds: 350),
+                behavior: SnackBarBehavior.floating,
+              ));
+
+              _tapTime = 0;
+              _movingEquipment.clear();
+            }else{
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('${equipmentTypeToString(_movingEquipment.first.type)} pasted!',
+                  style: Theme
+                    .of(context)
+                    .textTheme
+                    .button
+                    .copyWith(color: Colors.white)
+                ),
+                duration: Duration(milliseconds: 350),
+                behavior: SnackBarBehavior.floating,
+              ));
+
+              _bloc.selectedTiles.forEach((Coordinates c){
+                FactoryEquipmentModel fem = _bloc.equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == c, orElse: () => null);
+
+                if(fem == null){
+                  return;
+                }
+
+                _bloc.currentCredit -= _bloc.items.cost(fem.type);
+              });
+
+              _bloc.equipment.add(_movingEquipment.first.copyWith(coordinates: _coordinate));
+              _selected.add(_coordinate);
+              _tapTime = 0;
+              _movingEquipment.clear();
+
+              _findPortalPartner();
+            }
           }else{
             String _snackbarText;
             if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= _bloc.mapWidth && _coordinate.y <= _bloc.mapHeight){
@@ -379,6 +448,19 @@ class GamePainter extends CustomPainter{
     );
 
     selectedTiles.forEach((Coordinates c){
+      final FactoryEquipmentModel _equipment = bloc.equipment.firstWhere((FactoryEquipmentModel fe) => c.x == fe.coordinates.x && c.y == fe.coordinates.y, orElse: () => null);
+
+      if(_equipment == null){
+        canvas.drawRect(
+          Rect.fromCircle(
+            center: Offset(c.x * cubeSize, c.y * cubeSize),
+            radius: cubeSize / 2
+          ),
+          Paint()..color = bloc.items.cost(bloc.buildSelectedEquipmentType) * (bloc.selectedTiles.indexOf(c) + 1) < bloc.currentCredit ? theme.selectedTileColor : theme.negativeActionButtonColor.withOpacity(0.4)
+        );
+        return;
+      }
+
       canvas.drawRect(
         Rect.fromCircle(
           center: Offset(c.x * cubeSize, c.y * cubeSize),
@@ -404,7 +486,7 @@ class GamePainter extends CustomPainter{
       );
     }
 
-    List<Coordinates> _didConnect = <Coordinates>[];
+    final List<Coordinates> _didConnect = <Coordinates>[];
 
     bloc.equipment.where((FactoryEquipmentModel fe) => fe is UndergroundPortal && fe.connectingPortal != null && fe.distance != null).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).forEach((UndergroundPortal up){
       if(_didConnect.contains(up.coordinates)){
@@ -412,7 +494,7 @@ class GamePainter extends CustomPainter{
       }
 
       if(up.coordinates.x == up.connectingPortal.x){
-        bool _goUp = up.coordinates.y > up.connectingPortal.y;
+        final bool _goUp = up.coordinates.y > up.connectingPortal.y;
 
         for(int i = 0; i < (up.distance + 1); i++){
           canvas.drawRect(
@@ -424,7 +506,7 @@ class GamePainter extends CustomPainter{
           );
         }
       }else{
-        bool _goRight = up.coordinates.x > up.connectingPortal.x;
+        final bool _goRight = up.coordinates.x > up.connectingPortal.x;
 
         for(int i = 0; i < (up.distance + 1); i++){
           canvas.drawRect(
@@ -457,15 +539,21 @@ class GamePainter extends CustomPainter{
     });
 
     if(copyMaterial != null){
+      int totalCost = 0;
+
       copyMaterial.forEach((FactoryEquipmentModel fem){
+        totalCost += bloc.items.cost(fem.type);
+
         bool _inLimits = fem.coordinates.x >= 0 && fem.coordinates.y >= 0 && fem.coordinates.x <= bloc.mapWidth && fem.coordinates.y <= bloc.mapHeight;
+        bool _canAfford = totalCost < bloc.currentCredit || bloc.copyMode != CopyMode.copy;
+
         canvas.save();
         canvas.clipRect(Rect.fromCircle(center: Offset(fem.coordinates.x * cubeSize, fem.coordinates.y * cubeSize), radius: cubeSize / 2));
         fem.drawTrack(theme, Offset(fem.coordinates.x * cubeSize, fem.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
         fem.drawEquipment(theme, Offset(fem.coordinates.x * cubeSize, fem.coordinates.y * cubeSize), canvas, cubeSize, bloc.progress);
         canvas.drawRect(Rect.fromCircle(center: Offset(fem.coordinates.x * cubeSize, fem.coordinates.y * cubeSize), radius: cubeSize / 2), Paint()..color = _inLimits ? theme.floorColor.withOpacity(0.5) : theme.machineInActiveColor.withOpacity(0.6));
         if(_inLimits){
-          canvas.drawRect(Rect.fromCircle(center: Offset(fem.coordinates.x * cubeSize, fem.coordinates.y * cubeSize), radius: cubeSize / 2), Paint()..color = theme.selectedTileColor.withOpacity(0.5));
+          canvas.drawRect(Rect.fromCircle(center: Offset(fem.coordinates.x * cubeSize, fem.coordinates.y * cubeSize), radius: cubeSize / 2), Paint()..color = _canAfford ? theme.selectedTileColor.withOpacity(0.5) : theme.negativeActionButtonColor.withOpacity(0.5));
         }
         canvas.restore();
       });
