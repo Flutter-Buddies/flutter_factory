@@ -276,16 +276,6 @@ class ShowAction extends StatelessWidget {
                 child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
               ),
             ),
-            Container(
-              height: 200.0,
-              child: RaisedButton(
-                color: DynamicTheme.of(context).data.neutralActionButtonColor,
-                onPressed: (){
-                  bloc.copyMode = bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
-                },
-                child: Icon((bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy, color: DynamicTheme.of(context).data.neutralActionIconColor,),
-              ),
-            ),
           ],
         ),
       ) : SizedBox.shrink();
@@ -317,6 +307,16 @@ class ShowAction extends StatelessWidget {
             ),
           ) : SizedBox.shrink(),
           _showRotate,
+          Container(
+            height: 200.0,
+            child: RaisedButton(
+              color: DynamicTheme.of(context).data.neutralActionButtonColor,
+              onPressed: (){
+                bloc.copyMode = bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
+              },
+              child: Icon((bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+            ),
+          ),
           Expanded(
             child: Container(
               height: 200.0,

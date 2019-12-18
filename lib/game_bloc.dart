@@ -153,6 +153,15 @@ class GameBloc{
 
     print('Got from DB!');
 
+
+    /// TODO: Finish this!
+    final DateTime _lastCollection = _result['last_collection'] ?? DateTime.now();
+    currentCredit = ((_lastCollection.subtract(Duration(milliseconds: DateTime.now().millisecondsSinceEpoch))).millisecondsSinceEpoch * (_result['average_earnings'] ?? 0)).round();
+
+    print('Loaded last collection: ${_lastCollection.toIso8601String()}');
+    print('Now: ${DateTime.now().toIso8601String()}');
+    print('Added credit: $currentCredit');
+
     final List<dynamic> _equipmentList = _result['equipment'];
 
     print('Loaded equipment: ${_equipmentList.length}');
@@ -204,6 +213,7 @@ class GameBloc{
 
   Future<void> _autoSaveFactory() async {
     try{
+      items.saveUnLockable();
       await hiveBox.putAll(toMap());
     } on HiveError {
       print('Autosave error!');
@@ -217,6 +227,7 @@ class GameBloc{
   bool showArrows = false;
 
   int currentCredit = 0;
+  List<int> averageLast30 = <int>[];
   int lastTickEarnings = 0;
 
   EquipmentType buildSelectedEquipmentType = EquipmentType.roller;
@@ -535,6 +546,11 @@ class GameBloc{
         return value;
       });
 
+      averageLast30.insert(0, lastTickEarnings);
+      while(averageLast30.length > 30){
+        averageLast30.removeLast();
+      }
+
       currentCredit += lastTickEarnings;
 
       _material = equipment.fold(<FactoryMaterialModel>[], (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
@@ -588,6 +604,8 @@ class GameBloc{
     return <String, dynamic>{
       'factory_floor': factoryFloor,
       'equipment': _equipmentMap,
+      'average_earnings': averageLast30.fold(0, (int value, int earnings) => value += earnings) / averageLast30.length,
+      'last_collection': DateTime.now()
     };
   }
 }
