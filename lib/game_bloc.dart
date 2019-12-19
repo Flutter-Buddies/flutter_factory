@@ -147,20 +147,24 @@ class GameBloc{
     final Map<dynamic, dynamic> _result = hiveBox.toMap();
 
     if(_result.isEmpty){
+      currentCredit = 10000;
+
       equipment.clear();
       return;
     }
 
     print('Got from DB!');
+    
+    final DateTime _collectionTime = DateTime.now();
+    final DateTime _lastCollection = _result['last_collection'] ?? _collectionTime;
+    currentCredit = _result['current_credit'] ?? 10000;
+    final int idleCredit = (((_collectionTime.subtract(Duration(milliseconds: _lastCollection.millisecondsSinceEpoch))).millisecondsSinceEpoch / _tickSpeed).round() * (_result['average_earnings'] ?? 0)).round();
 
+    print('Difference in ticks: ${((_collectionTime.subtract(Duration(milliseconds: _lastCollection.millisecondsSinceEpoch))).millisecondsSinceEpoch / _tickSpeed).round()}');
+    print('Average earnings per tick: ${_result['average_earnings']}');
+    print('Added credit: $idleCredit');
 
-    /// TODO: Finish this!
-    final DateTime _lastCollection = _result['last_collection'] ?? DateTime.now();
-    currentCredit = ((_lastCollection.subtract(Duration(milliseconds: DateTime.now().millisecondsSinceEpoch))).millisecondsSinceEpoch * (_result['average_earnings'] ?? 0)).round();
-
-    print('Loaded last collection: ${_lastCollection.toIso8601String()}');
-    print('Now: ${DateTime.now().toIso8601String()}');
-    print('Added credit: $currentCredit');
+    currentCredit += idleCredit;
 
     final List<dynamic> _equipmentList = _result['equipment'];
 
@@ -605,7 +609,8 @@ class GameBloc{
       'factory_floor': factoryFloor,
       'equipment': _equipmentMap,
       'average_earnings': averageLast30.fold(0, (int value, int earnings) => value += earnings) / averageLast30.length,
-      'last_collection': DateTime.now()
+      'last_collection': DateTime.now(),
+      'floor_credit': currentCredit,
     };
   }
 }
