@@ -400,7 +400,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
                     child: Container(
-                      height: 90.0,
+                      height: 110.0,
                       color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
                       padding: const EdgeInsets.only(top: 24.0),
                       child: Column(
@@ -424,6 +424,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                     Text(_bloc.floor,
                                       style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),
                                     ),
+                                    SizedBox(height: 4.0),
                                     Row(
                                       children: <Widget>[
                                         Text(_bloc.currentCredit.toString(),

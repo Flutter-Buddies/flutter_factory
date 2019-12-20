@@ -63,7 +63,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                   decoration: BoxDecoration(
                     color: et.index % 2 == 0 ? DynamicTheme.of(context).data.textColor.withOpacity(0.1) : Colors.transparent,
                   ),
-                  height: 80.0,
+                  height: 100.0,
                   child: Row(
                     children: <Widget>[
                       Container(
@@ -101,51 +101,37 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                   ),
                 ),
 
-                widget._bloc.items.isUnlocked(et) ? SizedBox.shrink() : Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 0.4, color: DynamicTheme.of(context).data.rollerDividersColor)
-                  ),
-                  height: 80.0,
-                  child: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
-                      child: Container(
-                        color: DynamicTheme.of(context).data.floorColor.withOpacity(0.6),
+                AnimatedCrossFade(
+                  firstChild: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 0.4, color: DynamicTheme.of(context).data.rollerDividersColor)
+                    ),
+                    height: 100.0,
+                    child: ClipRect(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    height: 16.0,
-                                    width: 16.0,
-                                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: CustomPaint(
-                                      painter: ObjectPainter(
-                                        widget._bloc.progress,
-                                        theme: DynamicTheme.of(context).data,
-                                        equipment: widget._bloc.previewEquipment(et),
-                                        objectSize: 16.0
-                                      ),
-                                    ),
-                                  ),
-                                  Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
-                                ],
-                              ),
-                              Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
-                              Container(
-                                alignment: Alignment.centerRight,
-                                child: Text('Unlock for: ${widget._bloc.items.unlockCost(et)}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900, color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),)
-                              ),
-                            ],
+                          color: DynamicTheme.of(context).data.floorColor.withOpacity(0.6),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
+                                Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                                Text('${widget._bloc.items.unlockCost(et)}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 20.0, fontWeight: FontWeight.w900, color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
+                  secondChild: SizedBox.shrink(),
+                  alignment: Alignment.center,
+                  crossFadeState: widget._bloc.items.isUnlocked(et) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  duration: Duration(milliseconds: 250),
                 ),
               ],
             ),
@@ -173,7 +159,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
         Row(
           children: <Widget>[
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
@@ -183,7 +169,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
               ),
             ),
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               color: DynamicTheme.of(context).data.floorColor,
               child: Container(
                 margin: const EdgeInsets.only(left: 24.0, right: 24.0),
@@ -206,7 +192,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
               ),
             ),
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
@@ -219,7 +205,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
         ),
         Expanded(
           child: Container(
-            height: 200.0,
+            height: MediaQuery.of(context).size.height * 0.2,
             child: RaisedButton(
               color: DynamicTheme.of(context).data.positiveActionButtonColor,
               disabledColor: DynamicTheme.of(context).data.negativeActionButtonColor,

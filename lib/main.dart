@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
                       bloc: _bloc,
                       child: Stack(
                         children: <Widget>[
-                          GameWidget(),
+                          GameWidget(isPreview: true,),
                         ],
                       ),
                     ),

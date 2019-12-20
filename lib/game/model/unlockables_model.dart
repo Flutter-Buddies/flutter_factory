@@ -32,7 +32,11 @@ class GameItems{
       return;
     }
 
-    machines = Map<EquipmentType, UnLockableMachines>.fromEntries(unLockablesBox.values.map((dynamic item){
+    print('Loading unlockables: ${unLockablesBox.toMap()}');
+
+    final List<dynamic> machinesList = unLockablesBox.toMap()['unlockables'];
+
+    machines = Map.fromEntries(machinesList.map((dynamic item){
       final EquipmentType _type = EquipmentType.values[item['equipment']];
       return MapEntry<EquipmentType, UnLockableMachines>(_type, UnLockableMachines(
         _type,
@@ -41,6 +45,11 @@ class GameItems{
         item['unlock_cost']
       ));
     }));
+  }
+
+  void saveUnLockable(){
+    print('Saving unlockables!');
+    unLockablesBox.put('unlockables', machines.values.map((UnLockableMachines m) => m.toMap()).toList());
   }
 
   Map<EquipmentType, UnLockableMachines> machines;
