@@ -37,7 +37,7 @@ class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    pc = PanelController(vsync: this, duration: Duration(milliseconds: 450));
+    pc = PanelController(vsync: this, duration: Duration(milliseconds: 350));
   }
 
   @override
