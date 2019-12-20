@@ -424,6 +424,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                     Text(_bloc.floor,
                                       style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),
                                     ),
+                                    SizedBox(height: 4.0),
                                     Row(
                                       children: <Widget>[
                                         Text(_bloc.currentCredit.toString(),

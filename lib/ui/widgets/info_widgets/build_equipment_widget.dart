@@ -159,7 +159,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
         Row(
           children: <Widget>[
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
@@ -169,7 +169,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
               ),
             ),
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               color: DynamicTheme.of(context).data.floorColor,
               child: Container(
                 margin: const EdgeInsets.only(left: 24.0, right: 24.0),
@@ -192,7 +192,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
               ),
             ),
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
@@ -205,7 +205,7 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
         ),
         Expanded(
           child: Container(
-            height: 200.0,
+            height: MediaQuery.of(context).size.height * 0.2,
             child: RaisedButton(
               color: DynamicTheme.of(context).data.positiveActionButtonColor,
               disabledColor: DynamicTheme.of(context).data.negativeActionButtonColor,

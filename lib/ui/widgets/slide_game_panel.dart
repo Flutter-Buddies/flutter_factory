@@ -6,7 +6,7 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
-import 'package:flutter_factory/ui/widgets/panel/sliding_panel.dart';
+import 'package:flutter_factory/ui/widgets/panel.dart';
 
 import '../../game_bloc.dart';
 import 'info_widgets/build_equipment_widget.dart';
@@ -28,7 +28,7 @@ class SlideGamePanel extends StatefulWidget {
   _SlideGamePanelState createState() => new _SlideGamePanelState();
 }
 
-class _SlideGamePanelState extends State<SlideGamePanel> {
+class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProviderStateMixin{
   PanelController pc;
   GameBloc _bloc;
   EquipmentType et;
@@ -37,7 +37,7 @@ class _SlideGamePanelState extends State<SlideGamePanel> {
   void initState() {
     super.initState();
 
-    pc = PanelController();
+    pc = PanelController(vsync: this, duration: Duration(milliseconds: 450));
   }
 
   @override
@@ -55,34 +55,45 @@ class _SlideGamePanelState extends State<SlideGamePanel> {
 
           if(_bloc.selectedTiles.isEmpty){
             pc.close();
-          }else if(pc.currentState == PanelState.closed){
+          }else if(pc.state == PanelState.closed){
             pc.collapse();
           }
         }
         
-        return SlidingPanel(
-          duration: Duration(milliseconds: 350),
-          curve: Curves.easeInOut,
-          isTwoStatePanel: false,
-          panelController: pc,
-          backPressBehavior: BackPressBehavior.COLLAPSE_CLOSE_POP,
-          content: PanelContent(
-            panelContent: (BuildContext context, ScrollController controller){
-              return SingleChildScrollView(
-                controller: controller,
-                child: InfoWindow(_bloc)
-              );
-            },
-            collapsedWidget: PanelCollapsedWidget(
-              collapsedContent: Container(
-                height: MediaQuery.of(context).size.height * 0.12,
-                child: ShowAction(bloc: _bloc),
-              )
-            ),
+//        return SlidingPanel(
+//          duration: Duration(milliseconds: 350),
+//          curve: Curves.easeInOut,
+//          isTwoStatePanel: false,
+//          panelController: pc,
+//          backPressBehavior: BackPressBehavior.COLLAPSE_CLOSE_POP,
+//          content: PanelContent(
+//            panelContent: (BuildContext context, ScrollController controller){
+//              return SingleChildScrollView(
+//                controller: controller,
+//                child: InfoWindow(_bloc)
+//              );
+//            },
+//            collapsedWidget: PanelCollapsedWidget(
+//              collapsedContent: Container(
+//                height: MediaQuery.of(context).size.height * 0.12,
+//                child: ShowAction(bloc: _bloc),
+//              )
+//            ),
+//          ),
+//          snapPanel: true,
+//          initialState: InitialPanelState.closed,
+//          size: PanelSize(closedHeight: 0.0, collapsedHeight: 0.12, expandedHeight: 0.85),
+//        );
+
+        return Panel(
+          Container(
+            height: (MediaQuery.of(context).size.height - (MediaQuery.of(context).size.height * 0.2)) * 0.2,
+            child: ShowAction(bloc: _bloc),
           ),
-          snapPanel: true,
-          initialState: InitialPanelState.closed,
-          size: PanelSize(closedHeight: 0.0, collapsedHeight: 0.12, expandedHeight: 0.85),
+          SingleChildScrollView(
+            child: InfoWindow(_bloc)
+          ),
+          pc
         );
       }
     );
@@ -90,7 +101,7 @@ class _SlideGamePanelState extends State<SlideGamePanel> {
 
   @override
   void dispose() {
-    pc.close();
+//    pc.close();
     _bloc.dispose();
 
     super.dispose();
@@ -218,6 +229,8 @@ class ShowAction extends StatelessWidget {
     }
 
     final List<FactoryEquipmentModel> _selectedEquipment = bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates)).toList();
+    _selectedEquipment.addAll(bloc.movingEquipment);
+
     final FactoryEquipmentModel _equipment = _selectedEquipment.isEmpty ? null : _selectedEquipment.first;
     final bool _isNotRotatable = _equipment != null && (!_equipment.isMutable || (_equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller));
 
@@ -228,7 +241,7 @@ class ShowAction extends StatelessWidget {
         child: Row(
           children: <Widget>[
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               width: 60.0,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
@@ -241,7 +254,7 @@ class ShowAction extends StatelessWidget {
               ),
             ),
             Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               color: DynamicTheme.of(context).data.floorColor,
               child: Container(
                 margin: const EdgeInsets.only(left: 24.0, right: 24.0),
@@ -265,7 +278,7 @@ class ShowAction extends StatelessWidget {
             ),
             Container(
               width: 60.0,
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: (){
@@ -284,7 +297,7 @@ class ShowAction extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           _isNotRotatable ? Container(
-            height: 200.0,
+            height: MediaQuery.of(context).size.height * 0.2,
             color: DynamicTheme.of(context).data.floorColor,
             child: Container(
               margin: const EdgeInsets.only(left: 24.0, right: 24.0),
@@ -308,7 +321,7 @@ class ShowAction extends StatelessWidget {
           ) : SizedBox.shrink(),
           _showRotate,
           Container(
-            height: 200.0,
+            height: MediaQuery.of(context).size.height * 0.2,
             child: RaisedButton(
               color: DynamicTheme.of(context).data.neutralActionButtonColor,
               onPressed: (){
@@ -319,7 +332,7 @@ class ShowAction extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              height: 200.0,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.negativeActionButtonColor,
                 onPressed: (){
