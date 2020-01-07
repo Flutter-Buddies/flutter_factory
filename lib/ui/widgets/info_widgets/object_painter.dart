@@ -20,7 +20,7 @@ class ObjectPainter extends CustomPainter{
   void paint(Canvas canvas, Size size) {
     canvas.save();
 
-    canvas.translate(objectSize / 2, objectSize / 2);
+    canvas.translate(size.width / 2, size.height / 2);
     canvas.scale(scale);
 
     if(material != null){

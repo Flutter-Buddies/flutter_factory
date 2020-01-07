@@ -218,6 +218,9 @@ abstract class FactoryMaterialModel{
   }
 
   static Map<FactoryRecipeMaterialType, int> getRecipeFromType(FactoryMaterialType type){
+    if(type == null){
+      return <FactoryRecipeMaterialType, int>{};
+    }
     return FactoryMaterialModel.getFromType(type).getRecipe();
   }
 

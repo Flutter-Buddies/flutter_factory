@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_factory/game/factory_equipment.dart';
@@ -16,7 +17,7 @@ FactoryEquipmentModel equipmentFromMap(String jsonMap){
     case EquipmentType.roller:
       return Roller(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], rollerTickDuration: map['tick_duration']);
     case EquipmentType.crafter:
-      return Crafter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], FactoryMaterialType.values[map['craft_material']], craftingTickDuration: map['tick_duration']);
+      return Crafter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], map['craft_material'] == -1 ? null : FactoryMaterialType.values[map['craft_material']], craftingTickDuration: map['tick_duration']);
     case EquipmentType.splitter:
       return Splitter(Coordinates(map['position']['x'], map['position']['y']), Direction.values[map['direction']], map['splitter_directions'].map<Direction>((dynamic direction) => Direction.values[direction]).toList());
     case EquipmentType.sorter:
@@ -160,4 +161,93 @@ FactoryMaterialModel materialFromMap(Map<String, dynamic> map){
   }
 
   return null;
+}
+
+
+List<String> _rounding(String intStr, String decimalStr, int decimalLength) {
+  intStr = intStr ?? '';
+  if ((decimalStr == null) || (decimalStr == '0')) {
+    decimalStr = '';
+  }
+  if (decimalStr.length <= decimalLength) {
+    return [intStr, decimalStr];
+  }
+  decimalLength = max(min(decimalLength, 12 - intStr.length), 0);
+  final value = double.parse('$intStr.${decimalStr}e$decimalLength');
+  final List<String> rstStrs = (value.round() / pow(10, decimalLength)).toString().split('.');
+  if (rstStrs.length == 2) {
+    if (rstStrs[1] == '0') {
+      rstStrs[1] = '';
+    }
+    return rstStrs;
+  }
+  return [rstStrs[0], ''];
+}
+
+typedef Display = String Function(num value);
+
+String createDisplay(num value, {
+  int length = 9,
+  int decimal,
+  String placeholder = '',
+  bool separator = true,
+}){
+  decimal ??= length;
+  placeholder = placeholder.substring(0, min(length, placeholder.length));
+
+  if (value == null || !value.isFinite) {
+    print('Value $value is not valid!');
+    return placeholder;
+  }
+
+  final valueStr = num.parse(value.toStringAsPrecision(12)).toString();
+  final negative = RegExp(r'^-?').stringMatch(valueStr) ?? '';
+
+  var roundingRst = _rounding(
+    RegExp(r'\d+').stringMatch(valueStr) ?? '',
+    RegExp(r'(?<=\.)\d+$').stringMatch(valueStr) ?? '',
+    decimal,
+  );
+  var integer = roundingRst[0];
+  var deci = roundingRst[1];
+  var localeInt = integer.replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+  );
+
+  int currentLen = negative.length + localeInt.length + 1 + deci.length;
+  if (separator && currentLen <= length) {
+    deci = deci.replaceAll(RegExp(r'0+$'), '');
+    return '${negative}${localeInt}${deci == '' ? '' : '.'}${deci}';
+  }
+
+  int space = length - negative.length - integer.length;
+  if (space >= 0) {
+    roundingRst = _rounding(integer, deci, space - 1);
+    integer = roundingRst[0];
+    deci = roundingRst[1].replaceAll(RegExp(r'0+$'), '');
+    localeInt = integer.replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+        (m) => '${m[1]},',
+    );
+    return '${negative}${localeInt}${deci == '' ? '' : '.'}${deci}';
+  }
+
+  final sections = localeInt.split(',');
+  if (sections.length > 1) {
+    final mainSection = sections[0];
+    final tailSection = sections.sublist(1).join();
+    const units = ['k', 'M', 'B', 'T', 'P'];
+    final unit = units[sections.length - 2];
+    space = length - negative.length - mainSection.length - 1;
+    if (space >= 0) {
+      roundingRst = _rounding(mainSection, tailSection, length);
+      final main = roundingRst[0];
+      final tail = roundingRst[1].replaceAll(RegExp(r'0+$'), '');
+      return '${negative}${main}${tail == '' ? '' : '.'}${tail}${unit}';
+    }
+  }
+
+  print('number_display: length: ${length} is too small for ${value}');
+  return value.toString();
 }

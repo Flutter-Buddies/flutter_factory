@@ -1,8 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
+import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
+import 'package:flutter_factory/util/utils.dart';
 
 class CrafterOptionsWidget extends StatefulWidget {
   CrafterOptionsWidget({@required this.crafter, this.progress = 0.0, Key key}) : super(key: key);
@@ -21,6 +26,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
   Widget build(BuildContext context) {
     Crafter _showFirst = widget.crafter.first;
     Map<FactoryRecipeMaterialType, int> _craftMaterial = FactoryMaterialModel.getRecipeFromType(_showFirst.craftMaterial);
+    GameBloc _bloc = GameProvider.of(context);
 
     return Container(
       child: Column(
@@ -35,6 +41,16 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
               children: <ExpansionPanel>[
                 ExpansionPanel(
                   headerBuilder: (BuildContext context, bool isExpanded){
+                    if(_showFirst.craftMaterial == null){
+                      return Container(
+                        margin: const EdgeInsets.all(12.0),
+                        height: 100.0,
+                        child: Center(
+                          child: Text('Nothing'),
+                        ),
+                      );
+                    }
+
                     return Container(
                       margin: const EdgeInsets.all(12.0),
                       height: 100.0,
@@ -108,90 +124,136 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
 
                       return InkWell(
                         onTap: (){
-                          widget.crafter.forEach((Crafter c){
-                            c.changeRecipe(fmt);
-                          });
+                          if(_bloc.items.isRecipeUnlocked(fmt)){
+                            widget.crafter.forEach((Crafter c){
+                              c.changeRecipe(fmt);
+                            });
 
-                          setState(() {
-                            _recepiesOpen = false;
-                          });
+                            setState(() {
+                              _recepiesOpen = false;
+                            });
+                          }else{
+                            if(_bloc.items.recipeCost(fmt) > _bloc.currentCredit){
+                              print('You dont have enough money!');
+                            }else{
+                              _bloc.currentCredit -= _bloc.items.recipeCost(fmt);
+                              _bloc.items.recipes[fmt].isUnlocked = true;
+                            }
+                          }
                         },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 250),
-                          padding: const EdgeInsets.all(8.0),
-                          height: 90.0,
-                          foregroundDecoration: BoxDecoration(
-                            color: fmt == widget.crafter.first.craftMaterial ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
-                            border: fmt == widget.crafter.first.craftMaterial ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null
-                          ),
-                          decoration: BoxDecoration(
-                            color: fmt.index % 2 == 0 ? Colors.transparent : DynamicTheme.of(context).data.textColor.withOpacity(0.1),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Stack(
+                          children: <Widget>[
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 250),
+                              padding: const EdgeInsets.all(8.0),
+                              height: 90.0,
+                              foregroundDecoration: BoxDecoration(
+                                color: fmt == widget.crafter.first.craftMaterial ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
+                                border: fmt == widget.crafter.first.craftMaterial ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null
+                              ),
+                              decoration: BoxDecoration(
+                                color: fmt.index % 2 == 0 ? Colors.transparent : DynamicTheme.of(context).data.textColor.withOpacity(0.1),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Container(
-                                        child: Text('${factoryMaterialToString(fmt)}',
-                                          style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),
-                                        ),
-                                      ),
-                                      SizedBox(height: 12.0,),
-                                      Row(
-                                        children: _recepie.keys.map((FactoryRecipeMaterialType fmrt){
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(horizontal: 6.0),
-                                            child: Column(
-                                              children: <Widget>[
-                                                Row(
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Container(
+                                            child: Text('${factoryMaterialToString(fmt)}',
+                                              style: Theme.of(context).textTheme.subtitle.copyWith(color: DynamicTheme.of(context).data.textColor),
+                                            ),
+                                          ),
+                                          SizedBox(height: 12.0,),
+                                          Row(
+                                            children: _recepie.keys.map((FactoryRecipeMaterialType fmrt){
+                                              return Container(
+                                                margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                                                child: Column(
                                                   children: <Widget>[
-                                                    Container(
-                                                      height: 15.0,
-                                                      width: 15.0,
-                                                      child: CustomPaint(
-                                                        painter: ObjectPainter(
-                                                          widget.progress,
-                                                          theme: DynamicTheme.of(context).data,
-                                                          material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
-                                                          objectSize: 15.0,
+                                                    Row(
+                                                      children: <Widget>[
+                                                        Container(
+                                                          height: 15.0,
+                                                          width: 15.0,
+                                                          child: CustomPaint(
+                                                            painter: ObjectPainter(
+                                                              widget.progress,
+                                                              theme: DynamicTheme.of(context).data,
+                                                              material: FactoryMaterialModel.getFromType(fmrt.materialType)..state = fmrt.state,
+                                                              objectSize: 15.0,
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
 
-                                                    SizedBox(width: 4.0,),
-                                                    Text('x ${_recepie[fmrt]}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor),)
+                                                        SizedBox(width: 4.0,),
+                                                        Text('x ${_recepie[fmrt]}', style: Theme.of(context).textTheme.caption.copyWith(color: DynamicTheme.of(context).data.textColor),)
+                                                      ],
+                                                    ),
+                                                    Text('${factoryMaterialToString(fmrt.materialType)}\n(${factoryMaterialStateToString(fmrt.state)})', textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption,),
                                                   ],
                                                 ),
-                                                Text('${factoryMaterialToString(fmrt.materialType)}\n(${factoryMaterialStateToString(fmrt.state)})', textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption,),
-                                              ],
-                                            ),
-                                          );
-                                        }).toList(),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                                        height: 30.0,
+                                        width: 30.0,
+                                        child: CustomPaint(
+                                          painter: ObjectPainter(
+                                            widget.progress,
+                                            theme: DynamicTheme.of(context).data,
+                                            material: FactoryMaterialModel.getFromType(fmt),
+                                            objectSize: 30.0
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                                    height: 30.0,
-                                    width: 30.0,
-                                    child: CustomPaint(
-                                      painter: ObjectPainter(
-                                        widget.progress,
-                                        theme: DynamicTheme.of(context).data,
-                                        material: FactoryMaterialModel.getFromType(fmt),
-                                        objectSize: 30.0
+                                ],
+                              )
+                            ),
+
+                            AnimatedCrossFade(
+                              firstChild: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  border: Border.all(width: 0.4, color: DynamicTheme.of(context).data.rollerDividersColor)
+                                ),
+                                height: 100.0,
+                                child: ClipRect(
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+                                    child: Container(
+                                      color: DynamicTheme.of(context).data.floorColor.withOpacity(0.6),
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Text('${factoryMaterialToString(fmt)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
+                                            Text('${factoryMaterialToString(fmt)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                                            Text('${createDisplay(_bloc.items.recipeCost(fmt))}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 20.0, fontWeight: FontWeight.w900, color: _bloc.items.recipeCost(fmt) < _bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                            ],
-                          )
+                              secondChild: SizedBox.shrink(),
+                              alignment: Alignment.center,
+                              crossFadeState: _bloc.items.isRecipeUnlocked(fmt) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                              duration: Duration(milliseconds: 250),
+                            ),
+                          ],
                         ),
                       );
                     }).toList(),

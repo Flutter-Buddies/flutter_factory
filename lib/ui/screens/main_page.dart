@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
 import 'package:flutter_factory/ui/widgets/slide_game_panel.dart';
+import 'package:flutter_factory/util/utils.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({Key key}) : super(key: key);
@@ -427,7 +427,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                     SizedBox(height: 4.0),
                                     Row(
                                       children: <Widget>[
-                                        Text(_bloc.currentCredit.toString(),
+                                        Text(createDisplay(_bloc.currentCredit),
                                           style: Theme.of(context).textTheme.title.copyWith(color: DynamicTheme.of(context).data.textColor),
                                         ),
 
@@ -435,7 +435,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                         Icon(Icons.show_chart, size: 20.0, color: _bloc.lastTickEarnings.isNegative ? DynamicTheme.of(context).data.negativeActionButtonColor : DynamicTheme.of(context).data.positiveActionButtonColor,),
                                         SizedBox(width: 4.0,),
 
-                                        Text(_bloc.lastTickEarnings.toString(),
+                                        Text(createDisplay(_bloc.lastTickEarnings),
                                           style: Theme.of(context).textTheme.title.copyWith(color: _bloc.lastTickEarnings.isNegative ? DynamicTheme.of(context).data.negativeActionButtonColor : DynamicTheme.of(context).data.positiveActionButtonColor),
                                         ),
                                       ],

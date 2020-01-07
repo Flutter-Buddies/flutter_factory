@@ -99,10 +99,10 @@ class DispenserOptionsWidget extends StatelessWidget {
                   child: Row(
                     children: <Widget>[
                       Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: CustomPaint(
                           painter: ObjectPainter(
                             progress,
+                            objectSize: 20.0,
                             theme: DynamicTheme.of(context).data,
                             material: FactoryMaterialModel.getFromType(fmt)
                           ),

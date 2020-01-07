@@ -16,6 +16,10 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   bool get canCraft{
+    if(craftMaterial == null){
+      return false;
+    }
+
     bool canCraft = true;
     _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
       canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterialModel fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
@@ -95,8 +99,7 @@ class Crafter extends FactoryEquipmentModel{
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(theme.machineInActiveColor, theme.machineActiveColor, _machineProgress));//_didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = theme.machinePrimaryDarkColor);
 
-    canvas.scale(0.6);
-    FactoryMaterialModel.getFromType(craftMaterial).drawMaterial(Offset.zero, canvas, progress);
+    FactoryMaterialModel.getFromType(craftMaterial)?.drawMaterial(Offset.zero, canvas, progress);
 //    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
     canvas.restore();
   }
@@ -142,7 +145,7 @@ class Crafter extends FactoryEquipmentModel{
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(_crafted == null){
+    if(craftMaterial == null || _crafted == null){
       return;
     }
 
@@ -178,7 +181,7 @@ class Crafter extends FactoryEquipmentModel{
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
     _map.addAll(<String, dynamic>{
-      'craft_material': craftMaterial.index
+      'craft_material': craftMaterial == null ? -1 : craftMaterial.index
     });
     return _map;
   }

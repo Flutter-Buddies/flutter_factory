@@ -59,31 +59,6 @@ class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProvid
             pc.collapse();
           }
         }
-        
-//        return SlidingPanel(
-//          duration: Duration(milliseconds: 350),
-//          curve: Curves.easeInOut,
-//          isTwoStatePanel: false,
-//          panelController: pc,
-//          backPressBehavior: BackPressBehavior.COLLAPSE_CLOSE_POP,
-//          content: PanelContent(
-//            panelContent: (BuildContext context, ScrollController controller){
-//              return SingleChildScrollView(
-//                controller: controller,
-//                child: InfoWindow(_bloc)
-//              );
-//            },
-//            collapsedWidget: PanelCollapsedWidget(
-//              collapsedContent: Container(
-//                height: MediaQuery.of(context).size.height * 0.12,
-//                child: ShowAction(bloc: _bloc),
-//              )
-//            ),
-//          ),
-//          snapPanel: true,
-//          initialState: InitialPanelState.closed,
-//          size: PanelSize(closedHeight: 0.0, collapsedHeight: 0.12, expandedHeight: 0.85),
-//        );
 
         return Panel(
           Container(

@@ -12,6 +12,7 @@ import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
+import 'package:flutter_factory/util/utils.dart';
 import 'package:random_color/random_color.dart';
 
 class GameWidget extends StatefulWidget {
@@ -81,7 +82,7 @@ class _GameWidgetState extends State<GameWidget> {
                 child: Text('Idle income', style: Theme.of(context).textTheme.headline,)
               ),
               SizedBox(height: 24.0,),
-              Text('Your line earned: ${(_bloc.idleCredit * 0.5).round()}\$', style: Theme.of(context).textTheme.subhead,),
+              Text('Your line earned: ${createDisplay((_bloc.idleCredit * 0.5).round())}\$', style: Theme.of(context).textTheme.subhead,),
               SizedBox(height: 24.0,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

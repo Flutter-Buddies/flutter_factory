@@ -8,6 +8,7 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
+import 'package:flutter_factory/util/utils.dart';
 
 class BuildEquipmentWidget extends StatefulWidget {
   BuildEquipmentWidget(this._bloc, {Key key, this.isChallenge = false}) : super(key: key);
@@ -120,7 +121,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                               children: <Widget>[
                                 Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
                                 Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
-                                Text('${widget._bloc.items.unlockCost(et)}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 20.0, fontWeight: FontWeight.w900, color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),),
+                                Text('${createDisplay(widget._bloc.items.unlockCost(et))}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 20.0, fontWeight: FontWeight.w900, color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),),
                               ],
                             ),
                           ),

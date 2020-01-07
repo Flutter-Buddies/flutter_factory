@@ -66,7 +66,7 @@ class GameBloc {
     items = GameItems();
   }
 
-  Box hiveBox;
+  Box<dynamic> hiveBox;
 
   int mapWidth = 31;
   int mapHeight = 31;
@@ -250,7 +250,7 @@ class GameBloc {
   }
 
   Future<void> saveFactory() async {
-    if (!hiveBox.isOpen) {
+    if (hiveBox == null || !hiveBox.isOpen) {
       hiveBox = await Hive.openBox<dynamic>('factory_floor_$factoryFloor');
     }
 
@@ -596,7 +596,7 @@ class GameBloc {
         _addEquipment(Roller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
       case EquipmentType.crafter:
-        _addEquipment(Crafter(Coordinates(0, 0), buildSelectedEquipmentDirection, FactoryMaterialType.computerChip));
+        _addEquipment(Crafter(Coordinates(0, 0), buildSelectedEquipmentDirection, null));
         break;
       case EquipmentType.splitter:
         _addEquipment(
@@ -642,7 +642,7 @@ class GameBloc {
       case EquipmentType.roller:
         return Roller(selectedTiles.first, buildSelectedEquipmentDirection);
       case EquipmentType.crafter:
-        return Crafter(selectedTiles.first, buildSelectedEquipmentDirection, FactoryMaterialType.computerChip);
+        return Crafter(selectedTiles.first, buildSelectedEquipmentDirection, null);
       case EquipmentType.splitter:
         return Splitter(
             selectedTiles.first, buildSelectedEquipmentDirection, <Direction>[buildSelectedEquipmentDirection]);
@@ -685,6 +685,7 @@ class GameBloc {
 
   void clearLine() {
     equipment.clear();
+    currentCredit = 10000;
 
     _autoSaveFactory();
   }
