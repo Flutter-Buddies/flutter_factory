@@ -187,7 +187,7 @@ List<String> _rounding(String intStr, String decimalStr, int decimalLength) {
 typedef Display = String Function(num value);
 
 String createDisplay(num value, {
-  int length = 9,
+  int length = 5,
   int decimal,
   String placeholder = '',
   bool separator = true,

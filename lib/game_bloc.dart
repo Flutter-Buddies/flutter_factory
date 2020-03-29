@@ -8,18 +8,15 @@ import 'package:flutter/material.dart' hide Radio;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
-import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/model/unlockables_model.dart';
-import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:flutter_factory/util/utils.dart';
+import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:random_color/random_color.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:hive/hive.dart';
-
-import 'game/factory_material.dart';
 
 enum GameMenuState {
   none,
@@ -149,7 +146,7 @@ class GameBloc {
 
     hasClaimedCredit = false;
     idleCredit = 0;
-    currentCredit = 0;
+    currentCredit = 10000;
     averageLast30.clear();
 
     factoryFloor = floor;
@@ -204,10 +201,11 @@ class GameBloc {
         .round();
 
     print('Loaded credit: $currentCredit');
-    print('Difference in ticks: ${((_collectionTime.subtract(Duration(milliseconds: _lastCollection.millisecondsSinceEpoch))).millisecondsSinceEpoch / _tickSpeed).round()}');
+    print(
+        'Difference in ticks: ${((_collectionTime.subtract(Duration(milliseconds: _lastCollection.millisecondsSinceEpoch))).millisecondsSinceEpoch / _tickSpeed).round()}');
     print('Average earnings per tick: ${_result['average_earnings']}');
     print('Idle credit: $idleCredit');
-    
+
     final List<dynamic> _equipmentList = _result['equipment'];
 
     print('Loaded equipment: ${_equipmentList.length}');
@@ -273,7 +271,7 @@ class GameBloc {
   int _tickSpeed = 1200;
   bool showArrows = false;
 
-  int currentCredit = 0;
+  int currentCredit = 10000;
   int idleCredit = 0;
   bool hasClaimedCredit = false;
   List<int> averageLast30 = <int>[];
@@ -329,28 +327,32 @@ class GameBloc {
     _gameUpdate.add(GameUpdate.addEquipment);
   }
 
-  void _findPortalPartner(){
-    List<UndergroundPortal> _portals = equipment.where((FactoryEquipmentModel fem) => fem is UndergroundPortal).map<UndergroundPortal>((FactoryEquipmentModel fem) => fem).toList();
+  void _findPortalPartner() {
+    List<UndergroundPortal> _portals = equipment
+        .where((FactoryEquipmentModel fem) => fem is UndergroundPortal)
+        .map<UndergroundPortal>((FactoryEquipmentModel fem) => fem)
+        .toList();
 
-    _portals.forEach((UndergroundPortal up){
-      if(up.connectingPortal != null){
-        UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+    _portals.forEach((UndergroundPortal up) {
+      if (up.connectingPortal != null) {
+        UndergroundPortal _portal =
+            _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
-        if(_portal != null && (_portal.coordinates.x == up.coordinates.x || _portal.coordinates.y == up.coordinates.y)){
-
-          if(_portal.coordinates.x == up.coordinates.x){
-            if(_portal.coordinates.y < up.coordinates.y){
+        if (_portal != null &&
+            (_portal.coordinates.x == up.coordinates.x || _portal.coordinates.y == up.coordinates.y)) {
+          if (_portal.coordinates.x == up.coordinates.x) {
+            if (_portal.coordinates.y < up.coordinates.y) {
               _portal.direction = Direction.south;
               up.direction = Direction.north;
-            }else{
+            } else {
               _portal.direction = Direction.north;
               up.direction = Direction.south;
             }
-          }else{
-            if(_portal.coordinates.x < up.coordinates.x){
+          } else {
+            if (_portal.coordinates.x < up.coordinates.x) {
               _portal.direction = Direction.west;
               up.direction = Direction.east;
-            }else{
+            } else {
               _portal.direction = Direction.east;
               up.direction = Direction.west;
             }
@@ -363,32 +365,38 @@ class GameBloc {
       }
 
       print('Building portal!');
-      final List<UndergroundPortal> _connectingPortal = _portals.where((UndergroundPortal fem){
-        if(fem.coordinates == up.coordinates){
+      final List<UndergroundPortal> _connectingPortal = _portals.where((UndergroundPortal fem) {
+        if (fem.coordinates == up.coordinates) {
           return false;
         }
 
         bool _hasPartner = false;
 
-        for(int i = 0; i < 32; i++){
-          _hasPartner = _hasPartner || (fem.coordinates.y == up.coordinates.y - i && fem.coordinates.x == up.coordinates.x);
-          _hasPartner = _hasPartner || (fem.coordinates.y == up.coordinates.y + i && fem.coordinates.x == up.coordinates.x);
-          _hasPartner = _hasPartner || fem.coordinates.x == up.coordinates.x - i && fem.coordinates.y == up.coordinates.y;
-          _hasPartner = _hasPartner || fem.coordinates.x == up.coordinates.x + i && fem.coordinates.y == up.coordinates.y;
+        for (int i = 0; i < 32; i++) {
+          _hasPartner =
+              _hasPartner || (fem.coordinates.y == up.coordinates.y - i && fem.coordinates.x == up.coordinates.x);
+          _hasPartner =
+              _hasPartner || (fem.coordinates.y == up.coordinates.y + i && fem.coordinates.x == up.coordinates.x);
+          _hasPartner =
+              _hasPartner || fem.coordinates.x == up.coordinates.x - i && fem.coordinates.y == up.coordinates.y;
+          _hasPartner =
+              _hasPartner || fem.coordinates.x == up.coordinates.x + i && fem.coordinates.y == up.coordinates.y;
         }
 
         return _hasPartner;
       }).toList();
 
-      if(_connectingPortal != null){
-        _connectingPortal.firstWhere((UndergroundPortal fem){
-          if(fem.coordinates == up.coordinates){
+      if (_connectingPortal != null) {
+        _connectingPortal.firstWhere((UndergroundPortal fem) {
+          if (fem.coordinates == up.coordinates) {
             return false;
           }
 
-          final UndergroundPortal _portal = _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == fem.connectingPortal, orElse: () => null);
+          final UndergroundPortal _portal = _portals
+              .firstWhere((UndergroundPortal _up) => _up.coordinates == fem.connectingPortal, orElse: () => null);
 
-          if(_portal != null && (_portal.coordinates.x == fem.coordinates.x || _portal.coordinates.y == fem.coordinates.y)){
+          if (_portal != null &&
+              (_portal.coordinates.x == fem.coordinates.x || _portal.coordinates.y == fem.coordinates.y)) {
             print('Candidate is already connected! ${up.coordinates.toMap()} - ${fem.coordinates.toMap()}');
             return false;
           }
@@ -407,34 +415,34 @@ class GameBloc {
 
           print('Portal ${up.coordinates.toMap()} FOUND it\'s partner!');
 
-          if(fem.coordinates.x == up.coordinates.x){
-            if(fem.coordinates.y < up.coordinates.y){
+          if (fem.coordinates.x == up.coordinates.x) {
+            if (fem.coordinates.y < up.coordinates.y) {
               fem.direction = Direction.south;
               up.direction = Direction.north;
-            }else{
+            } else {
               fem.direction = Direction.north;
               up.direction = Direction.south;
             }
-          }else{
-            if(fem.coordinates.x < up.coordinates.x){
+          } else {
+            if (fem.coordinates.x < up.coordinates.x) {
               fem.direction = Direction.west;
               up.direction = Direction.east;
-            }else{
+            } else {
               fem.direction = Direction.east;
               up.direction = Direction.west;
             }
           }
 
-          if(!selectedTiles.contains(fem.coordinates)){
+          if (!selectedTiles.contains(fem.coordinates)) {
             selectedTiles.add(fem.coordinates);
           }
 
           return true;
-        }, orElse: (){
+        }, orElse: () {
           print('Passed all candidates ${_connectingPortal.length} but no connecting portal was found!');
           return null;
         });
-      }else{
+      } else {
         print('No connecting portal!');
       }
     });
@@ -551,9 +559,9 @@ class GameBloc {
       return null;
     });
   }
-  
-  void claimIdleCredit({double multiple = 1.0}){
-    if(idleCredit != 0){
+
+  void claimIdleCredit({double multiple = 1.0}) {
+    if (idleCredit != 0) {
       print('Added credit: ${(idleCredit * multiple).round()}');
       currentCredit += (idleCredit * multiple).round();
       idleCredit = 0;
@@ -739,6 +747,8 @@ class GameBloc {
 
       currentCredit += lastTickEarnings;
 
+      currentCredit = min(currentCredit, 10000);
+
       _material = equipment.fold(<FactoryMaterialModel>[],
           (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
       _lastTrigger = _duration.inMilliseconds;
@@ -776,83 +786,85 @@ class GameBloc {
   Stream<GameUpdate> get gameUpdate => _gameUpdate.stream;
 
   final PublishSubject<GameUpdate> _gameUpdate = PublishSubject<GameUpdate>();
-  
-  void onTapUp(TapUpDetails tud, ThemeData theme, GameTheme gameTheme, Function(SnackBar snackBar) showSnackBar){
+
+  void onTapUp(TapUpDetails tud, ThemeData theme, GameTheme gameTheme, Function(SnackBar snackBar) showSnackBar) {
     int _tapTime = DateTime.now().millisecondsSinceEpoch;
 
-    final Offset _s = (tud.globalPosition - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
-    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(),(_s.dy / cubeSize).floor());
-    final FactoryEquipmentModel _se = equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+    final Offset _s = (tud.globalPosition - gameCameraPosition.position) / gameCameraPosition.scale +
+        Offset(cubeSize / 2, cubeSize / 2);
+    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(), (_s.dy / cubeSize).floor());
+    final FactoryEquipmentModel _se =
+        equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
 
-    if(_se != null && _tapTime - _lastTap < doubleTapDuration && _se.isMutable && _lastTapLocation == _coordinate && movingEquipment.isEmpty){
+    if (_se != null &&
+        _tapTime - _lastTap < doubleTapDuration &&
+        _se.isMutable &&
+        _lastTapLocation == _coordinate &&
+        movingEquipment.isEmpty) {
       int totalCost = 0;
-      selectedTiles.forEach((Coordinates c){
-        FactoryEquipmentModel fem = equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == c, orElse: () => null);
+      selectedTiles.forEach((Coordinates c) {
+        FactoryEquipmentModel fem =
+            equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == c, orElse: () => null);
 
-        if(fem == null){
+        if (fem == null) {
           return;
         }
 
         totalCost += items.cost(fem.type);
       });
 
-      if(totalCost > currentCredit && copyMode == CopyMode.copy){
+      if (totalCost > currentCredit && copyMode == CopyMode.copy) {
         showSnackBar(SnackBar(
           content: Text('You don\'t have enough money to copy this!',
-            style: theme.textTheme.button.copyWith(color: Colors.white)
-          ),
+              style: theme.textTheme.button.copyWith(color: Colors.white)),
           duration: Duration(milliseconds: 350),
           behavior: SnackBarBehavior.floating,
         ));
         selectedTiles.clear();
-      }else{
+      } else {
         showSnackBar(SnackBar(
           content: Text('${equipmentTypeToString(_se.type)} copied!',
-            style: theme
-              .textTheme
-              .button
-              .copyWith(color: Colors.white)
-          ),
+              style: theme.textTheme.button.copyWith(color: Colors.white)),
           duration: Duration(milliseconds: 350),
           behavior: SnackBarBehavior.floating,
         ));
         selectedTiles.clear();
         movingEquipment.add(_se);
 
-        if(copyMode == CopyMode.move){
+        if (copyMode == CopyMode.move) {
           equipment.remove(_se);
         }
 
         _findPortalPartner();
       }
-    }else if(movingEquipment.isNotEmpty){
-      if(_se == null && _coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight){
-        if(items.cost(buildSelectedEquipmentType) * selectedTiles.length > currentCredit && copyMode == CopyMode.copy){
+    } else if (movingEquipment.isNotEmpty) {
+      if (_se == null &&
+          _coordinate.x >= 0 &&
+          _coordinate.y >= 0 &&
+          _coordinate.x <= mapWidth &&
+          _coordinate.y <= mapHeight) {
+        if (items.cost(buildSelectedEquipmentType) * selectedTiles.length > currentCredit &&
+            copyMode == CopyMode.copy) {
           showSnackBar(SnackBar(
             content: Text('You don\'t have enough money to copy ${equipmentTypeToString(buildSelectedEquipmentType)}!',
-              style: theme.textTheme.button.copyWith(color: Colors.white)
-            ),
+                style: theme.textTheme.button.copyWith(color: Colors.white)),
             duration: Duration(milliseconds: 350),
             behavior: SnackBarBehavior.floating,
           ));
 
           _tapTime = 0;
           movingEquipment.clear();
-        }else{
+        } else {
           showSnackBar(SnackBar(
             content: Text('${equipmentTypeToString(movingEquipment.first.type)} pasted!',
-              style: theme
-                .textTheme
-                .button
-                .copyWith(color: Colors.white)
-            ),
+                style: theme.textTheme.button.copyWith(color: Colors.white)),
             duration: Duration(milliseconds: 350),
             behavior: SnackBarBehavior.floating,
           ));
 
-          if(copyMode == CopyMode.copy){
-            movingEquipment.forEach((FactoryEquipmentModel fem){
-              if(fem == null){
+          if (copyMode == CopyMode.copy) {
+            movingEquipment.forEach((FactoryEquipmentModel fem) {
+              if (fem == null) {
                 return;
               }
 
@@ -869,37 +881,52 @@ class GameBloc {
 
           _findPortalPartner();
         }
-      }else{
+      } else {
         String _snackbarText;
-        if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight){
+        if (_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight) {
           _snackbarText = 'Can\'t paste on top of existing ${equipmentTypeToString(_se.type)}!';
-        }else{
+        } else {
           _snackbarText = 'Can\'t paste outside of the bounderies!';
         }
 
         showSnackBar(SnackBar(
-          content: Text(_snackbarText, style: theme.textTheme.button.copyWith(color: gameTheme.negativeActionButtonColor),),
+          content: Text(
+            _snackbarText,
+            style: theme.textTheme.button.copyWith(color: gameTheme.negativeActionButtonColor),
+          ),
           duration: Duration(milliseconds: 550),
           behavior: SnackBarBehavior.floating,
         ));
       }
-    }else if(selectedTiles.contains(_coordinate)){
-      FactoryEquipmentModel _e = equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
-      if(_e != null && _e is UndergroundPortal && _e.connectingPortal != null && selectedTiles.contains(_e.connectingPortal)){
+    } else if (selectedTiles.contains(_coordinate)) {
+      FactoryEquipmentModel _e =
+          equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+      if (_e != null &&
+          _e is UndergroundPortal &&
+          _e.connectingPortal != null &&
+          selectedTiles.contains(_e.connectingPortal)) {
         selectedTiles.remove(_e.connectingPortal);
       }
 
       selectedTiles.remove(_coordinate);
-    }else{
-      final List<FactoryEquipmentModel> _selectedEquipment = equipment.where((FactoryEquipmentModel fe) => selectedTiles.contains(fe.coordinates)).toList();
+    } else {
+      final List<FactoryEquipmentModel> _selectedEquipment =
+          equipment.where((FactoryEquipmentModel fe) => selectedTiles.contains(fe.coordinates)).toList();
 
-      if(selectedTiles.isNotEmpty && ((_selectedEquipment.isEmpty && _se != null) || (_selectedEquipment.isNotEmpty && _se == null) || !(isSameEquipment || (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first.type)))){
+      if (selectedTiles.isNotEmpty &&
+          ((_selectedEquipment.isEmpty && _se != null) ||
+              (_selectedEquipment.isNotEmpty && _se == null) ||
+              !(isSameEquipment || (_selectedEquipment.isNotEmpty && _se?.type == _selectedEquipment.first.type)))) {
         selectedTiles.clear();
       }
 
-      if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight){
-        FactoryEquipmentModel _e = equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
-        if(_e != null && _e is UndergroundPortal && _e.connectingPortal != null && !selectedTiles.contains(_e.connectingPortal)){
+      if (_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight) {
+        FactoryEquipmentModel _e =
+            equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
+        if (_e != null &&
+            _e is UndergroundPortal &&
+            _e.connectingPortal != null &&
+            !selectedTiles.contains(_e.connectingPortal)) {
           selectedTiles.add(_e.connectingPortal);
         }
 
@@ -911,17 +938,17 @@ class GameBloc {
     _lastTap = _tapTime;
   }
 
-  void onLongPressEnd(LongPressEndDetails lped){
+  void onLongPressEnd(LongPressEndDetails lped) {
     _startDragLocation = null;
   }
 
-  void onLongPressUpdate(LongPressMoveUpdateDetails lpmud){
-    final Offset _s = (lpmud.globalPosition - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
-    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(),(_s.dy / cubeSize).floor());
+  void onLongPressUpdate(LongPressMoveUpdateDetails lpmud) {
+    final Offset _s = (lpmud.globalPosition - gameCameraPosition.position) / gameCameraPosition.scale +
+        Offset(cubeSize / 2, cubeSize / 2);
+    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(), (_s.dy / cubeSize).floor());
 
-
-    if(_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight){
-      if(selectMode == SelectMode.box){
+    if (_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight) {
+      if (selectMode == SelectMode.box) {
         _startDragLocation ??= _coordinate;
 
         selectedTiles.clear();
@@ -929,32 +956,36 @@ class GameBloc {
         int _moveX = _startDragLocation.x - _coordinate.x;
         int _moveY = _startDragLocation.y - _coordinate.y;
 
-        for(int i = 0; i <= _moveX.abs(); i++){
-          for(int j = 0; j <= _moveY.abs(); j++){
+        for (int i = 0; i <= _moveX.abs(); i++) {
+          for (int j = 0; j <= _moveY.abs(); j++) {
             selectedTiles.add(_startDragLocation + Coordinates(_moveX.isNegative ? i : -i, _moveY.isNegative ? j : -j));
           }
         }
-      }else if(selectMode == SelectMode.freestyle){
-        if(!selectedTiles.contains(_coordinate)){
+      } else if (selectMode == SelectMode.freestyle) {
+        if (!selectedTiles.contains(_coordinate)) {
           selectedTiles.add(_coordinate);
         }
       }
     }
   }
 
-  void onScaleUpdate(ScaleUpdateDetails sud){
-    final Offset _s = (sud.focalPoint - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
-    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(),(_s.dy / cubeSize).floor());
+  void onScaleUpdate(ScaleUpdateDetails sud) {
+    final Offset _s =
+        (sud.focalPoint - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
+    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(), (_s.dy / cubeSize).floor());
 
-    if(sud.scale != 1.0){
+    if (sud.scale != 1.0) {
       _isMoving = false;
     }
 
-    if(_isMoving){
+    if (_isMoving) {
       print((_coordinate - _startMovingLocation).toMap());
 
-      movingEquipment = _initialMovingEquipment.map((FactoryEquipmentModel fem) => fem.copyWith(coordinates: fem.coordinates + (_coordinate - _startMovingLocation))).toList();
-    }else{
+      movingEquipment = _initialMovingEquipment
+          .map((FactoryEquipmentModel fem) =>
+              fem.copyWith(coordinates: fem.coordinates + (_coordinate - _startMovingLocation)))
+          .toList();
+    } else {
       gameCameraPosition.scale = (_scaleEnd * sud.scale).clamp(_minZoomLimit, _maxZoomLimit);
 
       final Offset normalizedOffset = _startPoint / _scaleEnd;
@@ -964,19 +995,19 @@ class GameBloc {
     }
   }
 
-  void onScaleEnd(ScaleEndDetails sed){
-    if(_isMoving && movingEquipment.isNotEmpty){
+  void onScaleEnd(ScaleEndDetails sed) {
+    if (_isMoving && movingEquipment.isNotEmpty) {
       _initialMovingEquipment.clear();
 
       int totalCost = 0;
 
-      if(copyMode == CopyMode.copy){
-        movingEquipment.forEach((FactoryEquipmentModel fem){
+      if (copyMode == CopyMode.copy) {
+        movingEquipment.forEach((FactoryEquipmentModel fem) {
           totalCost += items.cost(fem.type);
         });
       }
 
-      if(totalCost != 0 && totalCost > currentCredit){
+      if (totalCost != 0 && totalCost > currentCredit) {
         movingEquipment.clear();
         _isMoving = false;
         return;
@@ -986,7 +1017,11 @@ class GameBloc {
       currentCredit -= totalCost;
 
       selectedTiles.clear();
-      movingEquipment.removeWhere((FactoryEquipmentModel fem) => fem.coordinates.x < 0 || fem.coordinates.y < 0 || fem.coordinates.x > mapWidth || fem.coordinates.y > mapHeight);
+      movingEquipment.removeWhere((FactoryEquipmentModel fem) =>
+          fem.coordinates.x < 0 ||
+          fem.coordinates.y < 0 ||
+          fem.coordinates.x > mapWidth ||
+          fem.coordinates.y > mapHeight);
 
       selectedTiles.addAll(movingEquipment.map((FactoryEquipmentModel fem) => fem.coordinates));
       equipment.removeWhere((FactoryEquipmentModel fem) => selectedTiles.contains(fem.coordinates));
@@ -1000,21 +1035,28 @@ class GameBloc {
     _findPortalPartner();
   }
 
-  void onScaleStart(ScaleStartDetails ssd){
-    final Offset _s = (ssd.focalPoint - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
-    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(),(_s.dy / cubeSize).floor());
+  void onScaleStart(ScaleStartDetails ssd) {
+    final Offset _s =
+        (ssd.focalPoint - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
+    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(), (_s.dy / cubeSize).floor());
 
-    if(selectedTiles.contains(_coordinate)){
+    if (selectedTiles.contains(_coordinate)) {
       _isMoving = true;
-      movingEquipment.addAll(selectedTiles.where((Coordinates c) => equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == c && fe.isMutable, orElse: () => null) != null).map((Coordinates c) => equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == c, orElse: () => null)));
+      movingEquipment.addAll(selectedTiles
+          .where((Coordinates c) =>
+              equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == c && fe.isMutable,
+                  orElse: () => null) !=
+              null)
+          .map((Coordinates c) =>
+              equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == c, orElse: () => null)));
 
-      if(copyMode == CopyMode.move){
-        movingEquipment.forEach((FactoryEquipmentModel fem)=> equipment.remove(fem));
+      if (copyMode == CopyMode.move) {
+        movingEquipment.forEach((FactoryEquipmentModel fem) => equipment.remove(fem));
       }
 
       _initialMovingEquipment.addAll(movingEquipment);
       _startMovingLocation = _coordinate;
-    }else{
+    } else {
       _isMoving = false;
       _scaleEnd = gameCameraPosition.scale;
       _startPoint = ssd.focalPoint - gameCameraPosition.position;

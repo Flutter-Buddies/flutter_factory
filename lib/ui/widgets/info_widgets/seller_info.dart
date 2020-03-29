@@ -71,12 +71,10 @@ class SellerInfo extends StatelessWidget {
                         Expanded(flex: 2, child: Row(
                           children: <Widget>[
                             Container(
-                              transform: Matrix4.translationValues(18.0, 18.0, 0.0),
                               child: CustomPaint(
-                                size: Size(36.0, 36.0),
                                 painter: ObjectPainter(
                                   0.0,
-                                  scale: 2.0,
+                                  objectSize: 26.0,
                                   theme: DynamicTheme.of(context).data,
                                   material: FactoryMaterialModel.getFromType(frmt.materialType)..state = frmt.state,
                                 ),
