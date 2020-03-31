@@ -1,10 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
-import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
@@ -28,25 +26,25 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
     return Container(
       color: DynamicTheme.of(context).data.voidColor,
       child: Column(
-        children: EquipmentType.values.where((EquipmentType et){
-          if(widget.isChallenge){
+        children: EquipmentType.values.where((EquipmentType et) {
+          if (widget.isChallenge) {
             return et != EquipmentType.dispenser && et != EquipmentType.seller;
           }
 
           return true;
-        }).map((EquipmentType et){
+        }).map((EquipmentType et) {
           return InkWell(
-            onTap: (){
-              if(widget._bloc.items.isUnlocked(et)){
+            onTap: () {
+              if (widget._bloc.items.isUnlocked(et)) {
                 widget._bloc.buildSelectedEquipmentType = et;
 
-                setState((){
+                setState(() {
                   _isExpanded = false;
                 });
-              }else{
-                if(widget._bloc.items.unlockCost(et) > widget._bloc.currentCredit){
+              } else {
+                if (widget._bloc.items.unlockCost(et) > widget._bloc.currentCredit) {
                   print('You dont have enough money!');
-                }else{
+                } else {
                   widget._bloc.currentCredit -= widget._bloc.items.unlockCost(et);
                   widget._bloc.items.machines[et].isUnlocked = true;
                 }
@@ -58,11 +56,17 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                   duration: Duration(milliseconds: 250),
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   foregroundDecoration: BoxDecoration(
-                    color: widget._bloc.buildSelectedEquipmentType == et ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2) : Colors.transparent,
-                    border: widget._bloc.buildSelectedEquipmentType == et ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor) : null,
+                    color: widget._bloc.buildSelectedEquipmentType == et
+                        ? DynamicTheme.of(context).data.selectedTileColor.withOpacity(0.2)
+                        : Colors.transparent,
+                    border: widget._bloc.buildSelectedEquipmentType == et
+                        ? Border.all(color: DynamicTheme.of(context).data.selectedTileColor)
+                        : null,
                   ),
                   decoration: BoxDecoration(
-                    color: et.index % 2 == 0 ? DynamicTheme.of(context).data.textColor.withOpacity(0.1) : Colors.transparent,
+                    color: et.index % 2 == 0
+                        ? DynamicTheme.of(context).data.textColor.withOpacity(0.1)
+                        : Colors.transparent,
                   ),
                   height: 100.0,
                   child: Row(
@@ -72,15 +76,15 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                         width: 32.0,
                         margin: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: CustomPaint(
-                          painter: ObjectPainter(
-                            widget._bloc.progress,
-                            theme: DynamicTheme.of(context).data,
-                            equipment: widget._bloc.previewEquipment(et),
-                            objectSize: 32.0
-                          ),
+                          painter: ObjectPainter(widget._bloc.progress,
+                              theme: DynamicTheme.of(context).data,
+                              equipment: widget._bloc.previewEquipment(et),
+                              objectSize: 32.0),
                         ),
                       ),
-                      SizedBox(width: 12.0,),
+                      SizedBox(
+                        width: 12.0,
+                      ),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,25 +93,49 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
-                                Text('${widget._bloc.items.cost(et)}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900, color: widget._bloc.items.cost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor))
+                                Text(
+                                  '${equipmentTypeToString(et)}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .title
+                                      .copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),
+                                ),
+                                Text('${widget._bloc.items.cost(et)}\$',
+                                    style: Theme.of(context).textTheme.title.copyWith(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w900,
+                                        color: widget._bloc.items.cost(et) < widget._bloc.currentCredit
+                                            ? DynamicTheme.of(context).data.positiveActionButtonColor
+                                            : DynamicTheme.of(context).data.negativeActionButtonColor))
                               ],
                             ),
-                            Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
-                            Text('Operating cost: ${widget._bloc.machineOperatingCost(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                            Text(
+                              '${equipmentDescriptionFromType(et)}',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .title
+                                  .copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
+                            ),
+                            Text(
+                              'Operating cost: ${widget._bloc.machineOperatingCost(et)}',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .title
+                                  .copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-
                 AnimatedCrossFade(
                   firstChild: Container(
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      border: Border.all(width: 0.4, color: DynamicTheme.of(context).data.rollerDividersColor)
-                    ),
+                        border: Border.all(width: 0.4, color: DynamicTheme.of(context).data.rollerDividersColor)),
                     height: 100.0,
                     child: ClipRect(
                       child: BackdropFilter(
@@ -119,9 +147,28 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('${equipmentTypeToString(et)}', style: Theme.of(context).textTheme.title.copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),),
-                                Text('${equipmentDescriptionFromType(et)}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.title.copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
-                                Text('${createDisplay(widget._bloc.items.unlockCost(et))}\$', style: Theme.of(context).textTheme.title.copyWith(fontSize: 20.0, fontWeight: FontWeight.w900, color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor),),
+                                Text(
+                                  '${equipmentTypeToString(et)}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .title
+                                      .copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),
+                                ),
+                                Text(
+                                  '${equipmentDescriptionFromType(et)}',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.title.copyWith(
+                                      fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
+                                ),
+                                Text(
+                                  '${createDisplay(widget._bloc.items.unlockCost(et))}\$',
+                                  style: Theme.of(context).textTheme.title.copyWith(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w900,
+                                      color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit
+                                          ? DynamicTheme.of(context).data.positiveActionButtonColor
+                                          : DynamicTheme.of(context).data.negativeActionButtonColor),
+                                ),
                               ],
                             ),
                           ),
@@ -131,7 +178,8 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                   ),
                   secondChild: SizedBox.shrink(),
                   alignment: Alignment.center,
-                  crossFadeState: widget._bloc.items.isUnlocked(et) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  crossFadeState:
+                      widget._bloc.items.isUnlocked(et) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                   duration: Duration(milliseconds: 250),
                 ),
               ],
@@ -163,10 +211,14 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
               height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
-                onPressed: (){
-                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[(GameProvider.of(context).buildSelectedEquipmentDirection.index + 1) % Direction.values.length];
+                onPressed: () {
+                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[
+                      (GameProvider.of(context).buildSelectedEquipmentDirection.index + 1) % Direction.values.length];
                 },
-                child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+                child: Icon(
+                  Icons.rotate_right,
+                  color: DynamicTheme.of(context).data.neutralActionIconColor,
+                ),
               ),
             ),
             Container(
@@ -185,7 +237,8 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
                     painter: ObjectPainter(
                       GameProvider.of(context).progress,
                       theme: DynamicTheme.of(context).data,
-                      equipment: GameProvider.of(context).previewEquipment(GameProvider.of(context).buildSelectedEquipmentType),
+                      equipment: GameProvider.of(context)
+                          .previewEquipment(GameProvider.of(context).buildSelectedEquipmentType),
                       objectSize: 48.0,
                     ),
                   ),
@@ -196,10 +249,14 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
               height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.neutralActionButtonColor,
-                onPressed: (){
-                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[(GameProvider.of(context).buildSelectedEquipmentDirection.index - 1) % Direction.values.length];
+                onPressed: () {
+                  GameProvider.of(context).buildSelectedEquipmentDirection = Direction.values[
+                      (GameProvider.of(context).buildSelectedEquipmentDirection.index - 1) % Direction.values.length];
                 },
-                child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+                child: Icon(
+                  Icons.rotate_left,
+                  color: DynamicTheme.of(context).data.neutralActionIconColor,
+                ),
               ),
             ),
           ],
@@ -210,14 +267,33 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
             child: RaisedButton(
               color: DynamicTheme.of(context).data.positiveActionButtonColor,
               disabledColor: DynamicTheme.of(context).data.negativeActionButtonColor,
-              onPressed: GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length < GameProvider.of(context).currentCredit ? (){
-                GameProvider.of(context).buildSelected();
-              } : null,
+              onPressed: GameProvider.of(context).equipment.length < 10 ||
+                      GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) *
+                              GameProvider.of(context).selectedTiles.length <
+                          GameProvider.of(context).currentCredit
+                  ? () {
+                      GameProvider.of(context).buildSelected();
+                    }
+                  : null,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('BUILD', style: Theme.of(context).textTheme.subhead.copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),),
-                  Text('(${GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length}\$)', style: Theme.of(context).textTheme.subhead.copyWith(color: GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length < GameProvider.of(context).currentCredit ? DynamicTheme.of(context).data.positiveActionIconColor : DynamicTheme.of(context).data.negativeActionIconColor)),
+                  Text(
+                    'BUILD',
+                    style: Theme.of(context)
+                        .textTheme
+                        .subhead
+                        .copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
+                  ),
+                  Text(
+                      '(${GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length}\$)',
+                      style: Theme.of(context).textTheme.subhead.copyWith(
+                          color:
+                              GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) *
+                                          GameProvider.of(context).selectedTiles.length <
+                                      GameProvider.of(context).currentCredit
+                                  ? DynamicTheme.of(context).data.positiveActionIconColor
+                                  : DynamicTheme.of(context).data.negativeActionIconColor)),
                 ],
               ),
             ),

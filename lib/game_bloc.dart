@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Radio;
@@ -146,7 +145,7 @@ class GameBloc {
 
     hasClaimedCredit = false;
     idleCredit = 0;
-    currentCredit = 10000;
+    currentCredit = 0;
     averageLast30.clear();
 
     factoryFloor = floor;
@@ -271,7 +270,7 @@ class GameBloc {
   int _tickSpeed = 1200;
   bool showArrows = false;
 
-  int currentCredit = 10000;
+  int currentCredit = 0;
   int idleCredit = 0;
   bool hasClaimedCredit = false;
   List<int> averageLast30 = <int>[];
@@ -746,8 +745,6 @@ class GameBloc {
       }
 
       currentCredit += lastTickEarnings;
-
-      currentCredit = min(currentCredit, 10000);
 
       _material = equipment.fold(<FactoryMaterialModel>[],
           (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
