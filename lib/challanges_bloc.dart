@@ -4,20 +4,22 @@ import 'dart:ui';
 
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/game/money_manager/sandbox_manager.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/util/utils.dart';
 import 'package:hive/hive.dart';
+import 'package:random_color/random_color.dart';
 
 import 'game/model/coordinates.dart';
 import 'game/model/factory_equipment_model.dart';
 
-class ChallengesBloc extends GameBloc{
-  ChallengesBloc(int challenge) : super() {
+class ChallengesBloc extends GameBloc {
+  ChallengesBloc(int challenge) : super(moneyManager: SandboxManager()) {
     factoryFloor = challenge;
 
     loadFactoryFloor();
   }
-  
+
   bool _didComplete = false;
 
   double complete = 0.0;
@@ -29,22 +31,26 @@ class ChallengesBloc extends GameBloc{
   void loadChallenge(int challenge) => changeFloor(challenge);
 
   @override
-  bool tick(){
+  bool tick() {
     final bool _realTick = super.tick();
 
-    if(_realTick && challengeGoal != null){
+    if (_realTick && challengeGoal != null) {
       int soldItems = 0;
 
-      if(goalSeller != null){
-        goalSeller.soldItems.getRange(max(goalSeller.soldItems.length - 60, 0), goalSeller.soldItems.length).forEach((List<FactoryRecipeMaterialType> frmtList){
-          soldItems += frmtList.where((FactoryRecipeMaterialType frmt) => frmt.materialType == challengeGoal.keys.first.materialType).length;
+      if (goalSeller != null) {
+        goalSeller.soldItems
+            .getRange(max(goalSeller.soldItems.length - 60, 0), goalSeller.soldItems.length)
+            .forEach((List<FactoryRecipeMaterialType> frmtList) {
+          soldItems += frmtList
+              .where((FactoryRecipeMaterialType frmt) => frmt.materialType == challengeGoal.keys.first.materialType)
+              .length;
         });
       }
 
-      if(!_didComplete){
+      if (!_didComplete) {
         complete = (soldItems / 60) / challengeGoal.values.first;
         _didComplete = complete == 1.0;
-      }else{
+      } else {
         complete = 1.0;
       }
 
@@ -54,8 +60,8 @@ class ChallengesBloc extends GameBloc{
     return _realTick;
   }
 
-  String getChallengeGoalDescription(){
-    if(challengeGoal == null || challengeGoal.isEmpty){
+  String getChallengeGoalDescription() {
+    if (challengeGoal == null || challengeGoal.isEmpty) {
       return '';
     }
 
@@ -64,17 +70,17 @@ class ChallengesBloc extends GameBloc{
   }
 
   @override
-  String getFloorName(){
-    return 'Challenge ${factoryFloor + 1}';
+  String getFloorName({int floor}) {
+    return 'Challenge ${(floor ?? factoryFloor) + 1}';
   }
 
   @override
-  void changeFloor(int factoryFloor){}
+  void changeFloor(int factoryFloor) {}
 
   @override
   Future<void> saveFactory() async {
-    if(!hiveBox.isOpen){
-      hiveBox = await Hive.openBox<dynamic>('factory_floor_$factoryFloor');
+    if (!hiveBox.isOpen) {
+      hiveBox = await Hive.openBox<dynamic>('challenge_$factoryFloor');
     }
 
     await hiveBox.putAll(toMap());
@@ -83,15 +89,15 @@ class ChallengesBloc extends GameBloc{
 
   @override
   Future<void> loadFactoryFloor() async {
-    if(factoryFloor == 0){
+    if (factoryFloor == 0) {
       _loadFirstChallenge();
-    }else if(factoryFloor == 1){
+    } else if (factoryFloor == 1) {
       _loadSecondChallenge();
-    }else if(factoryFloor == 2){
+    } else if (factoryFloor == 2) {
       _loadThirdChallenge();
-    }else if(factoryFloor == 3){
+    } else if (factoryFloor == 3) {
       _loadFourthChallenge();
-    }else{
+    } else {
       _loadFifthChallenge();
     }
 
@@ -100,7 +106,7 @@ class ChallengesBloc extends GameBloc{
     hiveBox = await Hive.openBox<dynamic>('challenge_$factoryFloor');
     final Map<dynamic, dynamic> _result = hiveBox.toMap();
 
-    if(_result == null || _result.isEmpty){
+    if (_result == null || _result.isEmpty) {
       goalSeller = equipment.firstWhere((FactoryEquipmentModel fem) => fem is Seller);
       return;
     }
@@ -113,14 +119,14 @@ class ChallengesBloc extends GameBloc{
     print('Loaded equipment: ${equipmentList.length}');
 
     equipment.clear();
-    equipment.addAll(equipmentList.map((dynamic eq){
+    equipment.addAll(equipmentList.map((dynamic eq) {
       final FactoryEquipmentModel _fem = equipmentFromMap(eq);
       //      _fem.objects.add(Gold.fromOffset(Offset(_fem.coordinates.x.toDouble(), _fem.coordinates.y.toDouble())));
 
       final Map<String, dynamic> map = json.decode(eq);
 
       final List<dynamic> _materialMap = map['material'];
-      final List<FactoryMaterialModel> _materials = _materialMap.map((dynamic map){
+      final List<FactoryMaterialModel> _materials = _materialMap.map((dynamic map) {
         final FactoryMaterialModel _material = materialFromMap(map);
         _material.direction ??= _fem.direction;
         return _material;
@@ -131,11 +137,28 @@ class ChallengesBloc extends GameBloc{
       return _fem;
     }));
 
+    final List<UndergroundPortal> _portals = getAll<UndergroundPortal>();
+
+    _portals.forEach((UndergroundPortal up) {
+      final UndergroundPortal _connectingPortal =
+          _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
+
+      if (_connectingPortal != null) {
+        _connectingPortal.connectingPortal = up.coordinates;
+        up.connectingPortal = _connectingPortal.coordinates;
+
+        final Color _lineColor = RandomColor().randomColor();
+
+        _connectingPortal.lineColor = _lineColor;
+        up.lineColor = _lineColor;
+      }
+    });
+
     print(_result);
     goalSeller = equipment.firstWhere((FactoryEquipmentModel fem) => fem is Seller);
   }
 
-  void _loadFirstChallenge(){
+  void _loadFirstChallenge() {
     challengeGoal = <FactoryRecipeMaterialType, double>{
       FactoryRecipeMaterialType(FactoryMaterialType.washingMachine): 2
     };
@@ -148,43 +171,19 @@ class ChallengesBloc extends GameBloc{
 
     equipment.clear();
 
-    equipment.add(Dispenser(
-      Coordinates(0, 0),
-      Direction.north,
-      FactoryMaterialType.iron,
-      dispenseAmount: 4,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(5, 0),
-      Direction.north,
-      FactoryMaterialType.gold,
-      dispenseAmount: 2,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(5, 0), Direction.north, FactoryMaterialType.gold, dispenseAmount: 2, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(5, 4),
-      Direction.south,
-      FactoryMaterialType.copper,
-      dispenseAmount: 4,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(5, 4), Direction.south, FactoryMaterialType.copper, dispenseAmount: 4, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(0, 4),
-      Direction.south,
-      FactoryMaterialType.aluminium,
-      dispenseAmount: 4,
-      isMutable: false
-    ));
+    equipment.add(Dispenser(Coordinates(0, 4), Direction.south, FactoryMaterialType.aluminium,
+        dispenseAmount: 4, isMutable: false));
 
-    equipment.add(Seller(
-      Coordinates(4, 4),
-      Direction.south,
-      isMutable: false
-    ));
+    equipment.add(Seller(Coordinates(4, 4), Direction.south, isMutable: false));
   }
 
   void restart() async {
@@ -192,10 +191,8 @@ class ChallengesBloc extends GameBloc{
     loadFactoryFloor();
   }
 
-  void _loadSecondChallenge(){
-    challengeGoal = <FactoryRecipeMaterialType, double>{
-      FactoryRecipeMaterialType(FactoryMaterialType.airCondition): 1
-    };
+  void _loadSecondChallenge() {
+    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.airCondition): 1};
 
     gameCameraPosition.position = Offset(90.0, 300.0);
     gameCameraPosition.scale = 2.0;
@@ -205,57 +202,26 @@ class ChallengesBloc extends GameBloc{
 
     equipment.clear();
 
-    equipment.add(Dispenser(
-      Coordinates(0, 0),
-      Direction.north,
-      FactoryMaterialType.diamond,
-      dispenseAmount: 1,
-      isMutable: false
-    ));
+    equipment.add(Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.diamond,
+        dispenseAmount: 1, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(1, 1),
-      Direction.north,
-      FactoryMaterialType.gold,
-      dispenseAmount: 1,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(1, 1), Direction.north, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(2, 2),
-      Direction.west,
-      FactoryMaterialType.gold,
-      dispenseAmount: 1,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(2, 2), Direction.west, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(3, 3),
-      Direction.north,
-      FactoryMaterialType.gold,
-      dispenseAmount: 1,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(3, 3), Direction.north, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(4, 4),
-      Direction.west,
-      FactoryMaterialType.aluminium,
-      dispenseAmount: 1,
-      isMutable: false
-    ));
+    equipment.add(Dispenser(Coordinates(4, 4), Direction.west, FactoryMaterialType.aluminium,
+        dispenseAmount: 1, isMutable: false));
 
-    equipment.add(Seller(
-      Coordinates(0, 4),
-      Direction.west,
-      isMutable: false
-    ));
+    equipment.add(Seller(Coordinates(0, 4), Direction.west, isMutable: false));
   }
 
-  void _loadThirdChallenge(){
-    challengeGoal = <FactoryRecipeMaterialType, double>{
-      FactoryRecipeMaterialType(FactoryMaterialType.lightBulb): 1
-    };
+  void _loadThirdChallenge() {
+    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.lightBulb): 1};
 
     gameCameraPosition.position = Offset(120.0, 300.0);
     gameCameraPosition.scale = 2.5;
@@ -265,33 +231,17 @@ class ChallengesBloc extends GameBloc{
 
     equipment.clear();
 
-    equipment.add(Dispenser(
-      Coordinates(0, 0),
-      Direction.east,
-      FactoryMaterialType.copper,
-      dispenseAmount: 2,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(0, 0), Direction.east, FactoryMaterialType.copper, dispenseAmount: 2, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(0, 3),
-      Direction.east,
-      FactoryMaterialType.iron,
-      dispenseAmount: 2,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(0, 3), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2, isMutable: false));
 
-    equipment.add(Seller(
-      Coordinates(2, 0),
-      Direction.west,
-      isMutable: false
-    ));
+    equipment.add(Seller(Coordinates(2, 0), Direction.west, isMutable: false));
   }
 
-  void _loadFourthChallenge(){
-    challengeGoal = <FactoryRecipeMaterialType, double>{
-      FactoryRecipeMaterialType(FactoryMaterialType.engine): 1
-    };
+  void _loadFourthChallenge() {
+    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.engine): 1};
 
     gameCameraPosition.position = Offset(120.0, 300.0);
     gameCameraPosition.scale = 2.5;
@@ -301,33 +251,17 @@ class ChallengesBloc extends GameBloc{
 
     equipment.clear();
 
-    equipment.add(Dispenser(
-      Coordinates(0, 0),
-      Direction.east,
-      FactoryMaterialType.gold,
-      dispenseAmount: 1,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(0, 0), Direction.east, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(0, 3),
-      Direction.east,
-      FactoryMaterialType.iron,
-      dispenseAmount: 2,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(0, 3), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2, isMutable: false));
 
-    equipment.add(Seller(
-      Coordinates(2, 0),
-      Direction.west,
-      isMutable: false
-    ));
+    equipment.add(Seller(Coordinates(2, 0), Direction.west, isMutable: false));
   }
 
-  void _loadFifthChallenge(){
-    challengeGoal = <FactoryRecipeMaterialType, double>{
-      FactoryRecipeMaterialType(FactoryMaterialType.railway): 0.6
-    };
+  void _loadFifthChallenge() {
+    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.railway): 0.6};
 
     gameCameraPosition.position = Offset(80.0, 300.0);
     gameCameraPosition.scale = 2.0;
@@ -337,44 +271,23 @@ class ChallengesBloc extends GameBloc{
 
     equipment.clear();
 
-    equipment.add(Dispenser(
-      Coordinates(0, 0),
-      Direction.north,
-      FactoryMaterialType.iron,
-      dispenseAmount: 4,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(2, 0),
-      Direction.north,
-      FactoryMaterialType.iron,
-      dispenseAmount: 4,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(2, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
 
-    equipment.add(Dispenser(
-      Coordinates(4, 0),
-      Direction.north,
-      FactoryMaterialType.iron,
-      dispenseAmount: 4,
-      isMutable: false
-    ));
+    equipment.add(
+        Dispenser(Coordinates(4, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
 
-    equipment.add(Seller(
-      Coordinates(2, 4),
-      Direction.north,
-      isMutable: false
-    ));
+    equipment.add(Seller(Coordinates(2, 4), Direction.north, isMutable: false));
   }
 
   @override
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
 
-    _map.addAll(<String, dynamic>{
-      'did_complete': _didComplete
-    });
+    _map.addAll(<String, dynamic>{'did_complete': _didComplete});
 
     return _map;
   }

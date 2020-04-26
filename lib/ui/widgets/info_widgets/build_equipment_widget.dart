@@ -35,18 +35,17 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
         }).map((EquipmentType et) {
           return InkWell(
             onTap: () {
-              if (widget._bloc.items.isUnlocked(et)) {
+              if (widget._bloc.moneyManager.isEquipmentUnlocked(et)) {
                 widget._bloc.buildSelectedEquipmentType = et;
 
                 setState(() {
                   _isExpanded = false;
                 });
               } else {
-                if (widget._bloc.items.unlockCost(et) > widget._bloc.currentCredit) {
-                  print('You dont have enough money!');
+                if (widget._bloc.moneyManager.canUnlockEquipment(et)) {
+                  widget._bloc.moneyManager.unlockEquipment(et);
                 } else {
-                  widget._bloc.currentCredit -= widget._bloc.items.unlockCost(et);
-                  widget._bloc.items.machines[et].isUnlocked = true;
+                  print('You dont have enough money!');
                 }
               }
             },
@@ -100,11 +99,11 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                       .title
                                       .copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),
                                 ),
-                                Text('${widget._bloc.items.cost(et)}\$',
+                                Text('${widget._bloc.moneyManager.costOfEquipment(et)}\$',
                                     style: Theme.of(context).textTheme.title.copyWith(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.w900,
-                                        color: widget._bloc.items.cost(et) < widget._bloc.currentCredit
+                                        color: widget._bloc.moneyManager.canPurchaseEquipment(et)
                                             ? DynamicTheme.of(context).data.positiveActionButtonColor
                                             : DynamicTheme.of(context).data.negativeActionButtonColor))
                               ],
@@ -161,11 +160,11 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                       fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
                                 ),
                                 Text(
-                                  '${createDisplay(widget._bloc.items.unlockCost(et))}\$',
+                                  '${createDisplay(widget._bloc.moneyManager.costOfUnlockingEquipment(et))}\$',
                                   style: Theme.of(context).textTheme.title.copyWith(
                                       fontSize: 20.0,
                                       fontWeight: FontWeight.w900,
-                                      color: widget._bloc.items.unlockCost(et) < widget._bloc.currentCredit
+                                      color: widget._bloc.moneyManager.canUnlockEquipment(et)
                                           ? DynamicTheme.of(context).data.positiveActionButtonColor
                                           : DynamicTheme.of(context).data.negativeActionButtonColor),
                                 ),
@@ -178,8 +177,9 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                   ),
                   secondChild: SizedBox.shrink(),
                   alignment: Alignment.center,
-                  crossFadeState:
-                      widget._bloc.items.isUnlocked(et) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  crossFadeState: widget._bloc.moneyManager.isEquipmentUnlocked(et)
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
                   duration: Duration(milliseconds: 250),
                 ),
               ],
@@ -267,10 +267,9 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
             child: RaisedButton(
               color: DynamicTheme.of(context).data.positiveActionButtonColor,
               disabledColor: DynamicTheme.of(context).data.negativeActionButtonColor,
-              onPressed: GameProvider.of(context).equipment.length < 10 ||
-                      GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) *
-                              GameProvider.of(context).selectedTiles.length <
-                          GameProvider.of(context).currentCredit
+              onPressed: GameProvider.of(context).moneyManager.canPurchaseEquipment(
+                      GameProvider.of(context).buildSelectedEquipmentType,
+                      bulkBuy: GameProvider.of(context).selectedTiles.length)
                   ? () {
                       GameProvider.of(context).buildSelected();
                     }
@@ -286,14 +285,13 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
                         .copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
                   ),
                   Text(
-                      '(${GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length}\$)',
+                      '(${GameProvider.of(context).moneyManager.costOfEquipment(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length}\$)',
                       style: Theme.of(context).textTheme.subhead.copyWith(
-                          color:
-                              GameProvider.of(context).items.cost(GameProvider.of(context).buildSelectedEquipmentType) *
-                                          GameProvider.of(context).selectedTiles.length <
-                                      GameProvider.of(context).currentCredit
-                                  ? DynamicTheme.of(context).data.positiveActionIconColor
-                                  : DynamicTheme.of(context).data.negativeActionIconColor)),
+                          color: GameProvider.of(context).moneyManager.canPurchaseEquipment(
+                                  GameProvider.of(context).buildSelectedEquipmentType,
+                                  bulkBuy: GameProvider.of(context).selectedTiles.length)
+                              ? DynamicTheme.of(context).data.positiveActionIconColor
+                              : DynamicTheme.of(context).data.negativeActionIconColor)),
                 ],
               ),
             ),
