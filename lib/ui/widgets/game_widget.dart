@@ -69,7 +69,7 @@ class _GameWidgetState extends State<GameWidget> {
     showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (BuildContext context) => Dialog(
+        builder: (_) => Dialog(
               child: Container(
                 margin: const EdgeInsets.all(24.0),
                 child: Column(
@@ -79,14 +79,14 @@ class _GameWidgetState extends State<GameWidget> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Idle income',
-                          style: Theme.of(context).textTheme.headline,
+                          style: Theme.of(context).textTheme.headline6,
                         )),
                     SizedBox(
                       height: 24.0,
                     ),
                     Text(
                       'Your line earned: ${createDisplay((_bloc.moneyManager.idleCredit * 0.5).round())}\$',
-                      style: Theme.of(context).textTheme.subhead,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     SizedBox(
                       height: 24.0,

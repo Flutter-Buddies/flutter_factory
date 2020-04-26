@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_factory/challanges_bloc.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game_bloc.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
@@ -9,10 +10,9 @@ import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 import 'package:flutter_factory/util/utils.dart';
 
 class BuildEquipmentWidget extends StatefulWidget {
-  BuildEquipmentWidget(this._bloc, {Key key, this.isChallenge = false}) : super(key: key);
+  BuildEquipmentWidget(this._bloc, {Key key}) : super(key: key);
 
   final GameBloc _bloc;
-  final bool isChallenge;
 
   @override
   _BuildEquipmentWidgetState createState() => _BuildEquipmentWidgetState();
@@ -27,7 +27,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
       color: DynamicTheme.of(context).data.voidColor,
       child: Column(
         children: EquipmentType.values.where((EquipmentType et) {
-          if (widget.isChallenge) {
+          if (widget._bloc is ChallengesBloc) {
             return et != EquipmentType.dispenser && et != EquipmentType.seller;
           }
 
@@ -96,11 +96,11 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                   '${equipmentTypeToString(et)}',
                                   style: Theme.of(context)
                                       .textTheme
-                                      .title
+                                      .headline6
                                       .copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),
                                 ),
                                 Text('${widget._bloc.moneyManager.costOfEquipment(et)}\$',
-                                    style: Theme.of(context).textTheme.title.copyWith(
+                                    style: Theme.of(context).textTheme.headline6.copyWith(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.w900,
                                         color: widget._bloc.moneyManager.canPurchaseEquipment(et)
@@ -113,7 +113,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .title
+                                  .headline6
                                   .copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
                             ),
                             Text(
@@ -121,7 +121,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .title
+                                  .headline6
                                   .copyWith(fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
                             ),
                           ],
@@ -150,18 +150,18 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                                   '${equipmentTypeToString(et)}',
                                   style: Theme.of(context)
                                       .textTheme
-                                      .title
+                                      .headline6
                                       .copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),
                                 ),
                                 Text(
                                   '${equipmentDescriptionFromType(et)}',
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.title.copyWith(
+                                  style: Theme.of(context).textTheme.headline6.copyWith(
                                       fontSize: 12.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
                                 ),
                                 Text(
                                   '${createDisplay(widget._bloc.moneyManager.costOfUnlockingEquipment(et))}\$',
-                                  style: Theme.of(context).textTheme.title.copyWith(
+                                  style: Theme.of(context).textTheme.headline6.copyWith(
                                       fontSize: 20.0,
                                       fontWeight: FontWeight.w900,
                                       color: widget._bloc.moneyManager.canUnlockEquipment(et)

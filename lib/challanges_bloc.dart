@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_factory/game/factory_equipment.dart';
+import 'package:flutter_factory/game/model/challange_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/game/money_manager/sandbox_manager.dart';
 import 'package:flutter_factory/game_bloc.dart';
@@ -23,6 +24,7 @@ class ChallengesBloc extends GameBloc {
   bool _didComplete = false;
 
   double complete = 0.0;
+  ChallengeModel model;
 
   Map<FactoryRecipeMaterialType, double> challengeGoal;
 
@@ -60,14 +62,7 @@ class ChallengesBloc extends GameBloc {
     return _realTick;
   }
 
-  String getChallengeGoalDescription() {
-    if (challengeGoal == null || challengeGoal.isEmpty) {
-      return '';
-    }
-
-    final FactoryRecipeMaterialType _frmt = challengeGoal.keys.first;
-    return 'You have to produce ${challengeGoal[_frmt]} ${factoryMaterialToString(_frmt.materialType)} per tick';
-  }
+  String getChallengeGoalDescription() => model.getChallengeDescription();
 
   @override
   String getFloorName({int floor}) {
@@ -100,6 +95,15 @@ class ChallengesBloc extends GameBloc {
     } else {
       _loadFifthChallenge();
     }
+
+    equipment.clear();
+    equipment.addAll(model.equipmentPlacement);
+
+    gameCameraPosition.position = Offset(model.cameraPositionX, model.cameraPositionY);
+    gameCameraPosition.scale = model.cameraScale;
+
+    mapWidth = model.mapWidth;
+    mapHeight = model.mapHeight;
 
     print('Loading factory from DB!');
 
@@ -159,31 +163,23 @@ class ChallengesBloc extends GameBloc {
   }
 
   void _loadFirstChallenge() {
-    challengeGoal = <FactoryRecipeMaterialType, double>{
-      FactoryRecipeMaterialType(FactoryMaterialType.washingMachine): 2
-    };
-
-    gameCameraPosition.position = Offset(60.0, 300.0);
-    gameCameraPosition.scale = 2.0;
-
-    mapWidth = 5;
-    mapHeight = 4;
-
-    equipment.clear();
-
-    equipment.add(
-        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(5, 0), Direction.north, FactoryMaterialType.gold, dispenseAmount: 2, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(5, 4), Direction.south, FactoryMaterialType.copper, dispenseAmount: 4, isMutable: false));
-
-    equipment.add(Dispenser(Coordinates(0, 4), Direction.south, FactoryMaterialType.aluminium,
-        dispenseAmount: 4, isMutable: false));
-
-    equipment.add(Seller(Coordinates(4, 4), Direction.south, isMutable: false));
+    model = ChallengeModel()
+      ..mapHeight = 4
+      ..mapWidth = 5
+      ..challengeName = 'First challenge'
+      ..cameraPositionX = 60.0
+      ..cameraPositionY = 300.0
+      ..cameraScale = 2.0
+      ..challengeGoal = <ChallengeGoal>[ChallengeGoal(materialType: FactoryMaterialType.washingMachine, perTick: 2.0)]
+      ..bannedEquipment = <EquipmentType>[EquipmentType.crafter, EquipmentType.seller]
+      ..equipmentPlacement = <FactoryEquipmentModel>[
+        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false),
+        Dispenser(Coordinates(5, 0), Direction.north, FactoryMaterialType.gold, dispenseAmount: 2, isMutable: false),
+        Dispenser(Coordinates(5, 4), Direction.south, FactoryMaterialType.copper, dispenseAmount: 4, isMutable: false),
+        Dispenser(Coordinates(0, 4), Direction.south, FactoryMaterialType.aluminium,
+            dispenseAmount: 4, isMutable: false),
+        Seller(Coordinates(4, 4), Direction.south, isMutable: false)
+      ];
   }
 
   void restart() async {
@@ -192,95 +188,82 @@ class ChallengesBloc extends GameBloc {
   }
 
   void _loadSecondChallenge() {
-    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.airCondition): 1};
-
-    gameCameraPosition.position = Offset(90.0, 300.0);
-    gameCameraPosition.scale = 2.0;
-
-    mapWidth = 4;
-    mapHeight = 4;
-
-    equipment.clear();
-
-    equipment.add(Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.diamond,
-        dispenseAmount: 1, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(1, 1), Direction.north, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(2, 2), Direction.west, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(3, 3), Direction.north, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
-
-    equipment.add(Dispenser(Coordinates(4, 4), Direction.west, FactoryMaterialType.aluminium,
-        dispenseAmount: 1, isMutable: false));
-
-    equipment.add(Seller(Coordinates(0, 4), Direction.west, isMutable: false));
+    model = ChallengeModel()
+      ..mapHeight = 4
+      ..mapWidth = 4
+      ..challengeName = 'Second challenge'
+      ..cameraPositionX = 120.0
+      ..cameraPositionY = 260.0
+      ..cameraScale = 2.0
+      ..challengeGoal = <ChallengeGoal>[ChallengeGoal(materialType: FactoryMaterialType.airCondition, perTick: 1.0)]
+      ..bannedEquipment = <EquipmentType>[EquipmentType.crafter, EquipmentType.seller]
+      ..equipmentPlacement = <FactoryEquipmentModel>[
+        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.diamond, dispenseAmount: 1, isMutable: false),
+        Dispenser(Coordinates(1, 1), Direction.north, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false),
+        Dispenser(Coordinates(2, 2), Direction.west, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false),
+        Dispenser(Coordinates(3, 3), Direction.north, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false),
+        Dispenser(Coordinates(4, 4), Direction.west, FactoryMaterialType.aluminium,
+            dispenseAmount: 1, isMutable: false),
+        Seller(Coordinates(0, 4), Direction.west, isMutable: false)
+      ];
   }
 
   void _loadThirdChallenge() {
-    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.lightBulb): 1};
-
-    gameCameraPosition.position = Offset(120.0, 300.0);
-    gameCameraPosition.scale = 2.5;
-
-    mapWidth = 2;
-    mapHeight = 3;
-
-    equipment.clear();
-
-    equipment.add(
-        Dispenser(Coordinates(0, 0), Direction.east, FactoryMaterialType.copper, dispenseAmount: 2, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(0, 3), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2, isMutable: false));
-
-    equipment.add(Seller(Coordinates(2, 0), Direction.west, isMutable: false));
+    model = ChallengeModel()
+      ..mapHeight = 3
+      ..mapWidth = 2
+      ..challengeName = 'Third challenge'
+      ..cameraPositionX = 120.0
+      ..cameraPositionY = 260.0
+      ..cameraScale = 2.6
+      ..challengeGoal = <ChallengeGoal>[ChallengeGoal(materialType: FactoryMaterialType.lightBulb, perTick: 1.0)]
+      ..bannedEquipment = <EquipmentType>[EquipmentType.crafter, EquipmentType.seller]
+      ..equipmentPlacement = <FactoryEquipmentModel>[
+        Dispenser(Coordinates(0, 0), Direction.east, FactoryMaterialType.copper, dispenseAmount: 2, isMutable: false),
+        Dispenser(Coordinates(0, 3), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2, isMutable: false),
+        Seller(Coordinates(2, 0), Direction.west, isMutable: false),
+      ];
   }
 
   void _loadFourthChallenge() {
-    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.engine): 1};
-
-    gameCameraPosition.position = Offset(120.0, 300.0);
-    gameCameraPosition.scale = 2.5;
-
-    mapWidth = 2;
-    mapHeight = 3;
-
-    equipment.clear();
-
-    equipment.add(
-        Dispenser(Coordinates(0, 0), Direction.east, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(0, 3), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2, isMutable: false));
-
-    equipment.add(Seller(Coordinates(2, 0), Direction.west, isMutable: false));
+    model = ChallengeModel()
+      ..mapHeight = 3
+      ..mapWidth = 2
+      ..challengeName = 'Fourth challenge'
+      ..cameraPositionX = 120.0
+      ..cameraPositionY = 260.0
+      ..cameraScale = 2.6
+      ..challengeGoal = <ChallengeGoal>[ChallengeGoal(materialType: FactoryMaterialType.engine, perTick: 1.0)]
+      ..bannedEquipment = <EquipmentType>[EquipmentType.crafter, EquipmentType.seller]
+      ..equipmentPlacement = <FactoryEquipmentModel>[
+        Dispenser(Coordinates(0, 0), Direction.east, FactoryMaterialType.gold, dispenseAmount: 1, isMutable: false),
+        Dispenser(Coordinates(0, 3), Direction.east, FactoryMaterialType.iron, dispenseAmount: 2, isMutable: false),
+        Seller(Coordinates(2, 0), Direction.west, isMutable: false)
+      ];
   }
 
   void _loadFifthChallenge() {
-    challengeGoal = <FactoryRecipeMaterialType, double>{FactoryRecipeMaterialType(FactoryMaterialType.railway): 0.6};
+    model = ChallengeModel()
+      ..mapHeight = 4
+      ..mapWidth = 4
+      ..challengeName = 'Fifth challenge'
+      ..cameraPositionX = 80.0
+      ..cameraPositionY = 300.0
+      ..cameraScale = 2.0
+      ..challengeGoal = <ChallengeGoal>[ChallengeGoal(materialType: FactoryMaterialType.railway, perTick: 0.6)]
+      ..bannedEquipment = <EquipmentType>[EquipmentType.crafter, EquipmentType.seller]
+      ..equipmentPlacement = <FactoryEquipmentModel>[
+        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false),
+        Dispenser(Coordinates(2, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false),
+        Dispenser(Coordinates(4, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false),
+        Seller(Coordinates(2, 4), Direction.north, isMutable: false)
+      ];
+  }
 
-    gameCameraPosition.position = Offset(80.0, 300.0);
-    gameCameraPosition.scale = 2.0;
+  Future<ChallengeModel> loadModel() async {
+    await loadFactoryFloor();
 
-    mapWidth = 4;
-    mapHeight = 4;
-
-    equipment.clear();
-
-    equipment.add(
-        Dispenser(Coordinates(0, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(2, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
-
-    equipment.add(
-        Dispenser(Coordinates(4, 0), Direction.north, FactoryMaterialType.iron, dispenseAmount: 4, isMutable: false));
-
-    equipment.add(Seller(Coordinates(2, 4), Direction.north, isMutable: false));
+    return model;
   }
 
   @override
