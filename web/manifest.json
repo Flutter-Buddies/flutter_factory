@@ -1,6 +1,6 @@
 {
-    "name": "FlutterFactory",
-    "short_name": "FlutterFactory",
+    "name": "flutter_factory",
+    "short_name": "flutter_factory",
     "start_url": ".",
     "display": "minimal-ui",
     "background_color": "#0175C2",
