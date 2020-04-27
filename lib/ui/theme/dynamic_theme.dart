@@ -1,35 +1,29 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-enum ThemeType{
-  light,
-  dark,
-  oledDark
-}
+enum ThemeType { light, dark, oledDark }
 
-String getThemeName(ThemeType type){
-  switch(type){
-    case ThemeType.light: return 'Light';
-    case ThemeType.dark: return 'Dark';
-    case ThemeType.oledDark: return 'OLED Dark';
+String getThemeName(ThemeType type) {
+  switch (type) {
+    case ThemeType.light:
+      return 'Light';
+    case ThemeType.dark:
+      return 'Dark';
+    case ThemeType.oledDark:
+      return 'OLED Dark';
   }
 }
 
-typedef ThemedWidgetBuilder = Widget Function(
-  BuildContext context, GameTheme data);
+typedef ThemedWidgetBuilder = Widget Function(BuildContext context, GameTheme data);
 
-typedef ThemeDataWithThemeTypeBuilder = GameTheme Function(
-  ThemeType brightness);
+typedef ThemeDataWithThemeTypeBuilder = GameTheme Function(ThemeType brightness);
 
 class DynamicTheme extends StatefulWidget {
-  const DynamicTheme(
-    {Key key, this.data, this.themedWidgetBuilder, this.defaultThemeType})
-    : super(key: key);
+  const DynamicTheme({Key key, this.data, this.themedWidgetBuilder, this.defaultThemeType}) : super(key: key);
 
   final ThemedWidgetBuilder themedWidgetBuilder;
   final ThemeDataWithThemeTypeBuilder data;
@@ -96,16 +90,15 @@ class DynamicThemeState extends State<DynamicTheme> {
       _data = data;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return widget.themedWidgetBuilder(context, _data);
   }
 
   Future<ThemeType> loadBrightness() async {
-    if(_themeData == null){
-      final Directory _path = await getApplicationDocumentsDirectory();
-
-      Hive.init(_path.path);
+    if (_themeData == null) {
+      await Hive.initFlutter();
       _themeData = await Hive.openBox<dynamic>('theme_settings');
     }
 
