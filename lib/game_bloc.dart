@@ -9,7 +9,8 @@ import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/coordinates.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
-import 'package:flutter_factory/game/model/unlockables_model.dart';
+import 'package:flutter_factory/game/money_manager/money_manager.dart';
+import 'package:flutter_factory/game/money_manager/normal_manager.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:flutter_factory/util/utils.dart';
 import 'package:hive/hive.dart';
@@ -41,14 +42,14 @@ class GameCameraPosition {
 }
 
 class GameBloc {
-  GameBloc() {
+  GameBloc({this.moneyManager}) {
+    moneyManager ??= NormalMoneyManager();
+
     _waitForTick();
     _loadHive();
   }
 
   bool _didLoad = false;
-
-  GameItems items;
 
   Future<void> _loadHive() async {
     final Directory _path = await getApplicationDocumentsDirectory();
@@ -58,8 +59,6 @@ class GameBloc {
       _didLoad = true;
       loadFactoryFloor();
     }
-
-    items = GameItems();
   }
 
   Box<dynamic> hiveBox;
@@ -80,6 +79,8 @@ class GameBloc {
   double cubeSize = 30.0;
   double _scaleEnd;
   Offset _startPoint;
+
+  MoneyManager moneyManager;
 
   static const double _maxZoomLimit = 40.0;
   static const double _minZoomLimit = 0.25;
@@ -113,21 +114,23 @@ class GameBloc {
 
   String get floor => getFloorName();
 
-  String getFloorName() {
-    if (factoryFloor == 0) {
+  String getFloorName({int floor}) {
+    floor ??= factoryFloor;
+
+    if (floor == 0) {
       return 'Ground floor';
-    } else if (factoryFloor == 1) {
+    } else if (floor == 1) {
       return 'First floor';
-    } else if (factoryFloor == 2) {
+    } else if (floor == 2) {
       return 'Second floor';
-    } else if (factoryFloor == 3) {
+    } else if (floor == 3) {
       return 'Secret floor';
-    } else if (factoryFloor == 4) {
+    } else if (floor == 4) {
       return 'Big floor';
-    } else if (factoryFloor == 5) {
+    } else if (floor == 5) {
       return 'Really big floor';
     } else {
-      return 'Floor $factoryFloor';
+      return 'Floor $floor';
     }
   }
 
@@ -143,9 +146,7 @@ class GameBloc {
 
     await hiveBox.close();
 
-    hasClaimedCredit = false;
-    idleCredit = 0;
-    currentCredit = 0;
+    moneyManager.reset();
     averageLast30.clear();
 
     factoryFloor = floor;
@@ -181,29 +182,12 @@ class GameBloc {
     final Map<dynamic, dynamic> _result = hiveBox.toMap();
 
     if (_result.isEmpty) {
-      currentCredit = 10000;
-
       equipment.clear();
       return;
     }
 
     print('Got from DB!');
-
-    final DateTime _collectionTime = DateTime.now();
-    final DateTime _lastCollection = _result['last_collection'] ?? _collectionTime;
-    currentCredit = _result['floor_credit'] ?? 10000;
-    idleCredit = (((_collectionTime.subtract(Duration(milliseconds: _lastCollection.millisecondsSinceEpoch)))
-                        .millisecondsSinceEpoch /
-                    _tickSpeed)
-                .round() *
-            (_result['average_earnings'] ?? 0))
-        .round();
-
-    print('Loaded credit: $currentCredit');
-    print(
-        'Difference in ticks: ${((_collectionTime.subtract(Duration(milliseconds: _lastCollection.millisecondsSinceEpoch))).millisecondsSinceEpoch / _tickSpeed).round()}');
-    print('Average earnings per tick: ${_result['average_earnings']}');
-    print('Idle credit: $idleCredit');
+    moneyManager.getIdleEarnings(_result, _tickSpeed);
 
     final List<dynamic> _equipmentList = _result['equipment'];
 
@@ -257,7 +241,7 @@ class GameBloc {
 
   Future<void> _autoSaveFactory() async {
     try {
-      items.saveUnLockable();
+      moneyManager.save();
       await hiveBox.putAll(toMap());
     } on HiveError {
       print('Autosave error!');
@@ -269,10 +253,6 @@ class GameBloc {
 
   int _tickSpeed = 1200;
   bool showArrows = false;
-
-  int currentCredit = 0;
-  int idleCredit = 0;
-  bool hasClaimedCredit = false;
   List<int> averageLast30 = <int>[];
   int lastTickEarnings = 0;
 
@@ -559,14 +539,6 @@ class GameBloc {
     });
   }
 
-  void claimIdleCredit({double multiple = 1.0}) {
-    if (idleCredit != 0) {
-      print('Added credit: ${(idleCredit * multiple).round()}');
-      currentCredit += (idleCredit * multiple).round();
-      idleCredit = 0;
-    }
-  }
-
   void buildSelected() {
     void _addEquipment(FactoryEquipmentModel e) {
       print('Building equipment! ${e.type}');
@@ -592,7 +564,7 @@ class GameBloc {
         }
       });
 
-      currentCredit -= selectedTiles.length * items.cost(e.type);
+      moneyManager.buyEquipment(e.type, bulkBuy: selectedTiles.length);
     }
 
     switch (buildSelectedEquipmentType) {
@@ -692,16 +664,15 @@ class GameBloc {
 
   void clearLine() {
     equipment.clear();
-    currentCredit = 10000;
-
+    moneyManager.reset();
     _autoSaveFactory();
   }
 
+  /// TODO(lukaknezic): Optimize this for bulk selling!
   void removeEquipment(FactoryEquipmentModel eq) {
     if (equipment.contains(eq)) {
       equipment.remove(eq);
-      currentCredit += items.cost(eq.type) ~/ 2;
-
+      moneyManager.sellEquipment(eq.type);
       _autoSaveFactory();
     }
   }
@@ -744,7 +715,7 @@ class GameBloc {
         averageLast30.removeLast();
       }
 
-      currentCredit += lastTickEarnings;
+      moneyManager.tickEarned(lastTickEarnings);
 
       _material = equipment.fold(<FactoryMaterialModel>[],
           (List<FactoryMaterialModel> _material, FactoryEquipmentModel e) => _material..addAll(e.equipmentTick()));
@@ -807,10 +778,10 @@ class GameBloc {
           return;
         }
 
-        totalCost += items.cost(fem.type);
+        totalCost += moneyManager.costOfEquipment(fem.type);
       });
 
-      if (totalCost > currentCredit && copyMode == CopyMode.copy) {
+      if (moneyManager.canPurchase(totalCost) && copyMode == CopyMode.copy) {
         showSnackBar(SnackBar(
           content: Text('You don\'t have enough money to copy this!',
               style: theme.textTheme.button.copyWith(color: Colors.white)),
@@ -840,7 +811,7 @@ class GameBloc {
           _coordinate.y >= 0 &&
           _coordinate.x <= mapWidth &&
           _coordinate.y <= mapHeight) {
-        if (items.cost(buildSelectedEquipmentType) * selectedTiles.length > currentCredit &&
+        if (moneyManager.canPurchaseEquipment(buildSelectedEquipmentType, bulkBuy: selectedTiles.length) &&
             copyMode == CopyMode.copy) {
           showSnackBar(SnackBar(
             content: Text('You don\'t have enough money to copy ${equipmentTypeToString(buildSelectedEquipmentType)}!',
@@ -865,9 +836,7 @@ class GameBloc {
                 return;
               }
 
-              print('Charging for: ${fem.type} - ${items.cost(fem.type)}');
-
-              currentCredit -= items.cost(fem.type);
+              moneyManager.buyEquipment(fem.type);
             });
           }
 
@@ -969,7 +938,7 @@ class GameBloc {
   void onScaleUpdate(ScaleUpdateDetails sud) {
     final Offset _s =
         (sud.focalPoint - gameCameraPosition.position) / gameCameraPosition.scale + Offset(cubeSize / 2, cubeSize / 2);
-    final Coordinates _coordinate = Coordinates((_s.dx / cubeSize).floor(), (_s.dy / cubeSize).floor());
+    final Coordinates _coordinate = Coordinates(_s.dx ~/ cubeSize, _s.dy ~/ cubeSize);
 
     if (sud.scale != 1.0) {
       _isMoving = false;
@@ -1000,18 +969,18 @@ class GameBloc {
 
       if (copyMode == CopyMode.copy) {
         movingEquipment.forEach((FactoryEquipmentModel fem) {
-          totalCost += items.cost(fem.type);
+          totalCost += moneyManager.costOfEquipment(fem.type);
         });
       }
 
-      if (totalCost != 0 && totalCost > currentCredit) {
+      print('Curent selection duplicate cost: $totalCost');
+      if (totalCost != 0 && !moneyManager.canPurchase(totalCost)) {
         movingEquipment.clear();
         _isMoving = false;
         return;
       }
 
-      print('Curent selection duplicate cost: $totalCost');
-      currentCredit -= totalCost;
+      moneyManager.buy(totalCost);
 
       selectedTiles.clear();
       movingEquipment.removeWhere((FactoryEquipmentModel fem) =>
@@ -1076,7 +1045,7 @@ class GameBloc {
       'equipment': _equipmentMap,
       'average_earnings': averageLast30.fold(0, (int value, int earnings) => value += earnings) / averageLast30.length,
       'last_collection': DateTime.now(),
-      'floor_credit': currentCredit,
+      'floor_credit': moneyManager.currentCredit,
     };
   }
 }

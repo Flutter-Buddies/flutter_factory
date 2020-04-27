@@ -1,0 +1,115 @@
+import 'dart:convert';
+
+import 'package:flutter_factory/game/model/factory_equipment_model.dart';
+import 'package:flutter_factory/game/model/factory_material_model.dart';
+import 'package:flutter_factory/util/utils.dart';
+
+class ChallengeModel {
+  String challengeName;
+  String author;
+  List<ChallengeGoal> challengeGoal;
+  List<EquipmentType> bannedEquipment;
+  List<FactoryEquipmentModel> equipmentPlacement;
+
+  int mapWidth;
+  int mapHeight;
+
+  double cameraPositionX, cameraPositionY;
+  double cameraScale;
+
+  ChallengeModel({this.challengeName, this.author, this.challengeGoal, this.bannedEquipment, this.equipmentPlacement});
+
+  ChallengeModel.fromJson(Map<String, dynamic> json) {
+    challengeName = json['challenge_name'];
+    author = json['author'];
+    if (json['challenge_goal'] != null) {
+      challengeGoal = new List<ChallengeGoal>();
+      json['challenge_goal'].forEach((dynamic v) {
+        challengeGoal.add(new ChallengeGoal.fromJson(v));
+      });
+    }
+    bannedEquipment = json['banned_equipment'].cast<int>()..map((int i) => EquipmentType.values[i]).toList();
+    if (json['equipment_placement'] != null) {
+      equipmentPlacement = json['equipment_placement'].map((dynamic eq) {
+        final FactoryEquipmentModel _fem = equipmentFromMap(eq);
+        final Map<String, dynamic> map = jsonDecode(eq);
+
+        final List<dynamic> _materialMap = map['material'];
+        final List<FactoryMaterialModel> _materials = _materialMap.map((dynamic map) {
+          final FactoryMaterialModel _material = materialFromMap(map);
+          _material.direction ??= _fem.direction;
+          return _material;
+        }).toList();
+
+        _fem.objects.addAll(_materials);
+
+        return _fem;
+      }).toList();
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['challenge_name'] = challengeName;
+    data['author'] = author;
+    if (challengeGoal != null) {
+      data['challenge_goal'] = challengeGoal.map((ChallengeGoal v) => v.toJson()).toList();
+    }
+    data['banned_equipment'] = bannedEquipment.map((EquipmentType e) => e.index).toList();
+    if (equipmentPlacement != null) {
+      data['equipment_placement'] = equipmentPlacement.map((FactoryEquipmentModel v) => v.toMap()).toList();
+    }
+    return data;
+  }
+
+  String getChallengeDescription() {
+    if (challengeGoal == null || challengeGoal.isEmpty) {
+      return '';
+    }
+
+    StringBuffer _sb = StringBuffer();
+
+    _sb.write('You have to produce ');
+    challengeGoal.forEach((ChallengeGoal goal) {
+      _sb.write('${goal.perTick} ${factoryMaterialToString(goal.materialType)}');
+    });
+    _sb.write(' per tick');
+
+    return _sb.toString();
+  }
+
+  String getChallengeLongDescription() {
+    if (challengeGoal == null || challengeGoal.isEmpty) {
+      return '';
+    }
+
+    StringBuffer _sb = StringBuffer();
+
+    _sb.write('You have to use the space given to you, and build production line that will output ');
+    challengeGoal.forEach((ChallengeGoal goal) {
+      _sb.write('${goal.perTick} ${factoryMaterialToString(goal.materialType)}');
+    });
+    _sb.write(' per tick.');
+
+    return _sb.toString();
+  }
+}
+
+class ChallengeGoal {
+  FactoryMaterialType materialType;
+  double perTick;
+
+  ChallengeGoal({this.materialType, this.perTick});
+
+  ChallengeGoal.fromJson(Map<String, dynamic> json) {
+    materialType = FactoryMaterialType.values[json['material_type']];
+    perTick = json['per_tick'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['material_type'] = materialType.index;
+    data['per_tick'] = perTick;
+    return data;
+  }
+}

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/factory_equipment.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
-import 'package:flutter_factory/ui/screens/main_page.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/theme/theme_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
-import 'package:flutter_factory/ui/widgets/game_widget.dart';
 import 'package:flutter_factory/ui/widgets/panel.dart';
 
 import '../../game_bloc.dart';
@@ -28,7 +26,7 @@ class SlideGamePanel extends StatefulWidget {
   _SlideGamePanelState createState() => new _SlideGamePanelState();
 }
 
-class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProviderStateMixin{
+class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProviderStateMixin {
   PanelController pc;
   GameBloc _bloc;
   EquipmentType et;
@@ -45,33 +43,29 @@ class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProvid
     _bloc ??= GameProvider.of(context);
 
     return StreamBuilder<GameUpdate>(
-      stream: _bloc.gameUpdate,
-      builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
-        if(snapshot.hasData){
-          if(et == null || et != _bloc.buildSelectedEquipmentType){
-            et = _bloc.buildSelectedEquipmentType;
-            pc.collapse();
+        stream: _bloc.gameUpdate,
+        builder: (BuildContext context, AsyncSnapshot<GameUpdate> snapshot) {
+          if (snapshot.hasData) {
+            if (et == null || et != _bloc.buildSelectedEquipmentType) {
+              et = _bloc.buildSelectedEquipmentType;
+              pc.collapse();
+            }
+
+            if (_bloc.selectedTiles.isEmpty) {
+              pc.close();
+            } else if (pc.state == PanelState.closed) {
+              pc.collapse();
+            }
           }
 
-          if(_bloc.selectedTiles.isEmpty){
-            pc.close();
-          }else if(pc.state == PanelState.closed){
-            pc.collapse();
-          }
-        }
-
-        return Panel(
-          Container(
-            height: (MediaQuery.of(context).size.height - (MediaQuery.of(context).size.height * 0.2)) * 0.2,
-            child: ShowAction(bloc: _bloc),
-          ),
-          SingleChildScrollView(
-            child: InfoWindow(_bloc)
-          ),
-          pc
-        );
-      }
-    );
+          return Panel(
+              Container(
+                height: (MediaQuery.of(context).size.height - (MediaQuery.of(context).size.height * 0.2)) * 0.2,
+                child: ShowAction(bloc: _bloc),
+              ),
+              SingleChildScrollView(child: InfoWindow(_bloc)),
+              pc);
+        });
   }
 
   @override
@@ -90,58 +84,72 @@ class InfoWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(_bloc.selectedTiles.isEmpty){
+    if (_bloc.selectedTiles.isEmpty) {
       return SizedBox.shrink();
     }
 
     final List<Widget> _options = <Widget>[];
-    final List<FactoryEquipmentModel> _selectedEquipment = _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
+    final List<FactoryEquipmentModel> _selectedEquipment =
+        _bloc.equipment.where((FactoryEquipmentModel fe) => _bloc.selectedTiles.contains(fe.coordinates)).toList();
 
-    if(_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_bloc.isSameEquipment){
+    if (_bloc.selectedTiles.length > 1 && _selectedEquipment.isNotEmpty && !_bloc.isSameEquipment) {
       return Container();
     }
 
-    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere((FactoryEquipmentModel fe) => _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y, orElse: () => null);
+    final FactoryEquipmentModel _equipment = _bloc.equipment.firstWhere(
+        (FactoryEquipmentModel fe) =>
+            _bloc.selectedTiles.first.x == fe.coordinates.x && _bloc.selectedTiles.first.y == fe.coordinates.y,
+        orElse: () => null);
 
-    Widget _buildNoEquipment(){
-      return BuildEquipmentWidget(_bloc, isChallenge: _bloc.floor.startsWith('Challenge'));
+    Widget _buildNoEquipment() {
+      return BuildEquipmentWidget(_bloc);
     }
 
-    Widget _showSellerOptions(){
+    Widget _showSellerOptions() {
       return SellerInfo(equipment: _equipment);
     }
 
-    Widget _showSelectedInfo(){
+    Widget _showSelectedInfo() {
       return SelectedObjectInfoWidget(equipment: _equipment, progress: _bloc.progress);
     }
 
-    Widget _showDispenserOptions(){
-      return DispenserOptionsWidget(dispenser: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Dispenser).map<Dispenser>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
+    Widget _showDispenserOptions() {
+      return DispenserOptionsWidget(
+          dispenser: _selectedEquipment
+              .where((FactoryEquipmentModel fe) => fe is Dispenser)
+              .map<Dispenser>((FactoryEquipmentModel fe) => fe)
+              .toList(),
+          progress: _bloc.progress);
     }
 
-    Widget _showSplitterOptions(){
+    Widget _showSplitterOptions() {
       return SplitterOptionsWidget(splitter: _equipment);
     }
 
-    Widget _showSorterOptions(){
+    Widget _showSorterOptions() {
       return SorterOptionsWidget(sorter: _equipment);
     }
 
-    Widget _showCrafterOptions(){
-      return CrafterOptionsWidget(crafter: _selectedEquipment.where((FactoryEquipmentModel fe) => fe is Crafter).map<Crafter>((FactoryEquipmentModel fe) => fe).toList(), progress: _bloc.progress);
+    Widget _showCrafterOptions() {
+      return CrafterOptionsWidget(
+          crafter: _selectedEquipment
+              .where((FactoryEquipmentModel fe) => fe is Crafter)
+              .map<Crafter>((FactoryEquipmentModel fe) => fe)
+              .toList(),
+          progress: _bloc.progress);
     }
 
-    Widget _showRotationOptions(){
+    Widget _showRotationOptions() {
       return SelectedObjectFooter(_bloc, equipment: _selectedEquipment);
     }
 
-    if(_equipment == null){
+    if (_equipment == null) {
       return _buildNoEquipment();
     }
 
     _options.add(_showSelectedInfo());
 
-    switch(_equipment.type){
+    switch (_equipment.type) {
       case EquipmentType.dispenser:
         _options.add(_showDispenserOptions());
         break;
@@ -173,11 +181,16 @@ class InfoWindow extends StatelessWidget {
         _options.add(FreeRollerInfo(equipment: _equipment));
         break;
       case EquipmentType.portal:
-        _options.add(PortalInfo(equipment: _equipment, connectingPortal: _bloc.equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == (_equipment as UndergroundPortal).connectingPortal, orElse: () => null),));
+        _options.add(PortalInfo(
+          equipment: _equipment,
+          connectingPortal: _bloc.equipment.firstWhere(
+              (FactoryEquipmentModel fem) => fem.coordinates == (_equipment as UndergroundPortal).connectingPortal,
+              orElse: () => null),
+        ));
         break;
     }
 
-    if(_equipment.isMutable){
+    if (_equipment.isMutable) {
       _options.add(_showRotationOptions());
     }
 
@@ -199,110 +212,129 @@ class ShowAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(bloc.selectedTiles.isEmpty){
+    if (bloc.selectedTiles.isEmpty) {
       return SizedBox.shrink();
     }
 
-    final List<FactoryEquipmentModel> _selectedEquipment = bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates)).toList();
+    final List<FactoryEquipmentModel> _selectedEquipment =
+        bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates)).toList();
     _selectedEquipment.addAll(bloc.movingEquipment);
 
     final FactoryEquipmentModel _equipment = _selectedEquipment.isEmpty ? null : _selectedEquipment.first;
-    final bool _isNotRotatable = _equipment != null && (!_equipment.isMutable || (_equipment.type == EquipmentType.portal || _equipment.type == EquipmentType.seller || _equipment.type == EquipmentType.freeRoller || _equipment.type == EquipmentType.rotatingFreeRoller));
+    final bool _isNotRotatable = _equipment != null &&
+        (!_equipment.isMutable ||
+            (_equipment.type == EquipmentType.portal ||
+                _equipment.type == EquipmentType.seller ||
+                _equipment.type == EquipmentType.freeRoller ||
+                _equipment.type == EquipmentType.rotatingFreeRoller));
 
-    if(_equipment == null){
+    if (_equipment == null) {
       return BuildEquipmentHeaderWidget();
-    }else{
-      final Widget _showRotate = !_isNotRotatable ? Container(
-        child: Row(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              width: 60.0,
-              child: RaisedButton(
-                color: DynamicTheme.of(context).data.neutralActionButtonColor,
-                onPressed: (){
-                  _selectedEquipment.forEach((FactoryEquipmentModel fem){
-                    fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
-                  });
-                },
-                child: Icon(Icons.rotate_right, color: DynamicTheme.of(context).data.neutralActionIconColor,),
-              ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              color: DynamicTheme.of(context).data.floorColor,
-              child: Container(
-                margin: const EdgeInsets.only(left: 24.0, right: 24.0),
-                height: 48.0,
-                width: 48.0,
-                child: Center(
-                  child: CustomPaint(
-                    child: Container(
-                      height: 48.0,
-                      width: 48.0,
-                    ),
-                    painter: ObjectPainter(
-                      GameProvider.of(context).progress,
-                      theme: DynamicTheme.of(context).data,
-                      equipment: _selectedEquipment.first,
-                      objectSize: 48.0,
+    } else {
+      final Widget _showRotate = !_isNotRotatable
+          ? Container(
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    width: 60.0,
+                    child: RaisedButton(
+                      color: DynamicTheme.of(context).data.neutralActionButtonColor,
+                      onPressed: () {
+                        _selectedEquipment.forEach((FactoryEquipmentModel fem) {
+                          fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
+                        });
+                      },
+                      child: Icon(
+                        Icons.rotate_right,
+                        color: DynamicTheme.of(context).data.neutralActionIconColor,
+                      ),
                     ),
                   ),
-                ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    color: DynamicTheme.of(context).data.floorColor,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 24.0, right: 24.0),
+                      height: 48.0,
+                      width: 48.0,
+                      child: Center(
+                        child: CustomPaint(
+                          child: Container(
+                            height: 48.0,
+                            width: 48.0,
+                          ),
+                          painter: ObjectPainter(
+                            GameProvider.of(context).progress,
+                            theme: DynamicTheme.of(context).data,
+                            equipment: _selectedEquipment.first,
+                            objectSize: 48.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 60.0,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: RaisedButton(
+                      color: DynamicTheme.of(context).data.neutralActionButtonColor,
+                      onPressed: () {
+                        _selectedEquipment.forEach((FactoryEquipmentModel fem) {
+                          fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
+                        });
+                      },
+                      child: Icon(
+                        Icons.rotate_left,
+                        color: DynamicTheme.of(context).data.neutralActionIconColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Container(
-              width: 60.0,
-              height: MediaQuery.of(context).size.height * 0.2,
-              child: RaisedButton(
-                color: DynamicTheme.of(context).data.neutralActionButtonColor,
-                onPressed: (){
-                  _selectedEquipment.forEach((FactoryEquipmentModel fem){
-                    fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
-                  });
-                },
-                child: Icon(Icons.rotate_left, color: DynamicTheme.of(context).data.neutralActionIconColor,),
-              ),
-            ),
-          ],
-        ),
-      ) : SizedBox.shrink();
+            )
+          : SizedBox.shrink();
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          _isNotRotatable ? Container(
-            height: MediaQuery.of(context).size.height * 0.2,
-            color: DynamicTheme.of(context).data.floorColor,
-            child: Container(
-              margin: const EdgeInsets.only(left: 24.0, right: 24.0),
-              height: 48.0,
-              width: 48.0,
-              child: Center(
-                child: CustomPaint(
+          _isNotRotatable
+              ? Container(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  color: DynamicTheme.of(context).data.floorColor,
                   child: Container(
+                    margin: const EdgeInsets.only(left: 24.0, right: 24.0),
                     height: 48.0,
                     width: 48.0,
+                    child: Center(
+                      child: CustomPaint(
+                        child: Container(
+                          height: 48.0,
+                          width: 48.0,
+                        ),
+                        painter: ObjectPainter(
+                          GameProvider.of(context).progress,
+                          theme: DynamicTheme.of(context).data,
+                          equipment: _selectedEquipment.first,
+                          objectSize: 48.0,
+                        ),
+                      ),
+                    ),
                   ),
-                  painter: ObjectPainter(
-                    GameProvider.of(context).progress,
-                    theme: DynamicTheme.of(context).data,
-                    equipment: _selectedEquipment.first,
-                    objectSize: 48.0,
-                  ),
-                ),
-              ),
-            ),
-          ) : SizedBox.shrink(),
+                )
+              : SizedBox.shrink(),
           _showRotate,
           Container(
             height: MediaQuery.of(context).size.height * 0.2,
             child: RaisedButton(
               color: DynamicTheme.of(context).data.neutralActionButtonColor,
-              onPressed: (){
+              onPressed: () {
                 bloc.copyMode = bloc.copyMode == CopyMode.move ? CopyMode.copy : CopyMode.move;
               },
-              child: Icon((bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy, color: DynamicTheme.of(context).data.neutralActionIconColor,),
+              child: Icon(
+                (bloc.copyMode == CopyMode.move) ? Icons.content_cut : Icons.content_copy,
+                color: DynamicTheme.of(context).data.neutralActionIconColor,
+              ),
             ),
           ),
           Expanded(
@@ -310,14 +342,20 @@ class ShowAction extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.2,
               child: RaisedButton(
                 color: DynamicTheme.of(context).data.negativeActionButtonColor,
-                onPressed: (){
-                  bloc.equipment.where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates) && fe.isMutable).toList().forEach(bloc.removeEquipment);
+                onPressed: () {
+                  bloc.equipment
+                      .where((FactoryEquipmentModel fe) => bloc.selectedTiles.contains(fe.coordinates) && fe.isMutable)
+                      .toList()
+                      .forEach(bloc.removeEquipment);
 
-                  if(bloc.selectedTiles.length > 1){
+                  if (bloc.selectedTiles.length > 1) {
                     bloc.selectedTiles.clear();
                   }
                 },
-                child: Icon(Icons.clear, color:  DynamicTheme.of(context).data.negativeActionIconColor,),
+                child: Icon(
+                  Icons.clear,
+                  color: DynamicTheme.of(context).data.negativeActionIconColor,
+                ),
               ),
             ),
           ),
