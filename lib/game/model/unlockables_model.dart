@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class GameItems {
   GameItems() {
@@ -13,10 +11,7 @@ class GameItems {
   Box<dynamic> unLockablesBox;
 
   void _openHive() async {
-    final Directory _path = await getApplicationDocumentsDirectory();
-
-    Hive.init(_path.path);
-
+    await Hive.initFlutter();
     unLockablesBox = await Hive.openBox<dynamic>('unlockables');
 
     if (unLockablesBox.isEmpty) {

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Radio;
@@ -14,7 +13,7 @@ import 'package:flutter_factory/game/money_manager/normal_manager.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
 import 'package:flutter_factory/util/utils.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:random_color/random_color.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -52,8 +51,7 @@ class GameBloc {
   bool _didLoad = false;
 
   Future<void> _loadHive() async {
-    final Directory _path = await getApplicationDocumentsDirectory();
-    Hive.init(_path.path);
+    await Hive.initFlutter();
 
     if (!_didLoad) {
       _didLoad = true;
