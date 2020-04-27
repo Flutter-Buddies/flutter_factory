@@ -26,8 +26,6 @@ class ChallengesBloc extends GameBloc {
   double complete = 0.0;
   ChallengeModel model;
 
-  Map<FactoryRecipeMaterialType, double> challengeGoal;
-
   Seller goalSeller;
 
   void loadChallenge(int challenge) => changeFloor(challenge);
@@ -36,7 +34,7 @@ class ChallengesBloc extends GameBloc {
   bool tick() {
     final bool _realTick = super.tick();
 
-    if (_realTick && challengeGoal != null) {
+    if (_realTick && model.challengeGoal != null) {
       int soldItems = 0;
 
       if (goalSeller != null) {
@@ -44,13 +42,13 @@ class ChallengesBloc extends GameBloc {
             .getRange(max(goalSeller.soldItems.length - 60, 0), goalSeller.soldItems.length)
             .forEach((List<FactoryRecipeMaterialType> frmtList) {
           soldItems += frmtList
-              .where((FactoryRecipeMaterialType frmt) => frmt.materialType == challengeGoal.keys.first.materialType)
+              .where((FactoryRecipeMaterialType frmt) => frmt.materialType == model.challengeGoal.first.materialType)
               .length;
         });
       }
 
       if (!_didComplete) {
-        complete = (soldItems / 60) / challengeGoal.values.first;
+        complete = (soldItems / 60) / model.challengeGoal.first.perTick;
         _didComplete = complete == 1.0;
       } else {
         complete = 1.0;

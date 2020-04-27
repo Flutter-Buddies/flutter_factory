@@ -24,11 +24,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   TargetPlatform targetPlatform;
-  if (Platform.isMacOS) {
+  if (kIsWeb) {
+    targetPlatform = TargetPlatform.fuchsia;
+  } else if (Platform.isMacOS) {
     targetPlatform = TargetPlatform.iOS;
   } else if (Platform.isLinux || Platform.isWindows) {
     targetPlatform = TargetPlatform.android;
   }
+
   if (targetPlatform != null) {
     debugDefaultTargetPlatformOverride = targetPlatform;
   }
@@ -71,6 +74,7 @@ class _MyAppState extends State<MyApp> {
     _bloc ??= GameProvider.of(context) ?? GameBloc();
     _goOnFloor();
 
+    /// b612MonoTextTheme, pressStart2p, firaCodeTextTheme, sulphurPointTextTheme
     return DynamicTheme(
       data: _getTheme,
       defaultThemeType: ThemeType.light,
@@ -81,8 +85,8 @@ class _MyAppState extends State<MyApp> {
           duration: Duration(milliseconds: 450),
           data: theme,
           child: MaterialApp(
-            theme: ThemeData.light().copyWith(textTheme: GoogleFonts.sourceCodeProTextTheme()),
-            darkTheme: ThemeData.dark().copyWith(textTheme: GoogleFonts.sourceCodeProTextTheme()),
+            theme: ThemeData.light().copyWith(textTheme: GoogleFonts.firaCodeTextTheme(ThemeData.light().textTheme)),
+            darkTheme: ThemeData.dark().copyWith(textTheme: GoogleFonts.firaCodeTextTheme(ThemeData.dark().textTheme)),
             themeMode: theme.type == ThemeType.light ? ThemeMode.light : ThemeMode.dark,
             home: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
               return Stack(

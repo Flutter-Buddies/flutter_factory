@@ -69,7 +69,7 @@ class _GameWidgetState extends State<GameWidget> {
     showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => Dialog(
+        builder: (BuildContext bc) => Dialog(
               child: Container(
                 margin: const EdgeInsets.all(24.0),
                 child: Column(
@@ -97,7 +97,7 @@ class _GameWidgetState extends State<GameWidget> {
                         RaisedButton(
                           onPressed: () {
                             _bloc.moneyManager.claimIdleCredit(multiple: 0.5);
-                            Navigator.pop(context);
+                            Navigator.pop(bc);
                           },
                           child: Text('OK'),
                         )
