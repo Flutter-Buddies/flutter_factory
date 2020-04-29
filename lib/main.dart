@@ -50,11 +50,11 @@ class _MyAppState extends State<MyApp> {
   GameTheme _getTheme(ThemeType tt) {
     switch (tt) {
       case ThemeType.dark:
-        return DarkGameTheme();
+        return const DarkGameTheme();
       case ThemeType.oledDark:
-        return VeryDarkGameTheme();
+        return const VeryDarkGameTheme();
       default:
-        return LightGameTheme();
+        return const LightGameTheme();
     }
   }
 
@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
         SystemChrome.setSystemUIOverlayStyle(
             theme.type == ThemeType.light ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
         return AnimatedThemeProvider(
-          duration: Duration(milliseconds: 450),
+          duration: const Duration(milliseconds: 450),
           data: theme,
           child: MaterialApp(
             theme: ThemeData.light().copyWith(textTheme: GoogleFonts.firaCodeTextTheme(ThemeData.light().textTheme)),
@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
                   GameProvider(
                     bloc: _bloc,
                     child: Stack(
-                      children: <Widget>[
+                      children: const <Widget>[
                         GameWidget(
                           isPreview: true,
                         ),
@@ -105,7 +105,7 @@ class _MyAppState extends State<MyApp> {
                     filter: ImageFilter.blur(sigmaX: 2.2, sigmaY: 2.2),
                     child: Container(
                       color: DynamicTheme.of(context).data.voidColor.withOpacity(0.2),
-                      child: HomeButtons(),
+                      child: const HomeButtons(),
                     ),
                   )
                 ],
@@ -119,7 +119,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class HomeButtons extends StatelessWidget {
-  HomeButtons({Key key}) : super(key: key);
+  const HomeButtons({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -152,13 +152,13 @@ class HomeButtons extends StatelessWidget {
                 MaterialPageRoute<void>(
                   builder: (BuildContext context) => Provider<GameBloc>(
                     create: (BuildContext context) => GameBloc(moneyManager: NormalMoneyManager()),
-                    child: MainPage(),
+                    child: const MainPage(),
                   ),
                 ),
               );
             },
           ),
-          SizedBox(height: 24.0),
+          const SizedBox(height: 24.0),
           RaisedButton(
             child: Container(
                 height: 20.0,
@@ -174,10 +174,11 @@ class HomeButtons extends StatelessWidget {
                 )),
             color: DynamicTheme.of(context).data.neutralActionButtonColor,
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) => ChallengesListPage()));
+              Navigator.push(
+                  context, MaterialPageRoute<void>(builder: (BuildContext context) => const ChallengesListPage()));
             },
           ),
-          SizedBox(height: 24.0),
+          const SizedBox(height: 24.0),
           RaisedButton(
             child: Container(
               height: 20.0,
@@ -199,13 +200,13 @@ class HomeButtons extends StatelessWidget {
                 MaterialPageRoute<void>(
                   builder: (BuildContext context) => Provider<GameBloc>(
                     create: (BuildContext context) => SandboxBloc(),
-                    child: MainPage(),
+                    child: const MainPage(),
                   ),
                 ),
               );
             },
           ),
-          SizedBox(height: 24.0),
+          const SizedBox(height: 24.0),
           RaisedButton(
             child: Container(
               height: 20.0,
@@ -229,7 +230,7 @@ class HomeButtons extends StatelessWidget {
   }
 
   void _launchURL() async {
-    const url = 'https://discordapp.com/invite/hBNwHvb';
+    const String url = 'https://discordapp.com/invite/hBNwHvb';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

@@ -1,47 +1,73 @@
 part of factory_material;
 
-class SmartWatch extends FactoryMaterialModel{
-  SmartWatch.fromOffset(Offset o) : super(o.dx, o.dy, 8400.0, FactoryMaterialType.smartWatch, state: FactoryMaterialState.crafted);
+class SmartWatch extends FactoryMaterialModel {
+  SmartWatch.fromOffset(Offset o)
+      : super(o.dx, o.dy, 8400.0, FactoryMaterialType.smartWatch, state: FactoryMaterialState.crafted);
 
-  SmartWatch.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.smartWatch, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  SmartWatch.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.smartWatch,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.5;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.5;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     final Path _frame = Path();
-
-
     final Path _bands = Path();
 
-    _bands.addRRect(RRect.fromRectAndRadius(Rect.fromPoints(
-      Offset(_size * 0.3, _size * 0.8),
-      Offset(-_size * 0.3, -_size * 0.8),
-    ), Radius.circular(_size * 0.05)));
+    _bands.addRRect(RRect.fromRectAndRadius(
+        Rect.fromPoints(
+          Offset(_size * 0.3, _size * 0.8),
+          Offset(-_size * 0.3, -_size * 0.8),
+        ),
+        Radius.circular(_size * 0.05)));
 
     canvas.drawPath(_bands, _p..color = Colors.white.withOpacity(opacity));
 
-    _frame.addRRect(RRect.fromRectAndRadius(Rect.fromPoints(
-      Offset(_size * 0.4, _size * 0.4),
-      Offset(-_size * 0.4, -_size * 0.4),
-    ), Radius.circular(_size * 0.05)));
+    _frame.addRRect(RRect.fromRectAndRadius(
+        Rect.fromPoints(
+          Offset(_size * 0.4, _size * 0.4),
+          Offset(-_size * 0.4, -_size * 0.4),
+        ),
+        Radius.circular(_size * 0.05)));
 
     canvas.drawPath(_frame, _p..color = Colors.white.withOpacity(opacity));
-    canvas.drawPath(_frame, _p..style = PaintingStyle.stroke..strokeWidth = 0.04..color = Colors.black.withOpacity(opacity));
+    canvas.drawPath(
+        _frame,
+        _p
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.04
+          ..color = Colors.black.withOpacity(opacity));
 
     _p.style = PaintingStyle.fill;
 
     final Path _screen = Path();
 
-    _screen.addRRect(RRect.fromRectAndRadius(Rect.fromPoints(
-      Offset(_size * 0.35, _size * 0.35),
-      Offset(-_size * 0.35, -_size * 0.35),
-    ), Radius.circular(_size * 0.05)));
+    _screen.addRRect(RRect.fromRectAndRadius(
+        Rect.fromPoints(
+          Offset(_size * 0.35, _size * 0.35),
+          Offset(-_size * 0.35, -_size * 0.35),
+        ),
+        Radius.circular(_size * 0.05)));
 
     canvas.drawPath(_screen, _p..color = Colors.black.withOpacity(opacity));
 
@@ -67,10 +93,10 @@ class SmartWatch extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

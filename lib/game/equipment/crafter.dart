@@ -1,7 +1,9 @@
 part of factory_equipment;
 
-class Crafter extends FactoryEquipmentModel{
-  Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 1}) : _recipe = FactoryMaterialModel.getRecipeFromType(craftMaterial), super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
+class Crafter extends FactoryEquipmentModel {
+  Crafter(Coordinates coordinates, Direction direction, this.craftMaterial, {int craftingTickDuration = 1})
+      : _recipe = FactoryMaterialModel.getRecipeFromType(craftMaterial),
+        super(coordinates, direction, EquipmentType.crafter, tickDuration: craftingTickDuration);
 
   final Map<FactoryRecipeMaterialType, int> _recipe;
   FactoryMaterialType craftMaterial;
@@ -11,30 +13,35 @@ class Crafter extends FactoryEquipmentModel{
   @override
   int get operatingCost => isActive && canCraft ? 5 : 0;
 
-  int getRecipeAmount(FactoryMaterialType fmt){
+  int getRecipeAmount(FactoryMaterialType fmt) {
     return _recipe[fmt] ?? 0;
   }
 
-  bool get canCraft{
-    if(craftMaterial == null){
+  bool get canCraft {
+    if (craftMaterial == null) {
       return false;
     }
 
     bool canCraft = true;
-    _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
-      canCraft = canCraft && _recipe[fmt] <= objects.where((FactoryMaterialModel fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
-    });
+
+    void _checkIfCanCraft(FactoryRecipeMaterialType fmt) {
+      canCraft = canCraft &&
+          _recipe[fmt] <=
+              objects.where((FactoryMaterialModel fm) => fm.type == fmt.materialType && fm.state == fmt.state).length;
+    }
+
+    _recipe.keys.forEach(_checkIfCanCraft);
     return canCraft;
   }
 
   @override
   List<FactoryMaterialModel> tick() {
-    if(tickDuration > 1 && counter % tickDuration != 1 && _crafted == null){
+    if (tickDuration > 1 && counter % tickDuration != 1 && _crafted == null) {
       print('Not ticking!');
       return <FactoryMaterialModel>[];
     }
 
-    if((canCraft && _crafted != null) && tickDuration == 1){
+    if ((canCraft && _crafted != null) && tickDuration == 1) {
       final FactoryMaterialModel _craftedMaterial = _crafted.copyWith();
       _crafted = null;
       _craft();
@@ -45,7 +52,7 @@ class Crafter extends FactoryEquipmentModel{
       return <FactoryMaterialModel>[_craftedMaterial];
     }
 
-    if(_crafted == null){
+    if (_crafted == null) {
       _craft();
       return <FactoryMaterialModel>[];
     }
@@ -53,26 +60,30 @@ class Crafter extends FactoryEquipmentModel{
     final List<FactoryMaterialModel> _material = <FactoryMaterialModel>[]..add(_crafted);
     _crafted = null;
 
-    _material.map((FactoryMaterialModel fm){
+    _material.map((FactoryMaterialModel fm) {
       fm.direction = direction;
     }).toList();
 
     return _material;
   }
 
-  void changeRecipe(FactoryMaterialType fmt){
+  void changeRecipe(FactoryMaterialType fmt) {
     craftMaterial = fmt;
     _recipe.clear();
     _recipe.addAll(FactoryMaterialModel.getRecipeFromType(craftMaterial));
   }
 
-  void _craft(){
-    if(canCraft){
-      _recipe.keys.forEach((FactoryRecipeMaterialType fmt){
-        for(int j = 0; j < _recipe[fmt]; j++){
-          objects.remove(objects.firstWhere((FactoryMaterialModel fm) => fm.type == fmt.materialType && fm.state == fmt.state, orElse: () => null));
+  void _craft() {
+    if (canCraft) {
+      void _removeFromQueue(FactoryRecipeMaterialType frmt) {
+        for (int j = 0; j < _recipe[frmt]; j++) {
+          objects.remove(objects.firstWhere(
+              (FactoryMaterialModel fm) => fm.type == frmt.materialType && fm.state == frmt.state,
+              orElse: () => null));
         }
-      });
+      }
+
+      _recipe.keys.forEach(_removeFromQueue);
 
       _crafted = FactoryMaterialModel.getFromType(craftMaterial, offset: pointingOffset);
       _crafted.direction = direction;
@@ -81,23 +92,34 @@ class Crafter extends FactoryEquipmentModel{
 
   @override
   void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
-    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    final double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
-    if(tickDuration == 1){
+    if (tickDuration == 1) {
       _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
     }
 
-    if(!canCraft && _crafted == null){
+    if (!canCraft && _crafted == null) {
       _machineProgress = 0.0;
     }
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 //    canvas.drawRect(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Paint()..color = Colors.grey.shade900);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = theme.machinePrimaryDarkColor);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(theme.machineInActiveColor, theme.machineActiveColor, _machineProgress));//_didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = theme.machinePrimaryDarkColor);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)),
+            Radius.circular(size / 2.2 / 2)),
+        Paint()..color = theme.machinePrimaryDarkColor);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)),
+            Radius.circular(size / 2.4 / 2)),
+        Paint()
+          ..color = Color.lerp(theme.machineInActiveColor, theme.machineActiveColor,
+              _machineProgress)); //_didToggle ? (_temp == isCrafting ? 1 - progress : progress) : (isCrafting ? 1 : 0)));
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)),
+            Radius.circular(size / 2.5 / 2)),
+        Paint()..color = theme.machinePrimaryDarkColor);
 
     FactoryMaterialModel.getFromType(craftMaterial)?.drawMaterial(Offset.zero, canvas, progress);
 //    canvas.drawCircle(Offset(size / 4, size / 4), 4.0, Paint()..color = isCrafting || canCraft ? Colors.green : Colors.red);
@@ -105,7 +127,7 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
@@ -122,17 +144,19 @@ class Crafter extends FactoryEquipmentModel{
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(0.6);
 
-    canvas.drawRect(Rect.fromPoints(
-      Offset(-size * 0.8, 0.0),
-      Offset(size * 0.8, size * 0.8),
-    ), Paint()..color = Colors.black54);
+    canvas.drawRect(
+        Rect.fromPoints(
+          Offset(-size * 0.8, 0.0),
+          Offset(size * 0.8, size * 0.8),
+        ),
+        Paint()..color = Colors.black54);
 
-    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
+    final ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
     _paragraphBuilder.pushStyle(TextStyle(color: Colors.white, fontSize: 6.0, fontWeight: FontWeight.w500));
     _paragraphBuilder.addText('${factoryMaterialToString(craftMaterial)}\n');
     _paragraphBuilder.addText('Queue: ${objects.length}');
 
-    Paragraph _paragraph = _paragraphBuilder.build();
+    final Paragraph _paragraph = _paragraphBuilder.build();
     _paragraph.layout(ParagraphConstraints(width: size * 2));
 
     canvas.drawParagraph(_paragraph, Offset(-size, size / 6));
@@ -141,15 +165,15 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(craftMaterial == null || _crafted == null){
+    if (craftMaterial == null || _crafted == null) {
       return;
     }
 
-    switch(direction){
+    switch (direction) {
       case Direction.east:
         _moveX = progress * size;
         break;
@@ -168,7 +192,8 @@ class Crafter extends FactoryEquipmentModel{
   }
 
   @override
-  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialModel craftMaterial}) {
+  FactoryEquipmentModel copyWith(
+      {Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialModel craftMaterial}) {
     return Crafter(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
@@ -180,9 +205,7 @@ class Crafter extends FactoryEquipmentModel{
   @override
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
-    _map.addAll(<String, dynamic>{
-      'craft_material': craftMaterial == null ? -1 : craftMaterial.index
-    });
+    _map.addAll(<String, dynamic>{'craft_material': craftMaterial == null ? -1 : craftMaterial.index});
     return _map;
   }
 }

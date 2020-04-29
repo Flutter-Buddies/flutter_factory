@@ -1,13 +1,31 @@
 part of factory_material;
 
-class SolarPanel extends FactoryMaterialModel{
-  SolarPanel.fromOffset(Offset o) : super(o.dx, o.dy, 900.0, FactoryMaterialType.solarPanel, state: FactoryMaterialState.crafted);
+class SolarPanel extends FactoryMaterialModel {
+  SolarPanel.fromOffset(Offset o)
+      : super(o.dx, o.dy, 900.0, FactoryMaterialType.solarPanel, state: FactoryMaterialState.crafted);
 
-  SolarPanel.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.solarPanel, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  SolarPanel.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.solarPanel,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
     final Paint _p = Paint();
     final double _size = size * 0.8;
 
@@ -15,10 +33,12 @@ class SolarPanel extends FactoryMaterialModel{
     canvas.translate(offset.dx, offset.dy);
     final Path _frame = Path();
 
-    _frame.addRRect(RRect.fromRectAndRadius(Rect.fromPoints(
-      Offset(_size * 0.8, _size * 0.8),
-      Offset(-_size * 0.8, -_size * 0.8),
-    ), Radius.circular(_size * 0.05)));
+    _frame.addRRect(RRect.fromRectAndRadius(
+        Rect.fromPoints(
+          Offset(_size * 0.8, _size * 0.8),
+          Offset(-_size * 0.8, -_size * 0.8),
+        ),
+        Radius.circular(_size * 0.05)));
 
     canvas.drawPath(_frame, _p..color = Colors.blue.shade600.withOpacity(opacity));
 
@@ -29,23 +49,12 @@ class SolarPanel extends FactoryMaterialModel{
 
     _p.strokeWidth = 0.1;
 
-    for(int i = 1; i < 4; i++){
-      canvas.drawLine(
-        Offset(_size * 0.8 - (_size * 1.2 * (i / 3)), _size * 0.8),
-        Offset(_size * 0.8 - (_size * 1.2 * (i / 3)), -_size * 0.8),
-        _p
-      );
+    for (int i = 1; i < 4; i++) {
+      canvas.drawLine(Offset(_size * 0.8 - (_size * 1.2 * (i / 3)), _size * 0.8),
+          Offset(_size * 0.8 - (_size * 1.2 * (i / 3)), -_size * 0.8), _p);
     }
 
-    canvas.drawLine(
-      Offset(
-        _size * 0.8,
-        0.0
-      ),
-      Offset(
-        -_size * 0.8,
-        0.0
-      ), _p);
+    canvas.drawLine(Offset(_size * 0.8, 0.0), Offset(-_size * 0.8, 0.0), _p);
 
     canvas.restore();
   }
@@ -66,10 +75,10 @@ class SolarPanel extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

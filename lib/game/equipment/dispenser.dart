@@ -1,14 +1,16 @@
 part of factory_equipment;
 
-class Dispenser extends FactoryEquipmentModel{
-  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial, {this.dispenseAmount = 3, int dispenseTickDuration = 1, bool isMutable = true, this.isWorking = true}) : super(coordinates, direction, EquipmentType.dispenser, tickDuration: dispenseTickDuration, isMutable: isMutable);
+class Dispenser extends FactoryEquipmentModel {
+  Dispenser(Coordinates coordinates, Direction direction, this.dispenseMaterial,
+      {this.dispenseAmount = 3, int dispenseTickDuration = 1, bool isMutable = true, this.isWorking = true})
+      : super(coordinates, direction, EquipmentType.dispenser,
+            tickDuration: dispenseTickDuration, isMutable: isMutable);
 
   FactoryMaterialType dispenseMaterial;
 
   int dispenseAmount;
   List<FactoryMaterialModel> _materials = <FactoryMaterialModel>[];
 
-  bool _didToggle = false;
   bool isWorking;
 
   @override
@@ -16,32 +18,35 @@ class Dispenser extends FactoryEquipmentModel{
 
   @override
   List<FactoryMaterialModel> tick() {
-    if(!isWorking){
+    if (!isWorking) {
       return <FactoryMaterialModel>[];
     }
 
-    _didToggle = tickDuration > 1 && (counter % tickDuration == 0 || counter % tickDuration == tickDuration - 1);
-
-    if(_materials.isNotEmpty){
+    if (_materials.isNotEmpty) {
       final List<FactoryMaterialModel> _fml = <FactoryMaterialModel>[]..addAll(_materials);
       _materials.clear();
 
-      if(tickDuration == 1){
-        _materials = List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction..lastEquipment = type);
+      if (tickDuration == 1) {
+        _materials = List<FactoryMaterialModel>.generate(
+            dispenseAmount,
+            (int index) => _getMaterial()
+              ..direction = direction
+              ..lastEquipment = type);
       }
 
       return _fml;
-    }else if((counter - 1) % tickDuration != 0){
+    } else if ((counter - 1) % tickDuration != 0) {
       return <FactoryMaterialModel>[];
     }
 
-    _materials = List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
+    _materials =
+        List<FactoryMaterialModel>.generate(dispenseAmount, (int index) => _getMaterial()..direction = direction);
 
     return <FactoryMaterialModel>[];
   }
 
-  FactoryMaterialModel _getMaterial(){
-    switch(dispenseMaterial){
+  FactoryMaterialModel _getMaterial() {
+    switch (dispenseMaterial) {
       case FactoryMaterialType.gold:
         return Gold.fromOffset(pointingOffset);
       case FactoryMaterialType.iron:
@@ -59,22 +64,31 @@ class Dispenser extends FactoryEquipmentModel{
 
   @override
   void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
-    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    final double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
-    if(tickDuration == 1){
+    if (tickDuration == 1) {
       _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
     }
 
-    if(!isWorking){
+    if (!isWorking) {
       _machineProgress = 0.0;
     }
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)), Radius.circular(size / 2.2 / 2)), Paint()..color = theme.machineAccentColor);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = Color.lerp(theme.machineInActiveColor, theme.machineActiveColor, _machineProgress));
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)), Radius.circular(size / 2.5 / 2)), Paint()..color = theme.machineAccentColor);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.2, size / 2.2), Offset(-size / 2.2, -size / 2.2)),
+            Radius.circular(size / 2.2 / 2)),
+        Paint()..color = theme.machineAccentColor);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)),
+            Radius.circular(size / 2.4 / 2)),
+        Paint()..color = Color.lerp(theme.machineInActiveColor, theme.machineActiveColor, _machineProgress));
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.5, size / 2.5), Offset(-size / 2.5, -size / 2.5)),
+            Radius.circular(size / 2.5 / 2)),
+        Paint()..color = theme.machineAccentColor);
 
     canvas.save();
     canvas.scale(0.6);
@@ -94,19 +108,19 @@ class Dispenser extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
-    if(!isWorking){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    if (!isWorking) {
       return;
     }
-    
+
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(_materials.isEmpty){
+    if (_materials.isEmpty) {
       return;
     }
 
-    switch(direction){
+    switch (direction) {
       case Direction.east:
         _moveX = progress * size;
         break;
@@ -121,9 +135,11 @@ class Dispenser extends FactoryEquipmentModel{
         break;
     }
 
-    _materials.forEach((FactoryMaterialModel fm){
+    void _drawMaterial(FactoryMaterialModel fm) {
       fm.drawMaterial(offset + Offset(fm.offsetX + _moveX, fm.offsetY + _moveY), canvas, progress);
-    });
+    }
+
+    _materials.forEach(_drawMaterial);
   }
 
   @override
@@ -133,26 +149,33 @@ class Dispenser extends FactoryEquipmentModel{
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(0.6);
 
-    canvas.drawRect(Rect.fromPoints(
-      Offset(-size * 0.8, 0.0),
-      Offset(size * 0.8, size * 0.8),
-    ), Paint()..color = Colors.black54);
+    canvas.drawRect(
+        Rect.fromPoints(
+          Offset(-size * 0.8, 0.0),
+          Offset(size * 0.8, size * 0.8),
+        ),
+        Paint()..color = Colors.black54);
 
-    ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
+    final ParagraphBuilder _paragraphBuilder = ParagraphBuilder(ParagraphStyle(textAlign: TextAlign.center));
     _paragraphBuilder.pushStyle(TextStyle(color: Colors.white, fontSize: 6.0, fontWeight: FontWeight.w500));
-    _paragraphBuilder.addText('${factoryMaterialToString(dispenseMaterial)} x ${dispenseAmount}');
+    _paragraphBuilder.addText('${factoryMaterialToString(dispenseMaterial)} x $dispenseAmount');
 
-    Paragraph _paragraph = _paragraphBuilder.build();
+    final Paragraph _paragraph = _paragraphBuilder.build();
     _paragraph.layout(ParagraphConstraints(width: size * 2));
 
     canvas.drawParagraph(_paragraph, Offset(-size, size / 6));
-
 
     canvas.restore();
   }
 
   @override
-  FactoryEquipmentModel copyWith({Coordinates coordinates, Direction direction, int tickDuration, FactoryMaterialType dispenseMaterial, int dispenseAmount, bool isWorking}) {
+  FactoryEquipmentModel copyWith(
+      {Coordinates coordinates,
+      Direction direction,
+      int tickDuration,
+      FactoryMaterialType dispenseMaterial,
+      int dispenseAmount,
+      bool isWorking}) {
     return Dispenser(
       coordinates ?? this.coordinates,
       direction ?? this.direction,
@@ -162,7 +185,6 @@ class Dispenser extends FactoryEquipmentModel{
       isWorking: isWorking ?? this.isWorking,
     );
   }
-
 
   @override
   Map<String, dynamic> toMap() {

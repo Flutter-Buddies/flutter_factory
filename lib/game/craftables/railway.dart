@@ -1,24 +1,42 @@
 part of factory_material;
 
-class Railway extends FactoryMaterialModel{
-  Railway.fromOffset(Offset o) : super(o.dx, o.dy, 8400.0, FactoryMaterialType.railway, state: FactoryMaterialState.crafted);
+class Railway extends FactoryMaterialModel {
+  Railway.fromOffset(Offset o)
+      : super(o.dx, o.dy, 8400.0, FactoryMaterialType.railway, state: FactoryMaterialState.crafted);
 
-  Railway.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.railway, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Railway.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.railway,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-    double _size = size * 0.8;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.8;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.rotate(pi * 0.5);
 
     _p.color = Colors.brown.withOpacity(opacity);
-    for(int i = 0; i < 3; i++){
-      double _progress = i / 2;
-      double _legSize = (_size - .5) * 1.5 * _progress - _size * 0.8;
+    for (int i = 0; i < 3; i++) {
+      final double _progress = i / 2;
+      final double _legSize = (_size - .5) * 1.5 * _progress - _size * 0.8;
 
       canvas.drawRect(Rect.fromPoints(Offset(_legSize, -_size * 0.8), Offset(_legSize + 2.4, _size * 0.8)), _p);
     }
@@ -45,10 +63,10 @@ class Railway extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

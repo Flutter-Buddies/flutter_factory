@@ -1,25 +1,45 @@
 part of factory_material;
 
-class Headphones extends FactoryMaterialModel{
-  Headphones.fromOffset(Offset o) : super(o.dx, o.dy, 900.0, FactoryMaterialType.headphones, state: FactoryMaterialState.crafted);
+class Headphones extends FactoryMaterialModel {
+  Headphones.fromOffset(Offset o)
+      : super(o.dx, o.dy, 900.0, FactoryMaterialType.headphones, state: FactoryMaterialState.crafted);
 
-  Headphones.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.headphones, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Headphones.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.headphones,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.5;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.5;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     final Path _frame = Path();
 
-    _frame.addArc(Rect.fromPoints(
-      Offset(_size * 0.8, _size * 0.8),
-      Offset(-_size * 0.8, -_size * 0.8),
-    ), 0.0, -pi);
+    _frame.addArc(
+        Rect.fromPoints(
+          Offset(_size * 0.8, _size * 0.8),
+          Offset(-_size * 0.8, -_size * 0.8),
+        ),
+        0.0,
+        -pi);
 
     _p.color = Colors.black.withOpacity(opacity);
     _p.strokeWidth = 0.8;
@@ -27,23 +47,11 @@ class Headphones extends FactoryMaterialModel{
     canvas.drawPath(_frame, _p);
 
     _p.style = PaintingStyle.fill;
-    canvas.drawRect(Rect.fromCenter(
-      center: Offset(
-        _size * 0.7,
-        _size * 0.3
-      ),
-      width: _size * 0.4,
-      height: _size * 0.8
-    ), _p);
+    canvas.drawRect(
+        Rect.fromCenter(center: Offset(_size * 0.7, _size * 0.3), width: _size * 0.4, height: _size * 0.8), _p);
 
-    canvas.drawRect(Rect.fromCenter(
-      center: Offset(
-        -_size * 0.7,
-        _size * 0.3
-      ),
-      width: _size * 0.4,
-      height: _size * 0.8
-    ), _p);
+    canvas.drawRect(
+        Rect.fromCenter(center: Offset(-_size * 0.7, _size * 0.3), width: _size * 0.4, height: _size * 0.8), _p);
 
     canvas.restore();
   }
@@ -64,10 +72,10 @@ class Headphones extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

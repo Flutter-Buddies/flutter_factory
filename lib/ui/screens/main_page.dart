@@ -13,16 +13,16 @@ import 'package:flutter_factory/util/utils.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({Key key}) : super(key: key);
+  const MainPage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BackdropHolder();
+    return const BackdropHolder();
   }
 }
 
 class BackdropHolder extends StatefulWidget {
-  BackdropHolder({Key key}) : super(key: key);
+  const BackdropHolder({Key key}) : super(key: key);
 
   @override
   _BackdropHolderState createState() => new _BackdropHolderState();
@@ -39,7 +39,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
   }
 
   Widget _showSettings() {
-    Color _textColor = DynamicTheme.of(context).data.textColor;
+    final Color _textColor = DynamicTheme.of(context).data.textColor;
 
     return Container(
       padding: const EdgeInsets.all(12.0),
@@ -48,7 +48,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 40.0,
           ),
           Row(
@@ -63,7 +63,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 ),
               ),
               Text('Tick speed: ${_bloc.gameSpeed} ms',
-                  style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor)),
+                  style: Theme.of(context).textTheme.subtitle2.copyWith(color: _textColor)),
               FloatingActionButton(
                 backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: _bloc.decreaseGameSpeed,
@@ -78,7 +78,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             contentPadding: EdgeInsets.zero,
             title: Text(
               'Show arrows',
-              style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor),
+              style: Theme.of(context).textTheme.subtitle2.copyWith(color: _textColor),
             ),
             subtitle: Text(
               'Visual representation on equipment',
@@ -91,7 +91,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             },
             value: _bloc.showArrows,
           ),
-          SizedBox(
+          const SizedBox(
             height: 24.0,
           ),
           Row(
@@ -110,7 +110,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                     style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
                     value: _bloc.selectMode,
                     items: SelectMode.values.map((SelectMode tt) {
-                      TextStyle _style = Theme.of(context).textTheme.button;
+                      final TextStyle _style = Theme.of(context).textTheme.button;
 
                       return DropdownMenuItem<SelectMode>(
                         value: tt,
@@ -144,12 +144,12 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                     'Turn on all dispensers',
                     style: Theme.of(context)
                         .textTheme
-                        .subhead
+                        .subtitle1
                         .copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8.0,
               ),
               Container(
@@ -169,12 +169,12 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                     'Turn off all dispensers',
                     style: Theme.of(context)
                         .textTheme
-                        .subhead
+                        .subtitle1
                         .copyWith(color: DynamicTheme.of(context).data.negativeActionIconColor),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24.0,
               ),
               Row(
@@ -193,7 +193,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                         style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
                         value: DynamicTheme.of(context).data.type,
                         items: ThemeType.values.map((ThemeType tt) {
-                          TextStyle _style = Theme.of(context).textTheme.button;
+                          final TextStyle _style = Theme.of(context).textTheme.button;
 
                           return DropdownMenuItem<ThemeType>(
                             value: tt,
@@ -244,30 +244,32 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
             height: 80.0,
             child: FlatButton(
               onPressed: () {
-                _bloc.equipment.forEach((FactoryEquipmentModel fem) {
+                void _clearMaterial(FactoryEquipmentModel fem) {
                   fem.objects.clear();
-                });
+                }
+
+                _bloc.equipment.forEach(_clearMaterial);
               },
               child: Text(
                 'Vaporize all material on this floor',
-                style: Theme.of(context).textTheme.subhead.copyWith(
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
                     color: DynamicTheme.of(context).data.negativeActionButtonColor, fontWeight: FontWeight.w400),
               ),
             ),
           ),
-          SizedBox(height: 28.0),
+          const SizedBox(height: 28.0),
           Container(
             width: MediaQuery.of(context).size.width,
             height: 80.0,
             child: RaisedButton(
               color: DynamicTheme.of(context).data.negativeActionButtonColor,
               onPressed: () async {
-                bool _clear = await showDialog<bool>(
+                final bool _clear = await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Clear?'),
-                            content: Text('Are you sure you want to clear this whole floor?'),
+                            title: const Text('Clear?'),
+                            content: const Text('Are you sure you want to clear this whole floor?'),
                             actions: <Widget>[
                               FlatButton(
                                 child: Text(
@@ -281,11 +283,11 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                   Navigator.pop(context, true);
                                 },
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 12.0,
                               ),
                               FlatButton(
-                                child: Text('CANCEL'),
+                                child: const Text('CANCEL'),
                                 onPressed: () {
                                   Navigator.pop(context, false);
                                 },
@@ -303,7 +305,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                 'CLEAR LINE',
                 style: Theme.of(context)
                     .textTheme
-                    .subhead
+                    .subtitle1
                     .copyWith(color: DynamicTheme.of(context).data.negativeActionIconColor),
               ),
             ),
@@ -322,7 +324,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          SizedBox.shrink(),
+          const SizedBox.shrink(),
           Container(
             child: Material(
               type: MaterialType.transparency,
@@ -359,10 +361,10 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60.0,
               ),
-              Divider(),
+              const Divider(),
               Column(
                 children: List<Widget>.generate(4, (int index) {
                   return Material(
@@ -379,7 +381,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               ),
             ],
           ),
-          SizedBox.shrink()
+          const SizedBox.shrink()
         ],
       ),
     );
@@ -400,8 +402,8 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
               bloc: _bloc,
               child: Stack(
                 children: <Widget>[
-                  GameWidget(),
-                  SlideGamePanel(),
+                  const GameWidget(),
+                  const SlideGamePanel(),
                   Positioned(
                     bottom: 0.0,
                     right: 0.0,
@@ -412,7 +414,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                         '${_bloc.frameRate}',
                         style: Theme.of(context)
                             .textTheme
-                            .headline
+                            .headline5
                             .copyWith(color: DynamicTheme.of(context).data.textColor, fontWeight: FontWeight.w200),
                       ),
                     ),
@@ -447,20 +449,20 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                         _bloc.floor,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subtitle
+                                            .subtitle2
                                             .copyWith(color: DynamicTheme.of(context).data.textColor),
                                       ),
-                                      SizedBox(height: 4.0),
+                                      const SizedBox(height: 4.0),
                                       Row(
                                         children: <Widget>[
                                           Text(
                                             createDisplay(_bloc.moneyManager.currentCredit),
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .title
+                                                .headline6
                                                 .copyWith(color: DynamicTheme.of(context).data.textColor),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 24.0,
                                           ),
                                           Icon(
@@ -470,12 +472,12 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                                 ? DynamicTheme.of(context).data.negativeActionButtonColor
                                                 : DynamicTheme.of(context).data.positiveActionButtonColor,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 4.0,
                                           ),
                                           Text(
                                             createDisplay(_bloc.lastTickEarnings),
-                                            style: Theme.of(context).textTheme.title.copyWith(
+                                            style: Theme.of(context).textTheme.headline6.copyWith(
                                                 color: _bloc.lastTickEarnings.isNegative
                                                     ? DynamicTheme.of(context).data.negativeActionButtonColor
                                                     : DynamicTheme.of(context).data.positiveActionButtonColor),
@@ -496,7 +498,7 @@ class _BackdropHolderState extends State<BackdropHolder> with SingleTickerProvid
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 4.0,
                             ),
                             Container(

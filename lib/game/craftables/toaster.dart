@@ -1,13 +1,31 @@
 part of factory_material;
 
-class Toaster extends FactoryMaterialModel{
-  Toaster.fromOffset(Offset o) : super(o.dx, o.dy, 900.0, FactoryMaterialType.toaster, state: FactoryMaterialState.crafted);
+class Toaster extends FactoryMaterialModel {
+  Toaster.fromOffset(Offset o)
+      : super(o.dx, o.dy, 900.0, FactoryMaterialType.toaster, state: FactoryMaterialState.crafted);
 
-  Toaster.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.toaster, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Toaster.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.toaster,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
     final Paint _p = Paint();
     final double _size = size * 0.8;
 
@@ -15,10 +33,13 @@ class Toaster extends FactoryMaterialModel{
     canvas.translate(offset.dx, offset.dy);
     final Path _frame = Path();
 
-    _frame.addRRect(RRect.fromRectAndCorners(Rect.fromPoints(
-      Offset(_size * 0.6, _size * 0.7),
-      Offset(-_size * 0.6, 0.0),
-    ), topLeft: Radius.circular(_size * 0.2), topRight: Radius.circular(_size * 0.2)));
+    _frame.addRRect(RRect.fromRectAndCorners(
+        Rect.fromPoints(
+          Offset(_size * 0.6, _size * 0.7),
+          Offset(-_size * 0.6, 0.0),
+        ),
+        topLeft: Radius.circular(_size * 0.2),
+        topRight: Radius.circular(_size * 0.2)));
 
     canvas.drawPath(_frame, _p..color = Colors.grey.withOpacity(opacity));
 
@@ -29,12 +50,12 @@ class Toaster extends FactoryMaterialModel{
 
     _p.style = PaintingStyle.fill;
     _p.color = Colors.black;
-    canvas.drawRRect(RRect.fromRectAndCorners(
-      Rect.fromPoints(
-        Offset(-_size * 0.75, _size * 0.7),
-        Offset(-_size * 0.6, _size * 0.6),
-      )
-    ), _p);
+    canvas.drawRRect(
+        RRect.fromRectAndCorners(Rect.fromPoints(
+          Offset(-_size * 0.75, _size * 0.7),
+          Offset(-_size * 0.6, _size * 0.6),
+        )),
+        _p);
 
     canvas.restore();
   }
@@ -55,10 +76,10 @@ class Toaster extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

@@ -10,7 +10,7 @@ import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 import 'package:flutter_factory/util/utils.dart';
 
 class BuildEquipmentWidget extends StatefulWidget {
-  BuildEquipmentWidget(this._bloc, {Key key}) : super(key: key);
+  const BuildEquipmentWidget(this._bloc, {Key key}) : super(key: key);
 
   final GameBloc _bloc;
 
@@ -19,8 +19,6 @@ class BuildEquipmentWidget extends StatefulWidget {
 }
 
 class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
-  bool _isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,10 +35,6 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
             onTap: () {
               if (widget._bloc.moneyManager.isEquipmentUnlocked(et)) {
                 widget._bloc.buildSelectedEquipmentType = et;
-
-                setState(() {
-                  _isExpanded = false;
-                });
               } else {
                 if (widget._bloc.moneyManager.canUnlockEquipment(et)) {
                   widget._bloc.moneyManager.unlockEquipment(et);
@@ -52,7 +46,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
             child: Stack(
               children: <Widget>[
                 AnimatedContainer(
-                  duration: Duration(milliseconds: 250),
+                  duration: const Duration(milliseconds: 250),
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   foregroundDecoration: BoxDecoration(
                     color: widget._bloc.buildSelectedEquipmentType == et
@@ -81,7 +75,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                               objectSize: 32.0),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12.0,
                       ),
                       Flexible(
@@ -175,12 +169,12 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
                       ),
                     ),
                   ),
-                  secondChild: SizedBox.shrink(),
+                  secondChild: const SizedBox.shrink(),
                   alignment: Alignment.center,
                   crossFadeState: widget._bloc.moneyManager.isEquipmentUnlocked(et)
                       ? CrossFadeState.showSecond
                       : CrossFadeState.showFirst,
-                  duration: Duration(milliseconds: 250),
+                  duration: const Duration(milliseconds: 250),
                 ),
               ],
             ),
@@ -192,7 +186,7 @@ class _BuildEquipmentWidgetState extends State<BuildEquipmentWidget> {
 }
 
 class BuildEquipmentHeaderWidget extends StatefulWidget {
-  BuildEquipmentHeaderWidget({Key key, this.isChallenge = false}) : super(key: key);
+  const BuildEquipmentHeaderWidget({Key key, this.isChallenge = false}) : super(key: key);
 
   final bool isChallenge;
 
@@ -281,12 +275,12 @@ class _BuildEquipmentHeaderWidgetState extends State<BuildEquipmentHeaderWidget>
                     'BUILD',
                     style: Theme.of(context)
                         .textTheme
-                        .subhead
+                        .subtitle1
                         .copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
                   ),
                   Text(
                       '(${GameProvider.of(context).moneyManager.costOfEquipment(GameProvider.of(context).buildSelectedEquipmentType) * GameProvider.of(context).selectedTiles.length}\$)',
-                      style: Theme.of(context).textTheme.subhead.copyWith(
+                      style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: GameProvider.of(context).moneyManager.canPurchaseEquipment(
                                   GameProvider.of(context).buildSelectedEquipmentType,
                                   bulkBuy: GameProvider.of(context).selectedTiles.length)

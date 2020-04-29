@@ -16,14 +16,14 @@ class GameItems {
 
     if (unLockablesBox.isEmpty) {
       machines = Map<EquipmentType, UnLockableMachines>.fromEntries(EquipmentType.values.map((EquipmentType type) {
-        return MapEntry(
+        return MapEntry<EquipmentType, UnLockableMachines>(
             type, UnLockableMachines(type, machineUnlocked(type), _getMachineCost(type), _getMachineUnlockCost(type)));
       }));
 
       recipes = Map<FactoryMaterialType, UnLockableRecipes>.fromEntries(FactoryMaterialType.values
           .where((FactoryMaterialType fmt) => !FactoryMaterialModel.isRaw(fmt))
           .map((FactoryMaterialType type) {
-        return MapEntry(
+        return MapEntry<FactoryMaterialType, UnLockableRecipes>(
             type,
             UnLockableRecipes(
               type,
@@ -39,13 +39,13 @@ class GameItems {
     final List<dynamic> machinesList = unLockablesBox.toMap()['unlockable_machines'];
     final List<dynamic> recepiesList = unLockablesBox.toMap()['unlockable_recipes'];
 
-    machines = Map.fromEntries(machinesList.map((dynamic item) {
+    machines = Map<EquipmentType, UnLockableMachines>.fromEntries(machinesList.map((dynamic item) {
       final EquipmentType _type = EquipmentType.values[item['equipment']];
       return MapEntry<EquipmentType, UnLockableMachines>(
           _type, UnLockableMachines(_type, item['unlocked'], item['cost'], item['unlock_cost']));
     }));
 
-    recipes = Map.fromEntries(recepiesList.map((dynamic item) {
+    recipes = Map<FactoryMaterialType, UnLockableRecipes>.fromEntries(recepiesList.map((dynamic item) {
       final FactoryMaterialType _type = FactoryMaterialType.values[item['recepie']];
       return MapEntry<FactoryMaterialType, UnLockableRecipes>(
           _type, UnLockableRecipes(_type, item['unlocked'], item['unlock_cost']));

@@ -13,7 +13,7 @@ import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/util/utils.dart';
 
 class GameWidget extends StatefulWidget {
-  GameWidget({this.isPreview = false, Key key}) : super(key: key);
+  const GameWidget({this.isPreview = false, Key key}) : super(key: key);
 
   final bool isPreview;
   @override
@@ -81,14 +81,14 @@ class _GameWidgetState extends State<GameWidget> {
                           'Idle income',
                           style: Theme.of(context).textTheme.headline6,
                         )),
-                    SizedBox(
+                    const SizedBox(
                       height: 24.0,
                     ),
                     Text(
                       'Your line earned: ${createDisplay((_bloc.moneyManager.idleCredit * 0.5).round())}\$',
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 24.0,
                     ),
                     Row(
@@ -99,7 +99,7 @@ class _GameWidgetState extends State<GameWidget> {
                             _bloc.moneyManager.claimIdleCredit(multiple: 0.5);
                             Navigator.pop(bc);
                           },
-                          child: Text('OK'),
+                          child: const Text('OK'),
                         )
                       ],
                     )
@@ -134,7 +134,7 @@ class GamePainter extends CustomPainter {
                 bloc.cubeSize * bloc.mapWidth + bloc.cubeSize / 2, bloc.cubeSize * bloc.mapHeight + bloc.cubeSize / 2)),
         Paint()..color = theme.floorColor);
 
-    bloc.selectedTiles.forEach((Coordinates c) {
+    void _paintSelected(Coordinates c) {
       final FactoryEquipmentModel _equipment = bloc.equipment.firstWhere(
           (FactoryEquipmentModel fe) => c.x == fe.coordinates.x && c.y == fe.coordinates.y,
           orElse: () => null);
@@ -153,7 +153,9 @@ class GamePainter extends CustomPainter {
       canvas.drawRect(
           Rect.fromCircle(center: Offset(c.x * bloc.cubeSize, c.y * bloc.cubeSize), radius: bloc.cubeSize / 2),
           Paint()..color = theme.selectedTileColor);
-    });
+    }
+
+    bloc.selectedTiles.forEach(_paintSelected);
 
     for (int i = 0; i < bloc.mapHeight; i++) {
       canvas.drawLine(
@@ -211,17 +213,17 @@ class GamePainter extends CustomPainter {
       _didConnect.add(up.connectingPortal);
     });
 
-    bloc.equipment.forEach((FactoryEquipmentModel fe) {
+    void _drawTracks(FactoryEquipmentModel fe) {
       fe.drawTrack(theme, Offset(fe.coordinates.x * bloc.cubeSize, fe.coordinates.y * bloc.cubeSize), canvas,
           bloc.cubeSize, bloc.progress);
-    });
+    }
 
-    bloc.equipment.forEach((FactoryEquipmentModel fe) {
+    void _drawMaterial(FactoryEquipmentModel fe) {
       fe.drawMaterial(theme, Offset(fe.coordinates.x * bloc.cubeSize, fe.coordinates.y * bloc.cubeSize), canvas,
           bloc.cubeSize, bloc.progress);
-    });
+    }
 
-    bloc.equipment.forEach((FactoryEquipmentModel fe) {
+    void _drawEquipment(FactoryEquipmentModel fe) {
       fe.drawEquipment(theme, Offset(fe.coordinates.x * bloc.cubeSize, fe.coordinates.y * bloc.cubeSize), canvas,
           bloc.cubeSize, bloc.progress);
 
@@ -229,19 +231,23 @@ class GamePainter extends CustomPainter {
         fe.paintInfo(theme, Offset(fe.coordinates.x * bloc.cubeSize, fe.coordinates.y * bloc.cubeSize), canvas,
             bloc.cubeSize, bloc.progress);
       }
-    });
+    }
+
+    bloc.equipment.forEach(_drawTracks);
+    bloc.equipment.forEach(_drawMaterial);
+    bloc.equipment.forEach(_drawEquipment);
 
     if (bloc.movingEquipment != null) {
       int totalCost = 0;
 
-      bloc.movingEquipment.forEach((FactoryEquipmentModel fem) {
+      void _drawMovingEquipment(FactoryEquipmentModel fem) {
         totalCost += bloc.moneyManager.costOfEquipment(fem.type);
 
-        bool _inLimits = fem.coordinates.x >= 0 &&
+        final bool _inLimits = fem.coordinates.x >= 0 &&
             fem.coordinates.y >= 0 &&
             fem.coordinates.x <= bloc.mapWidth &&
             fem.coordinates.y <= bloc.mapHeight;
-        bool _canAfford = bloc.moneyManager.canPurchase(totalCost) || bloc.copyMode != CopyMode.copy;
+        final bool _canAfford = bloc.moneyManager.canPurchase(totalCost) || bloc.copyMode != CopyMode.copy;
 
         canvas.save();
         canvas.clipRect(Rect.fromCircle(
@@ -268,10 +274,12 @@ class GamePainter extends CustomPainter {
                     : theme.negativeActionButtonColor.withOpacity(0.5));
         }
         canvas.restore();
-      });
+      }
+
+      bloc.movingEquipment.forEach(_drawMovingEquipment);
     }
 
-    bloc.getExcessMaterial.forEach((FactoryMaterialModel fm) {
+    void _drawExcessMaterial(FactoryMaterialModel fm) {
       if (bloc.getLastExcessMaterial.contains(fm)) {
         fm.drawMaterial(
             Offset(fm.offsetX + fm.x * bloc.cubeSize, fm.offsetY + fm.y * bloc.cubeSize), canvas, bloc.progress,
@@ -280,7 +288,9 @@ class GamePainter extends CustomPainter {
         fm.drawMaterial(
             Offset(fm.offsetX + fm.x * bloc.cubeSize, fm.offsetY + fm.y * bloc.cubeSize), canvas, bloc.progress);
       }
-    });
+    }
+
+    bloc.getExcessMaterial.forEach(_drawExcessMaterial);
   }
 
   @override

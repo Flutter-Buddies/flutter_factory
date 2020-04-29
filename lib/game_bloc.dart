@@ -69,7 +69,7 @@ class GameBloc {
   Coordinates _lastTapLocation;
 
   List<FactoryEquipmentModel> movingEquipment = <FactoryEquipmentModel>[];
-  List<FactoryEquipmentModel> _initialMovingEquipment = <FactoryEquipmentModel>[];
+  final List<FactoryEquipmentModel> _initialMovingEquipment = <FactoryEquipmentModel>[];
   bool _isMoving = false;
   Coordinates _startMovingLocation;
   Coordinates _startDragLocation;
@@ -210,7 +210,7 @@ class GameBloc {
 
     final List<UndergroundPortal> _portals = getAll<UndergroundPortal>();
 
-    _portals.forEach((UndergroundPortal up) {
+    void _connectPortal(UndergroundPortal up) {
       final UndergroundPortal _connectingPortal =
           _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
@@ -223,7 +223,9 @@ class GameBloc {
         _connectingPortal.lineColor = _lineColor;
         up.lineColor = _lineColor;
       }
-    });
+    }
+
+    _portals.forEach(_connectPortal);
 
     print(_result);
   }
@@ -246,7 +248,7 @@ class GameBloc {
     }
   }
 
-  Duration _duration = Duration();
+  Duration _duration = Duration.zero;
   int _lastTrigger = -1;
 
   int _tickSpeed = 1200;
@@ -271,7 +273,7 @@ class GameBloc {
 
   bool _isGameRunning = true;
 
-  List<int> _averageFrameRate = <int>[];
+  final List<int> _averageFrameRate = <int>[];
 
   int get frameRate =>
       _averageFrameRate.fold(0, (int _rate, int _value) => _rate += _value) ~/ _averageFrameRate.length;
@@ -305,14 +307,14 @@ class GameBloc {
   }
 
   void _findPortalPartner() {
-    List<UndergroundPortal> _portals = equipment
+    final List<UndergroundPortal> _portals = equipment
         .where((FactoryEquipmentModel fem) => fem is UndergroundPortal)
         .map<UndergroundPortal>((FactoryEquipmentModel fem) => fem)
         .toList();
 
-    _portals.forEach((UndergroundPortal up) {
+    void _findPortalPartner(UndergroundPortal up) {
       if (up.connectingPortal != null) {
-        UndergroundPortal _portal =
+        final UndergroundPortal _portal =
             _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
         if (_portal != null &&
@@ -378,7 +380,7 @@ class GameBloc {
             return false;
           }
 
-          print('Connecting portal is: ${fem}');
+          print('Connecting portal is: $fem');
           print('Connection length: ${up.toMap()} - ${fem.coordinates.toMap()}');
           print('Connection length: ${up.coordinates.x - fem.coordinates.x}');
 
@@ -422,7 +424,9 @@ class GameBloc {
       } else {
         print('No connecting portal!');
       }
-    });
+    }
+
+    _portals.forEach(_findPortalPartner);
   }
 
   void _findExistingPortalPartner(UndergroundPortal up) {
@@ -540,10 +544,10 @@ class GameBloc {
   void buildSelected() {
     void _addEquipment(FactoryEquipmentModel e) {
       print('Building equipment! ${e.type}');
-      List<Coordinates> addSelect = <Coordinates>[];
+      final List<Coordinates> addSelect = <Coordinates>[];
 
-      selectedTiles.forEach((Coordinates c) {
-        FactoryEquipmentModel fem = e.copyWith(coordinates: c);
+      void _findPortals(Coordinates c) {
+        final FactoryEquipmentModel fem = e.copyWith(coordinates: c);
 
         if (e.type == EquipmentType.portal) {
           _findExistingPortalPartner(fem);
@@ -554,13 +558,17 @@ class GameBloc {
         }
 
         equipment.add(fem);
-      });
+      }
 
-      addSelect.forEach((Coordinates c) {
+      selectedTiles.forEach(_findPortals);
+
+      void _addSelect(Coordinates c) {
         if (!selectedTiles.contains(c)) {
           selectedTiles.add(c);
         }
-      });
+      }
+
+      addSelect.forEach(_addSelect);
 
       moneyManager.buyEquipment(e.type, bulkBuy: selectedTiles.length);
     }
@@ -723,7 +731,7 @@ class GameBloc {
         _excessMaterial.removeAt(0);
       }
 
-      equipment.forEach((FactoryEquipmentModel fem) {
+      void _removeMaterial(FactoryEquipmentModel fem) {
         _material.removeWhere((FactoryMaterialModel fmm) {
           bool _remove = false;
 
@@ -734,7 +742,9 @@ class GameBloc {
 
           return _remove;
         });
-      });
+      }
+
+      equipment.forEach(_removeMaterial);
 
       _excessMaterial.add(_material);
     }
@@ -768,8 +778,9 @@ class GameBloc {
         _lastTapLocation == _coordinate &&
         movingEquipment.isEmpty) {
       int totalCost = 0;
-      selectedTiles.forEach((Coordinates c) {
-        FactoryEquipmentModel fem =
+
+      void _addTotalCost(Coordinates c) {
+        final FactoryEquipmentModel fem =
             equipment.firstWhere((FactoryEquipmentModel fem) => fem.coordinates == c, orElse: () => null);
 
         if (fem == null) {
@@ -777,13 +788,15 @@ class GameBloc {
         }
 
         totalCost += moneyManager.costOfEquipment(fem.type);
-      });
+      }
+
+      selectedTiles.forEach(_addTotalCost);
 
       if (moneyManager.canPurchase(totalCost) && copyMode == CopyMode.copy) {
         showSnackBar(SnackBar(
           content: Text('You don\'t have enough money to copy this!',
               style: theme.textTheme.button.copyWith(color: Colors.white)),
-          duration: Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 350),
           behavior: SnackBarBehavior.floating,
         ));
         selectedTiles.clear();
@@ -791,7 +804,7 @@ class GameBloc {
         showSnackBar(SnackBar(
           content: Text('${equipmentTypeToString(_se.type)} copied!',
               style: theme.textTheme.button.copyWith(color: Colors.white)),
-          duration: Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 350),
           behavior: SnackBarBehavior.floating,
         ));
         selectedTiles.clear();
@@ -814,7 +827,7 @@ class GameBloc {
           showSnackBar(SnackBar(
             content: Text('You don\'t have enough money to copy ${equipmentTypeToString(buildSelectedEquipmentType)}!',
                 style: theme.textTheme.button.copyWith(color: Colors.white)),
-            duration: Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 350),
             behavior: SnackBarBehavior.floating,
           ));
 
@@ -824,18 +837,20 @@ class GameBloc {
           showSnackBar(SnackBar(
             content: Text('${equipmentTypeToString(movingEquipment.first.type)} pasted!',
                 style: theme.textTheme.button.copyWith(color: Colors.white)),
-            duration: Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 350),
             behavior: SnackBarBehavior.floating,
           ));
 
           if (copyMode == CopyMode.copy) {
-            movingEquipment.forEach((FactoryEquipmentModel fem) {
+            void _buyCopiedEquipment(FactoryEquipmentModel fem) {
               if (fem == null) {
                 return;
               }
 
               moneyManager.buyEquipment(fem.type);
-            });
+            }
+
+            movingEquipment.forEach(_buyCopiedEquipment);
           }
 
           equipment.add(movingEquipment.first.copyWith(coordinates: _coordinate));
@@ -858,12 +873,12 @@ class GameBloc {
             _snackbarText,
             style: theme.textTheme.button.copyWith(color: gameTheme.negativeActionButtonColor),
           ),
-          duration: Duration(milliseconds: 550),
+          duration: const Duration(milliseconds: 550),
           behavior: SnackBarBehavior.floating,
         ));
       }
     } else if (selectedTiles.contains(_coordinate)) {
-      FactoryEquipmentModel _e =
+      final FactoryEquipmentModel _e =
           equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
       if (_e != null &&
           _e is UndergroundPortal &&
@@ -885,7 +900,7 @@ class GameBloc {
       }
 
       if (_coordinate.x >= 0 && _coordinate.y >= 0 && _coordinate.x <= mapWidth && _coordinate.y <= mapHeight) {
-        FactoryEquipmentModel _e =
+        final FactoryEquipmentModel _e =
             equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == _coordinate, orElse: () => null);
         if (_e != null &&
             _e is UndergroundPortal &&
@@ -917,8 +932,8 @@ class GameBloc {
 
         selectedTiles.clear();
 
-        int _moveX = _startDragLocation.x - _coordinate.x;
-        int _moveY = _startDragLocation.y - _coordinate.y;
+        final int _moveX = _startDragLocation.x - _coordinate.x;
+        final int _moveY = _startDragLocation.y - _coordinate.y;
 
         for (int i = 0; i <= _moveX.abs(); i++) {
           for (int j = 0; j <= _moveY.abs(); j++) {
@@ -966,9 +981,11 @@ class GameBloc {
       int totalCost = 0;
 
       if (copyMode == CopyMode.copy) {
-        movingEquipment.forEach((FactoryEquipmentModel fem) {
+        void _copyCost(FactoryEquipmentModel fem) {
           totalCost += moneyManager.costOfEquipment(fem.type);
-        });
+        }
+
+        movingEquipment.forEach(_copyCost);
       }
 
       print('Curent selection duplicate cost: $totalCost');
@@ -1015,7 +1032,9 @@ class GameBloc {
               equipment.firstWhere((FactoryEquipmentModel fe) => fe.coordinates == c, orElse: () => null)));
 
       if (copyMode == CopyMode.move) {
-        movingEquipment.forEach((FactoryEquipmentModel fem) => equipment.remove(fem));
+        void _moveEquipment(FactoryEquipmentModel fem) => equipment.remove(fem);
+
+        movingEquipment.forEach(_moveEquipment);
       }
 
       _initialMovingEquipment.addAll(movingEquipment);

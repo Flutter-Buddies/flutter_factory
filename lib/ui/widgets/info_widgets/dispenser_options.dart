@@ -6,7 +6,7 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class DispenserOptionsWidget extends StatelessWidget {
-  DispenserOptionsWidget({@required this.dispenser, this.progress = 0.0, Key key}) : super(key: key);
+  const DispenserOptionsWidget({@required this.dispenser, this.progress = 0.0, Key key}) : super(key: key);
 
   final double progress;
   final List<Dispenser> dispenser;
@@ -19,8 +19,8 @@ class DispenserOptionsWidget extends StatelessWidget {
     );
   }
 
-  Widget _showInMutableWidget(BuildContext context){
-    Dispenser _showFirst = dispenser.first;
+  Widget _showInMutableWidget(BuildContext context) {
+    final Dispenser _showFirst = dispenser.first;
 
     return Column(
       children: <Widget>[
@@ -28,17 +28,15 @@ class DispenserOptionsWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Produce material:'),
+            const Text('Produce material:'),
             Row(
               children: <Widget>[
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: CustomPaint(
-                    painter: ObjectPainter(
-                      progress,
-                      theme: DynamicTheme.of(context).data,
-                      material: FactoryMaterialModel.getFromType(_showFirst.dispenseMaterial)
-                    ),
+                    painter: ObjectPainter(progress,
+                        theme: DynamicTheme.of(context).data,
+                        material: FactoryMaterialModel.getFromType(_showFirst.dispenseMaterial)),
                   ),
                 ),
                 Container(
@@ -49,37 +47,31 @@ class DispenserOptionsWidget extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 28.0),
+        const SizedBox(height: 28.0),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text('Produce time:'),
-            Text('${_showFirst.tickDuration.toString()}')
-          ],
+          children: <Widget>[const Text('Produce time:'), Text('${_showFirst.tickDuration.toString()}')],
         ),
-        SizedBox(height: 28.0),
+        const SizedBox(height: 28.0),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text('Produce amount:'),
-            Text('${_showFirst.dispenseAmount.toString()}')
-          ],
+          children: <Widget>[const Text('Produce amount:'), Text('${_showFirst.dispenseAmount.toString()}')],
         ),
-        SizedBox(height: 36.0),
-
-        Text('This ${equipmentTypeToString(_showFirst.type)} is part of the challenge and cannot be moved, modified or rotated!',
+        const SizedBox(height: 36.0),
+        Text(
+          'This ${equipmentTypeToString(_showFirst.type)} is part of the challenge and cannot be moved, modified or rotated!',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.caption.copyWith(color: Colors.red, fontWeight: FontWeight.w800),
         ),
-        SizedBox(height: 12.0),
+        const SizedBox(height: 12.0),
       ],
     );
   }
 
-  Widget _showMutableWidget(BuildContext context){
-    Dispenser _showFirst = dispenser.first;
+  Widget _showMutableWidget(BuildContext context) {
+    final Dispenser _showFirst = dispenser.first;
 
     return Column(
       children: <Widget>[
@@ -87,25 +79,25 @@ class DispenserOptionsWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Produce material:'),
+            const Text('Produce material:'),
             DropdownButton<FactoryMaterialType>(
               value: _showFirst.dispenseMaterial,
-              onChanged: (FactoryMaterialType fmt){
-                dispenser.forEach((Dispenser d) => d.dispenseMaterial = fmt);
+              onChanged: (FactoryMaterialType fmt) {
+                void _changeDispenseMaterial(Dispenser d) => d.dispenseMaterial = fmt;
+
+                dispenser.forEach(_changeDispenseMaterial);
               },
-              items: FactoryMaterialType.values.where(FactoryMaterialModel.isRaw).map((FactoryMaterialType fmt){
+              items: FactoryMaterialType.values.where(FactoryMaterialModel.isRaw).map((FactoryMaterialType fmt) {
                 return DropdownMenuItem<FactoryMaterialType>(
                   value: fmt,
                   child: Row(
                     children: <Widget>[
                       Container(
                         child: CustomPaint(
-                          painter: ObjectPainter(
-                            progress,
-                            objectSize: 20.0,
-                            theme: DynamicTheme.of(context).data,
-                            material: FactoryMaterialModel.getFromType(fmt)
-                          ),
+                          painter: ObjectPainter(progress,
+                              objectSize: 20.0,
+                              theme: DynamicTheme.of(context).data,
+                              material: FactoryMaterialModel.getFromType(fmt)),
                         ),
                       ),
                       Container(
@@ -119,18 +111,19 @@ class DispenserOptionsWidget extends StatelessWidget {
             )
           ],
         ),
-        SizedBox(height: 28.0),
+        const SizedBox(height: 28.0),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Produce time:'),
+            const Text('Produce time:'),
             DropdownButton<int>(
               value: _showFirst.tickDuration,
-              onChanged: (int fmt){
-                dispenser.forEach((Dispenser d) => d.tickDuration = fmt);
+              onChanged: (int fmt) {
+                void _changeTickDuration(Dispenser d) => d.tickDuration = fmt;
+                dispenser.forEach(_changeTickDuration);
               },
-              items: List<int>.generate(12, (int i) => i + 1).map((int fmt){
+              items: List<int>.generate(12, (int i) => i + 1).map((int fmt) {
                 return DropdownMenuItem<int>(
                   value: fmt,
                   child: Text('${fmt.toString()}'),
@@ -139,18 +132,20 @@ class DispenserOptionsWidget extends StatelessWidget {
             )
           ],
         ),
-        SizedBox(height: 28.0),
+        const SizedBox(height: 28.0),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Produce amount:'),
+            const Text('Produce amount:'),
             DropdownButton<int>(
               value: _showFirst.dispenseAmount,
-              onChanged: (int fmt){
-                dispenser.forEach((Dispenser d) => d.dispenseAmount = fmt);
+              onChanged: (int fmt) {
+                void _changeDispenseAmount(Dispenser d) => d.dispenseAmount = fmt;
+
+                dispenser.forEach(_changeDispenseAmount);
               },
-              items: List<int>.generate(12, (int i) => i + 1).map((int fmt){
+              items: List<int>.generate(12, (int i) => i + 1).map((int fmt) {
                 return DropdownMenuItem<int>(
                   value: fmt,
                   child: Text('${fmt.toString()}'),
@@ -159,7 +154,7 @@ class DispenserOptionsWidget extends StatelessWidget {
             )
           ],
         ),
-        SizedBox(height: 28.0),
+        const SizedBox(height: 28.0),
       ],
     );
   }

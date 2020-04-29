@@ -68,7 +68,7 @@ class ChallengesBloc extends GameBloc {
   }
 
   @override
-  void changeFloor(int factoryFloor) {}
+  void changeFloor(int floor) {}
 
   @override
   Future<void> saveFactory() async {
@@ -141,7 +141,7 @@ class ChallengesBloc extends GameBloc {
 
     final List<UndergroundPortal> _portals = getAll<UndergroundPortal>();
 
-    _portals.forEach((UndergroundPortal up) {
+    void _findUndergroundPortal(UndergroundPortal up) {
       final UndergroundPortal _connectingPortal =
           _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
@@ -154,7 +154,9 @@ class ChallengesBloc extends GameBloc {
         _connectingPortal.lineColor = _lineColor;
         up.lineColor = _lineColor;
       }
-    });
+    }
+
+    _portals.forEach(_findUndergroundPortal);
 
     print(_result);
     goalSeller = equipment.firstWhere((FactoryEquipmentModel fem) => fem is Seller);

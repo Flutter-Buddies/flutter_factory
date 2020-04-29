@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 const double _kFrontHeadingHeight = 32.0; // front layer beveled rectangle
-const double _kFrontClosedHeight = 80.0;//92.0; // front layer height when closed
-const double _kBackAppBarHeight = 56.0; // back layer (options) appbar height
+const double _kFrontClosedHeight = 80.0; //92.0; // front layer height when closed
 
 // The size of the front layer heading's left and right beveled corners.
 final Animatable<BorderRadius> _kFrontHeadingBevelRadius = BorderRadiusTween(
@@ -26,7 +24,8 @@ final Animatable<BorderRadius> _kFrontHeadingBevelRadius = BorderRadiusTween(
 );
 
 class _TappableWhileStatusIs extends StatefulWidget {
-  const _TappableWhileStatusIs(this.status, {
+  const _TappableWhileStatusIs(
+    this.status, {
     Key key,
     this.controller,
     this.child,
@@ -75,14 +74,8 @@ class _TappableWhileStatusIsState extends State<_TappableWhileStatusIs> {
 }
 
 class Backdrop extends StatefulWidget {
-  const Backdrop({
-    this.frontTitle,
-    this.frontLayer,
-    this.backTitle,
-    this.backLayer,
-    this.controller,
-    this.firstLayerHeight = 400
-  });
+  const Backdrop(
+      {this.frontTitle, this.frontLayer, this.backTitle, this.backLayer, this.controller, this.firstLayerHeight = 400});
 
   final AnimationController controller;
   final Widget frontTitle;
@@ -100,16 +93,17 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
   AnimationController _controller;
   Animation<double> _frontBlur;
 
-  static final Animatable<double> _frontBlurTween = Tween<double>(begin: 0.0, end: 0.8)
-    .chain(CurveTween(curve: const Interval(0.2, 0.8, curve: Curves.easeInOut)));
+  static final Animatable<double> _frontBlurTween =
+      Tween<double>(begin: 0.0, end: 0.8).chain(CurveTween(curve: const Interval(0.2, 0.8, curve: Curves.easeInOut)));
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
+    _controller = widget.controller ??
+        AnimationController(
+          duration: const Duration(milliseconds: 300),
+          vsync: this,
+        );
 
     _frontBlur = _controller.drive(_frontBlurTween);
   }
@@ -120,40 +114,11 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  double get _backdropHeight {
-    // Warning: this can be safely called from the event handlers but it may
-    // not be called at build time.
-    final RenderBox renderBox = _backdropKey.currentContext.findRenderObject();
-    return math.max(0.0, renderBox.size.height - _kBackAppBarHeight - _kFrontClosedHeight);
-  }
-
-  void _handleDragUpdate(DragUpdateDetails details) {
-    _controller.value -= details.primaryDelta / (_backdropHeight ?? details.primaryDelta);
-  }
-
-  void _handleDragEnd(DragEndDetails details) {
-    if (_controller.isAnimating || _controller.status == AnimationStatus.completed)
-      return;
-
-    final double flingVelocity = details.velocity.pixelsPerSecond.dy / _backdropHeight;
-    if (flingVelocity < 0.0)
-      _controller.fling(velocity: math.max(2.0, -flingVelocity));
-    else if (flingVelocity > 0.0)
-      _controller.fling(velocity: math.min(-2.0, -flingVelocity));
-    else
-      _controller.fling(velocity: _controller.value < 0.5 ? -2.0 : 2.0);
-  }
-
-  void _toggleFrontLayer() {
-    final AnimationStatus status = _controller.status;
-    final bool isOpen = status == AnimationStatus.completed || status == AnimationStatus.forward;
-    _controller.fling(velocity: isOpen ? -2.0 : 2.0);
-  }
-
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
     final Animation<RelativeRect> frontRelativeRect = _controller.drive(RelativeRectTween(
       begin: RelativeRect.fromLTRB(0.0, constraints.biggest.height - _kFrontClosedHeight, 0.0, 0.0),
-      end: RelativeRect.fromLTRB(0.0, constraints.biggest.height - _kFrontClosedHeight - constraints.biggest.height / 2 + 80.0, 0.0, 0.0),
+      end: RelativeRect.fromLTRB(
+          0.0, constraints.biggest.height - _kFrontClosedHeight - constraints.biggest.height / 2 + 80.0, 0.0, 0.0),
     ));
 
     final List<Widget> layers = <Widget>[

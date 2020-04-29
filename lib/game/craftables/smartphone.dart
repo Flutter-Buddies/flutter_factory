@@ -1,37 +1,44 @@
 part of factory_material;
 
-class Smartphone extends FactoryMaterialModel{
-  Smartphone.fromOffset(Offset o) : super(o.dx, o.dy, 7300.0, FactoryMaterialType.smartphone, state: FactoryMaterialState.crafted);
+class Smartphone extends FactoryMaterialModel {
+  Smartphone.fromOffset(Offset o)
+      : super(o.dx, o.dy, 7300.0, FactoryMaterialType.smartphone, state: FactoryMaterialState.crafted);
 
-  Smartphone.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.smartphone, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Smartphone.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.smartphone,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.4;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.4;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     final Path _frame = Path();
 
     _frame.addRRect(RRect.fromRectAndRadius(
-      Rect.fromCenter(
-        center: Offset(0.0, 0.0),
-        height: _size * 1.9,
-        width: _size * 1.2
-      ), Radius.circular(_size * 0.1))
-    );
+        Rect.fromCenter(center: Offset.zero, height: _size * 1.9, width: _size * 1.2), Radius.circular(_size * 0.1)));
 
     final Path _screen = Path();
 
-    _screen.addRect(Rect.fromCenter(
-        center: Offset(0.0, -_size * 0.1),
-        height: _size * 1.5,
-        width: _size * 1.0
-      )
-    );
+    _screen.addRect(Rect.fromCenter(center: Offset(0.0, -_size * 0.1), height: _size * 1.5, width: _size * 1.0));
 
     _screen.addOval(Rect.fromCenter(
       center: Offset(0.0, _size * 0.8),
@@ -71,10 +78,10 @@ class Smartphone extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

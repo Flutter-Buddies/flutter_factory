@@ -15,13 +15,13 @@ import 'package:hive/hive.dart';
 import '../../challanges_bloc.dart';
 
 class ChallengesListPage extends StatelessWidget {
-  ChallengesListPage({Key key}) : super(key: key);
+  const ChallengesListPage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Challenges'),
+        title: const Text('Challenges'),
       ),
       body: Column(
         children: <Widget>[
@@ -29,16 +29,16 @@ class ChallengesListPage extends StatelessWidget {
             child: ListView.separated(
               itemCount: 5,
               separatorBuilder: (BuildContext context, int i) {
-                return Divider(height: 0.0);
+                return const Divider(height: 0.0);
               },
               itemBuilder: (BuildContext context, int i) {
                 return Container(
                   height: 120.0,
                   child: Stack(
                     children: <Widget>[
-                      FutureBuilder<Box>(
+                      FutureBuilder<Box<dynamic>>(
                           future: Hive.openBox<dynamic>('challenge_$i'),
-                          builder: (BuildContext context, AsyncSnapshot<Box> snapshot) {
+                          builder: (BuildContext context, AsyncSnapshot<Box<dynamic>> snapshot) {
                             return Positioned(
                               right: 0.0,
                               child: Container(
@@ -58,11 +58,13 @@ class ChallengesListPage extends StatelessWidget {
                             child: ListTile(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute<void>(
-                                        builder: (BuildContext context) => ChallengesPage(
-                                              loadChallenge: i,
-                                            )));
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder: (BuildContext context) => ChallengesPage(
+                                      loadChallenge: i,
+                                    ),
+                                  ),
+                                );
                               },
                               title: Text(
                                 snapshot.data.challengeName ?? '',
@@ -82,17 +84,18 @@ class ChallengesListPage extends StatelessWidget {
               },
             ),
           ),
-          Text('All challenges were designed by Elomavi on Discord!')
+          const Text('All challenges were designed by Elomavi on Discord!')
         ],
       ),
     );
   }
 }
 
+@immutable
 class ChallengesPage extends StatefulWidget {
-  ChallengesPage({Key key, this.loadChallenge = 0}) : super(key: key);
+  const ChallengesPage({Key key, this.loadChallenge = 0}) : super(key: key);
 
-  int loadChallenge;
+  final int loadChallenge;
 
   @override
   _ChallengesPageState createState() => _ChallengesPageState();
@@ -100,7 +103,7 @@ class ChallengesPage extends StatefulWidget {
 
 class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProviderStateMixin {
   ChallengesBloc _bloc;
-  GlobalKey<ScaffoldState> _key = GlobalKey();
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   @override
   void dispose() {
@@ -109,7 +112,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
   }
 
   Widget _showSettings() {
-    Color _textColor = DynamicTheme.of(context).data.textColor;
+    final Color _textColor = DynamicTheme.of(context).data.textColor;
 
     return Container(
       padding: const EdgeInsets.all(12.0),
@@ -118,7 +121,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 40.0,
           ),
           Row(
@@ -133,7 +136,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                 ),
               ),
               Text('Tick speed: ${_bloc.gameSpeed} ms',
-                  style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor)),
+                  style: Theme.of(context).textTheme.subtitle2.copyWith(color: _textColor)),
               FloatingActionButton(
                 backgroundColor: DynamicTheme.of(context).data.neutralActionButtonColor,
                 onPressed: _bloc.decreaseGameSpeed,
@@ -148,7 +151,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
             contentPadding: EdgeInsets.zero,
             title: Text(
               'Show arrows',
-              style: Theme.of(context).textTheme.subtitle.copyWith(color: _textColor),
+              style: Theme.of(context).textTheme.subtitle2.copyWith(color: _textColor),
             ),
             subtitle: Text(
               'Visual representation on equipment',
@@ -161,7 +164,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
             },
             value: _bloc.showArrows,
           ),
-          SizedBox(
+          const SizedBox(
             height: 24.0,
           ),
           Row(
@@ -180,7 +183,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                     style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
                     value: _bloc.selectMode,
                     items: SelectMode.values.map((SelectMode tt) {
-                      TextStyle _style = Theme.of(context).textTheme.button;
+                      final TextStyle _style = Theme.of(context).textTheme.button;
 
                       return DropdownMenuItem<SelectMode>(
                         value: tt,
@@ -214,12 +217,12 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                     'Turn on all dispensers',
                     style: Theme.of(context)
                         .textTheme
-                        .subhead
+                        .subtitle1
                         .copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8.0,
               ),
               Container(
@@ -239,12 +242,12 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                     'Turn off all dispensers',
                     style: Theme.of(context)
                         .textTheme
-                        .subhead
+                        .subtitle1
                         .copyWith(color: DynamicTheme.of(context).data.negativeActionIconColor),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24.0,
               ),
               Row(
@@ -263,7 +266,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                         style: Theme.of(context).textTheme.button.copyWith(color: _textColor),
                         value: DynamicTheme.of(context).data.type,
                         items: ThemeType.values.map((ThemeType tt) {
-                          TextStyle _style = Theme.of(context).textTheme.button;
+                          final TextStyle _style = Theme.of(context).textTheme.button;
 
                           return DropdownMenuItem<ThemeType>(
                             value: tt,
@@ -314,13 +317,15 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
             height: 80.0,
             child: FlatButton(
               onPressed: () {
-                _bloc.equipment.forEach((FactoryEquipmentModel fem) {
+                void _clearMaterial(FactoryEquipmentModel fem) {
                   fem.objects.clear();
-                });
+                }
+
+                _bloc.equipment.forEach(_clearMaterial);
               },
               child: Text(
                 'Vaporize all material on this floor',
-                style: Theme.of(context).textTheme.subhead.copyWith(
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
                     color: DynamicTheme.of(context).data.negativeActionButtonColor, fontWeight: FontWeight.w400),
               ),
             ),
@@ -331,12 +336,12 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
             child: RaisedButton(
               color: Colors.red,
               onPressed: () async {
-                bool _clear = await showDialog<bool>(
+                final bool _clear = await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Clear?'),
-                            content: Text('Are you sure you want to restart this challenge?'),
+                            title: const Text('Clear?'),
+                            content: const Text('Are you sure you want to restart this challenge?'),
                             actions: <Widget>[
                               FlatButton(
                                 child: Text(
@@ -350,11 +355,11 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                                   Navigator.pop(context, true);
                                 },
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 12.0,
                               ),
                               FlatButton(
-                                child: Text('CANCEL'),
+                                child: const Text('CANCEL'),
                                 onPressed: () {
                                   Navigator.pop(context, false);
                                 },
@@ -370,7 +375,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
               },
               child: Text(
                 'Restart challenge',
-                style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -393,8 +398,8 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
               bloc: _bloc,
               child: Stack(
                 children: <Widget>[
-                  GameWidget(),
-                  SlideGamePanel(),
+                  const GameWidget(),
+                  const SlideGamePanel(),
                   Positioned(
                     bottom: 0.0,
                     right: 0.0,
@@ -405,7 +410,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                         '${_bloc.frameRate}',
                         style: Theme.of(context)
                             .textTheme
-                            .headline
+                            .headline5
                             .copyWith(color: Colors.white, fontWeight: FontWeight.w200),
                       ),
                     ),
@@ -452,8 +457,10 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                                               children: <Widget>[
                                                 Text(
                                                   _bloc.floor,
-                                                  style:
-                                                      Theme.of(context).textTheme.title.copyWith(color: Colors.white),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline6
+                                                      .copyWith(color: Colors.white),
                                                 ),
                                                 Text(
                                                   _bloc.getChallengeGoalDescription(),
@@ -479,7 +486,7 @@ class _ChallengesPageState extends State<ChallengesPage> with SingleTickerProvid
                                           ],
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 4.0,
                                       ),
                                     ],

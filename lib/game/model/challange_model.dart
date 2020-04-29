@@ -5,25 +5,13 @@ import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/util/utils.dart';
 
 class ChallengeModel {
-  String challengeName;
-  String author;
-  List<ChallengeGoal> challengeGoal;
-  List<EquipmentType> bannedEquipment;
-  List<FactoryEquipmentModel> equipmentPlacement;
-
-  int mapWidth;
-  int mapHeight;
-
-  double cameraPositionX, cameraPositionY;
-  double cameraScale;
-
   ChallengeModel({this.challengeName, this.author, this.challengeGoal, this.bannedEquipment, this.equipmentPlacement});
 
   ChallengeModel.fromJson(Map<String, dynamic> json) {
     challengeName = json['challenge_name'];
     author = json['author'];
     if (json['challenge_goal'] != null) {
-      challengeGoal = new List<ChallengeGoal>();
+      challengeGoal = <ChallengeGoal>[];
       json['challenge_goal'].forEach((dynamic v) {
         challengeGoal.add(new ChallengeGoal.fromJson(v));
       });
@@ -48,8 +36,20 @@ class ChallengeModel {
     }
   }
 
+  String challengeName;
+  String author;
+  List<ChallengeGoal> challengeGoal;
+  List<EquipmentType> bannedEquipment;
+  List<FactoryEquipmentModel> equipmentPlacement;
+
+  int mapWidth;
+  int mapHeight;
+
+  double cameraPositionX, cameraPositionY;
+  double cameraScale;
+
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['challenge_name'] = challengeName;
     data['author'] = author;
     if (challengeGoal != null) {
@@ -67,12 +67,15 @@ class ChallengeModel {
       return '';
     }
 
-    StringBuffer _sb = StringBuffer();
+    final StringBuffer _sb = StringBuffer();
 
     _sb.write('You have to produce ');
-    challengeGoal.forEach((ChallengeGoal goal) {
+
+    void _appendBuilder(ChallengeGoal goal) {
       _sb.write('${goal.perTick} ${factoryMaterialToString(goal.materialType)}');
-    });
+    }
+
+    challengeGoal.forEach(_appendBuilder);
     _sb.write(' per tick');
 
     return _sb.toString();
@@ -83,12 +86,15 @@ class ChallengeModel {
       return '';
     }
 
-    StringBuffer _sb = StringBuffer();
+    final StringBuffer _sb = StringBuffer();
 
     _sb.write('You have to use the space given to you, and build production line that will output ');
-    challengeGoal.forEach((ChallengeGoal goal) {
+
+    void _appendBuilder(ChallengeGoal goal) {
       _sb.write('${goal.perTick} ${factoryMaterialToString(goal.materialType)}');
-    });
+    }
+
+    challengeGoal.forEach(_appendBuilder);
     _sb.write(' per tick.');
 
     return _sb.toString();
@@ -96,9 +102,6 @@ class ChallengeModel {
 }
 
 class ChallengeGoal {
-  FactoryMaterialType materialType;
-  double perTick;
-
   ChallengeGoal({this.materialType, this.perTick});
 
   ChallengeGoal.fromJson(Map<String, dynamic> json) {
@@ -106,8 +109,11 @@ class ChallengeGoal {
     perTick = json['per_tick'];
   }
 
+  FactoryMaterialType materialType;
+  double perTick;
+
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['material_type'] = materialType.index;
     data['per_tick'] = perTick;
     return data;

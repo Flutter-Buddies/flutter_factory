@@ -20,7 +20,7 @@ import 'info_widgets/sorter_options.dart';
 import 'info_widgets/splitter_options.dart';
 
 class SlideGamePanel extends StatefulWidget {
-  SlideGamePanel({Key key}) : super(key: key);
+  const SlideGamePanel({Key key}) : super(key: key);
 
   @override
   _SlideGamePanelState createState() => new _SlideGamePanelState();
@@ -35,7 +35,7 @@ class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    pc = PanelController(vsync: this, duration: Duration(milliseconds: 350));
+    pc = PanelController(vsync: this, duration: const Duration(milliseconds: 350));
   }
 
   @override
@@ -78,14 +78,14 @@ class _SlideGamePanelState extends State<SlideGamePanel> with SingleTickerProvid
 }
 
 class InfoWindow extends StatelessWidget {
-  InfoWindow(this._bloc, {Key key}) : super(key: key);
+  const InfoWindow(this._bloc, {Key key}) : super(key: key);
 
   final GameBloc _bloc;
 
   @override
   Widget build(BuildContext context) {
     if (_bloc.selectedTiles.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     final List<Widget> _options = <Widget>[];
@@ -184,7 +184,8 @@ class InfoWindow extends StatelessWidget {
         _options.add(PortalInfo(
           equipment: _equipment,
           connectingPortal: _bloc.equipment.firstWhere(
-              (FactoryEquipmentModel fem) => fem.coordinates == (_equipment as UndergroundPortal).connectingPortal,
+              (FactoryEquipmentModel fem) =>
+                  _equipment is UndergroundPortal && fem.coordinates == _equipment.connectingPortal,
               orElse: () => null),
         ));
         break;
@@ -206,14 +207,14 @@ class InfoWindow extends StatelessWidget {
 }
 
 class ShowAction extends StatelessWidget {
-  ShowAction({Key key, this.bloc}) : super(key: key);
+  const ShowAction({Key key, this.bloc}) : super(key: key);
 
   final GameBloc bloc;
 
   @override
   Widget build(BuildContext context) {
     if (bloc.selectedTiles.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     final List<FactoryEquipmentModel> _selectedEquipment =
@@ -229,7 +230,7 @@ class ShowAction extends StatelessWidget {
                 _equipment.type == EquipmentType.rotatingFreeRoller));
 
     if (_equipment == null) {
-      return BuildEquipmentHeaderWidget();
+      return const BuildEquipmentHeaderWidget();
     } else {
       final Widget _showRotate = !_isNotRotatable
           ? Container(
@@ -241,9 +242,11 @@ class ShowAction extends StatelessWidget {
                     child: RaisedButton(
                       color: DynamicTheme.of(context).data.neutralActionButtonColor,
                       onPressed: () {
-                        _selectedEquipment.forEach((FactoryEquipmentModel fem) {
+                        void _rotateEquipment(FactoryEquipmentModel fem) {
                           fem.direction = Direction.values[(fem.direction.index + 1) % Direction.values.length];
-                        });
+                        }
+
+                        _selectedEquipment.forEach(_rotateEquipment);
                       },
                       child: Icon(
                         Icons.rotate_right,
@@ -280,9 +283,11 @@ class ShowAction extends StatelessWidget {
                     child: RaisedButton(
                       color: DynamicTheme.of(context).data.neutralActionButtonColor,
                       onPressed: () {
-                        _selectedEquipment.forEach((FactoryEquipmentModel fem) {
+                        void _rotateEquipment(FactoryEquipmentModel fem) {
                           fem.direction = Direction.values[(fem.direction.index - 1) % Direction.values.length];
-                        });
+                        }
+
+                        _selectedEquipment.forEach(_rotateEquipment);
                       },
                       child: Icon(
                         Icons.rotate_left,
@@ -293,7 +298,7 @@ class ShowAction extends StatelessWidget {
                 ],
               ),
             )
-          : SizedBox.shrink();
+          : const SizedBox.shrink();
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -322,7 +327,7 @@ class ShowAction extends StatelessWidget {
                     ),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           _showRotate,
           Container(
             height: MediaQuery.of(context).size.height * 0.2,

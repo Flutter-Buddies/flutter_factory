@@ -8,9 +8,8 @@ class JackHammer extends FactoryMaterialModel{
 
   @override
   void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.5;
+    final Paint _p = Paint();
+    final double _size = size * 0.5;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -59,10 +58,10 @@ class JackHammer extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

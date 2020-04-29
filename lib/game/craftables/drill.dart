@@ -1,16 +1,34 @@
 part of factory_material;
 
-class Drill extends FactoryMaterialModel{
-  Drill.fromOffset(Offset o) : super(o.dx, o.dy, 1500.0, FactoryMaterialType.drill, state: FactoryMaterialState.crafted);
+class Drill extends FactoryMaterialModel {
+  Drill.fromOffset(Offset o)
+      : super(o.dx, o.dy, 1500.0, FactoryMaterialType.drill, state: FactoryMaterialState.crafted);
 
-  Drill.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.drill, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Drill.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.drill,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
 
-    double _size = size * 0.4;
+    final double _size = size * 0.4;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -22,10 +40,15 @@ class Drill extends FactoryMaterialModel{
     final Path _details = Path();
     _details.addArc(Rect.fromPoints(Offset(_size * 0.5, -_size * 0.8), Offset(_size * 0.8, -_size * 0.2)), -pi / 2, pi);
 
-
     canvas.drawPath(_frame, _p..color = Colors.yellow.withOpacity(opacity));
     canvas.drawPath(_details, _p..color = Colors.grey.withOpacity(opacity));
-    canvas.drawLine(Offset(_size * 0.8, -_size * 0.5), Offset(_size, -_size * 0.5), Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 0.2);
+    canvas.drawLine(
+        Offset(_size * 0.8, -_size * 0.5),
+        Offset(_size, -_size * 0.5),
+        Paint()
+          ..color = Colors.black
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.2);
 
     canvas.restore();
   }
@@ -46,10 +69,10 @@ class Drill extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

@@ -1,22 +1,40 @@
 part of factory_material;
 
-class AdvancedEngine extends FactoryMaterialModel{
-  AdvancedEngine.fromOffset(Offset o) : super(o.dx, o.dy, 70000.0, FactoryMaterialType.advancedEngine, state: FactoryMaterialState.crafted);
+class AdvancedEngine extends FactoryMaterialModel {
+  AdvancedEngine.fromOffset(Offset o)
+      : super(o.dx, o.dy, 70000.0, FactoryMaterialType.advancedEngine, state: FactoryMaterialState.crafted);
 
-  AdvancedEngine.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.advancedEngine, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  AdvancedEngine.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.advancedEngine,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
 
-    double _size = size * 0.6;
+    final double _size = size * 0.6;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.rotate(-pi / 2);
 
-    Path _engineDetails = Path();
+    final Path _engineDetails = Path();
 
     _engineDetails.moveTo(_size * 0.4, -_size);
     _engineDetails.lineTo(-_size * 0.4, -_size);
@@ -31,7 +49,7 @@ class AdvancedEngine extends FactoryMaterialModel{
     _engineDetails.moveTo(_size * 0.9, _size * 0.3);
     _engineDetails.lineTo(_size * 0.9, -_size * 0.3);
 
-    Path _engine = Path();
+    final Path _engine = Path();
 
     _engine.addPolygon(<Offset>[
       Offset(-_size * 0.4, -_size * 0.8),
@@ -55,7 +73,6 @@ class AdvancedEngine extends FactoryMaterialModel{
       Offset(_size * 0.4, -_size * 0.4),
       Offset(_size * 0.4, -_size * 0.8),
     ], true);
-
 
     _p.color = Colors.black.withOpacity(opacity);
     _p.strokeWidth = 1.6;
@@ -90,10 +107,10 @@ class AdvancedEngine extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

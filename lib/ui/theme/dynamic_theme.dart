@@ -16,6 +16,8 @@ String getThemeName(ThemeType type) {
     case ThemeType.oledDark:
       return 'OLED Dark';
   }
+
+  return '';
 }
 
 typedef ThemedWidgetBuilder = Widget Function(BuildContext context, GameTheme data);
@@ -33,7 +35,7 @@ class DynamicTheme extends StatefulWidget {
   DynamicThemeState createState() => DynamicThemeState();
 
   static DynamicThemeState of(BuildContext context) {
-    return context.ancestorStateOfType(const TypeMatcher<DynamicThemeState>());
+    return context.findAncestorStateOfType<DynamicThemeState>();
   }
 }
 
@@ -46,7 +48,7 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   ThemeType get brightness => _brightness;
 
-  Box _themeData;
+  Box<dynamic> _themeData;
 
   @override
   void initState() {

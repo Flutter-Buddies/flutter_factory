@@ -1,16 +1,33 @@
 part of factory_material;
 
-class PowerSupply extends FactoryMaterialModel{
-  PowerSupply.fromOffset(Offset o) : super(o.dx, o.dy, 1500.0, FactoryMaterialType.powerSupply, state: FactoryMaterialState.crafted);
+class PowerSupply extends FactoryMaterialModel {
+  PowerSupply.fromOffset(Offset o)
+      : super(o.dx, o.dy, 1500.0, FactoryMaterialType.powerSupply, state: FactoryMaterialState.crafted);
 
-  PowerSupply.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.powerSupply, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  PowerSupply.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.powerSupply,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.5;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.5;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -26,28 +43,14 @@ class PowerSupply extends FactoryMaterialModel{
     _p.style = PaintingStyle.fill;
     canvas.drawPath(_frame, _p);
 
-    canvas.drawRect(Rect.fromCenter(
-      center: Offset(
-        _size * 0.7,
-        _size * 0.6
-      ),
-      width: _size * 0.4,
-      height: _size * 0.1
-    ), _p);
+    canvas.drawRect(
+        Rect.fromCenter(center: Offset(_size * 0.7, _size * 0.6), width: _size * 0.4, height: _size * 0.1), _p);
 
-    canvas.drawRect(Rect.fromCenter(
-      center: Offset(
-        -_size * 0.7,
-        _size * 0.6
-      ),
-      width: _size * 0.4,
-      height: _size * 0.1
-    ), _p);
+    canvas.drawRect(
+        Rect.fromCenter(center: Offset(-_size * 0.7, _size * 0.6), width: _size * 0.4, height: _size * 0.1), _p);
 
     _p.color = Colors.grey.shade600.withOpacity(opacity);
-    canvas.drawCircle(Offset(
-      _size * 0.4, 0.0
-    ), _size * 0.4, _p);
+    canvas.drawCircle(Offset(_size * 0.4, 0.0), _size * 0.4, _p);
 
     final Path _lightning = Path();
 
@@ -56,7 +59,14 @@ class PowerSupply extends FactoryMaterialModel{
     _lightning.lineTo(-_size * 0.4, -_size * 0.1);
     _lightning.lineTo(-_size * 0.5, _size * 0.3);
 
-    canvas.drawPath(_lightning, Paint()..color = Colors.yellow..style = PaintingStyle.stroke..strokeWidth = 0.2..strokeJoin = StrokeJoin.round..strokeCap = StrokeCap.round);
+    canvas.drawPath(
+        _lightning,
+        Paint()
+          ..color = Colors.yellow
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.2
+          ..strokeJoin = StrokeJoin.round
+          ..strokeCap = StrokeCap.round);
 
     canvas.restore();
   }
@@ -77,10 +87,10 @@ class PowerSupply extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

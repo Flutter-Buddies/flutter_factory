@@ -10,7 +10,7 @@ import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 import 'package:flutter_factory/util/utils.dart';
 
 class CrafterOptionsWidget extends StatefulWidget {
-  CrafterOptionsWidget({@required this.crafter, this.progress = 0.0, Key key}) : super(key: key);
+  const CrafterOptionsWidget({@required this.crafter, this.progress = 0.0, Key key}) : super(key: key);
 
   final List<Crafter> crafter;
   final double progress;
@@ -20,14 +20,14 @@ class CrafterOptionsWidget extends StatefulWidget {
 }
 
 class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
-  bool _recepiesOpen = false;
+  bool _recipesOpen = false;
 
   @override
   Widget build(BuildContext context) {
-    Crafter _showFirst = widget.crafter.first;
-    Map<FactoryRecipeMaterialType, int> _craftMaterial =
+    final Crafter _showFirst = widget.crafter.first;
+    final Map<FactoryRecipeMaterialType, int> _craftMaterial =
         FactoryMaterialModel.getRecipeFromType(_showFirst.craftMaterial);
-    GameBloc _bloc = GameProvider.of(context);
+    final GameBloc _bloc = GameProvider.of(context);
 
     return Container(
       child: Column(
@@ -36,7 +36,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
             child: ExpansionPanelList(
               expansionCallback: (int clicked, bool open) {
                 setState(() {
-                  _recepiesOpen = !_recepiesOpen;
+                  _recipesOpen = !_recipesOpen;
                 });
               },
               children: <ExpansionPanel>[
@@ -46,7 +46,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                         return Container(
                           margin: const EdgeInsets.all(12.0),
                           height: 100.0,
-                          child: Center(
+                          child: const Center(
                             child: Text('Nothing'),
                           ),
                         );
@@ -65,10 +65,10 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                 Container(
                                   child: Text(
                                     '${factoryMaterialToString(_showFirst.craftMaterial)}',
-                                    style: Theme.of(context).textTheme.subtitle,
+                                    style: Theme.of(context).textTheme.subtitle2,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12.0,
                                 ),
                                 Row(
@@ -92,7 +92,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                       objectSize: 20.0),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 4.0,
                                               ),
                                               Text(
@@ -133,17 +133,19 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                       children: FactoryMaterialType.values
                           .where((FactoryMaterialType fmt) => !FactoryMaterialModel.isRaw(fmt))
                           .map((FactoryMaterialType fmt) {
-                        Map<FactoryRecipeMaterialType, int> _recepie = FactoryMaterialModel.getRecipeFromType(fmt);
+                        final Map<FactoryRecipeMaterialType, int> _recipe = FactoryMaterialModel.getRecipeFromType(fmt);
 
                         return InkWell(
                           onTap: () {
                             if (_bloc.moneyManager.isRecipeUnlocked(fmt)) {
-                              widget.crafter.forEach((Crafter c) {
+                              void _changeRecipe(Crafter c) {
                                 c.changeRecipe(fmt);
-                              });
+                              }
+
+                              widget.crafter.forEach(_changeRecipe);
 
                               setState(() {
-                                _recepiesOpen = false;
+                                _recipesOpen = false;
                               });
                             } else {
                               if (_bloc.moneyManager.canUnlockRecipe(fmt)) {
@@ -156,7 +158,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                           child: Stack(
                             children: <Widget>[
                               AnimatedContainer(
-                                  duration: Duration(milliseconds: 250),
+                                  duration: const Duration(milliseconds: 250),
                                   padding: const EdgeInsets.all(8.0),
                                   height: 90.0,
                                   foregroundDecoration: BoxDecoration(
@@ -185,15 +187,15 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                   '${factoryMaterialToString(fmt)}',
                                                   style: Theme.of(context)
                                                       .textTheme
-                                                      .subtitle
+                                                      .subtitle2
                                                       .copyWith(color: DynamicTheme.of(context).data.textColor),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 12.0,
                                               ),
                                               Row(
-                                                children: _recepie.keys.map((FactoryRecipeMaterialType fmrt) {
+                                                children: _recipe.keys.map((FactoryRecipeMaterialType fmrt) {
                                                   return Container(
                                                     margin: const EdgeInsets.symmetric(horizontal: 6.0),
                                                     child: Column(
@@ -214,11 +216,11 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               width: 4.0,
                                                             ),
                                                             Text(
-                                                              'x ${_recepie[fmrt]}',
+                                                              'x ${_recipe[fmrt]}',
                                                               style: Theme.of(context).textTheme.caption.copyWith(
                                                                   color: DynamicTheme.of(context).data.textColor),
                                                             )
@@ -272,20 +274,20 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                                 '${factoryMaterialToString(fmt)}',
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .title
+                                                    .headline6
                                                     .copyWith(fontSize: 18.0, fontWeight: FontWeight.w900),
                                               ),
                                               Text(
                                                 '${factoryMaterialToString(fmt)}',
                                                 textAlign: TextAlign.center,
-                                                style: Theme.of(context).textTheme.title.copyWith(
+                                                style: Theme.of(context).textTheme.headline6.copyWith(
                                                     fontSize: 12.0,
                                                     fontStyle: FontStyle.italic,
                                                     fontWeight: FontWeight.w300),
                                               ),
                                               Text(
                                                 '${createDisplay(_bloc.moneyManager.costOfRecipe(fmt))}\$',
-                                                style: Theme.of(context).textTheme.title.copyWith(
+                                                style: Theme.of(context).textTheme.headline6.copyWith(
                                                     fontSize: 20.0,
                                                     fontWeight: FontWeight.w900,
                                                     color: _bloc.moneyManager.canUnlockRecipe(fmt)
@@ -299,12 +301,12 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                     ),
                                   ),
                                 ),
-                                secondChild: SizedBox.shrink(),
+                                secondChild: const SizedBox.shrink(),
                                 alignment: Alignment.center,
                                 crossFadeState: _bloc.moneyManager.isRecipeUnlocked(fmt)
                                     ? CrossFadeState.showSecond
                                     : CrossFadeState.showFirst,
-                                duration: Duration(milliseconds: 250),
+                                duration: const Duration(milliseconds: 250),
                               ),
                             ],
                           ),
@@ -312,11 +314,11 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                       }).toList(),
                     ),
                     canTapOnHeader: true,
-                    isExpanded: _recepiesOpen)
+                    isExpanded: _recipesOpen)
               ],
             ),
           ),
-          SizedBox(height: 28.0),
+          const SizedBox(height: 28.0),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Row(
@@ -330,7 +332,9 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                 DropdownButton<int>(
                   value: _showFirst.tickDuration,
                   onChanged: (int fmt) {
-                    widget.crafter.forEach((Crafter c) => c.tickDuration = fmt);
+                    void _changeTickDuration(Crafter c) => c.tickDuration = fmt;
+
+                    widget.crafter.forEach(_changeTickDuration);
                   },
                   items: List<int>.generate(12, (int i) => i + 1).map((int fmt) {
                     return DropdownMenuItem<int>(
@@ -350,7 +354,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
               ],
             ),
           ),
-          SizedBox(height: 28.0),
+          const SizedBox(height: 28.0),
           Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -362,7 +366,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Craft queue:'),
+                    const Text('Craft queue:'),
                     Text(
                       '${_showFirst.objects.length}',
                       style: Theme.of(context).textTheme.caption.copyWith(
@@ -371,7 +375,7 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                   ],
                 ),
               ),
-              Divider(),
+              const Divider(),
               Column(
                 children: FactoryMaterialType.values.where((FactoryMaterialType type) {
                   return _showFirst.objects.where((FactoryMaterialModel _fm) => _fm.type == type).isNotEmpty;
@@ -459,15 +463,15 @@ class _CrafterOptionsWidgetState extends State<CrafterOptionsWidget> {
                                 );
                               }).toList(),
                             )
-                          : SizedBox.shrink(),
-                      Divider(),
+                          : const SizedBox.shrink(),
+                      const Divider(),
                     ],
                   );
                 }).toList(),
               )
             ],
           ),
-          SizedBox(height: 28.0),
+          const SizedBox(height: 28.0),
         ],
       ),
     );

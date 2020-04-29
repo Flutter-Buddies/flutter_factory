@@ -4,7 +4,7 @@ import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 import 'package:flutter_factory/ui/widgets/info_widgets/object_painter.dart';
 
 class SelectedObjectInfoWidget extends StatelessWidget {
-  SelectedObjectInfoWidget({this.progress = 0.0, @required this.equipment, Key key}) : super(key: key);
+  const SelectedObjectInfoWidget({this.progress = 0.0, @required this.equipment, Key key}) : super(key: key);
 
   final double progress;
   final FactoryEquipmentModel equipment;
@@ -17,8 +17,9 @@ class SelectedObjectInfoWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Flexible(
-            child: Text('${equipmentTypeToString(equipment.type)}',
-              style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0),
+            child: Text(
+              '${equipmentTypeToString(equipment.type)}',
+              style: Theme.of(context).textTheme.subtitle1.copyWith(fontSize: 18.0),
             ),
           ),
           Container(

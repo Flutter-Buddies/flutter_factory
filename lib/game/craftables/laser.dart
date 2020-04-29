@@ -1,16 +1,33 @@
 part of factory_material;
 
-class Laser extends FactoryMaterialModel{
-  Laser.fromOffset(Offset o) : super(o.dx, o.dy, 32000.0, FactoryMaterialType.laser, state: FactoryMaterialState.crafted);
+class Laser extends FactoryMaterialModel {
+  Laser.fromOffset(Offset o)
+      : super(o.dx, o.dy, 32000.0, FactoryMaterialType.laser, state: FactoryMaterialState.crafted);
 
-  Laser.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.laser, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Laser.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.laser,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.8;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.8;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -34,16 +51,11 @@ class Laser extends FactoryMaterialModel{
     _p.style = PaintingStyle.stroke;
     _p.strokeWidth = 0.2;
     _p.shader = LinearGradient(
-      begin: Alignment.centerRight,
-      end: Alignment.centerLeft,
-      stops: [
-        0.6, 1.0
-      ],
-      colors: <Color>[
-        Colors.green,
-        Colors.transparent
-      ]
-    ).createShader(Rect.fromPoints(Offset(-_size * 0.55, 0.0), Offset(-_size, 0.0)));
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            stops: const <double>[0.6, 1.0],
+            colors: <Color>[Colors.green, Colors.transparent])
+        .createShader(Rect.fromPoints(Offset(-_size * 0.55, 0.0), Offset(-_size, 0.0)));
 
     canvas.drawLine(Offset(-_size * 0.55, 0.0), Offset(-_size, 0.0), _p);
 
@@ -66,10 +78,10 @@ class Laser extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

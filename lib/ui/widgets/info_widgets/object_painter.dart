@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/game/model/factory_material_model.dart';
 import 'package:flutter_factory/ui/theme/game_theme.dart';
-import 'package:flutter_factory/ui/theme/themes/light_game_theme.dart';
 
-class ObjectPainter extends CustomPainter{
-  ObjectPainter(this.progress, {@required this.theme, this.objectSize = 48.0, this.scale = 1.0, this.equipment, this.material});
+class ObjectPainter extends CustomPainter {
+  ObjectPainter(this.progress,
+      {@required this.theme, this.objectSize = 48.0, this.scale = 1.0, this.equipment, this.material});
 
   final FactoryMaterialModel material;
   final FactoryEquipmentModel equipment;
@@ -23,12 +23,12 @@ class ObjectPainter extends CustomPainter{
     canvas.translate(size.width / 2, size.height / 2);
     canvas.scale(scale);
 
-    if(material != null){
+    if (material != null) {
       material.size = objectSize;
       material.drawMaterial(Offset.zero, canvas, progress);
     }
 
-    if(equipment != null){
+    if (equipment != null) {
       equipment.drawTrack(theme, Offset.zero, canvas, objectSize, progress);
       equipment.drawMaterial(theme, Offset.zero, canvas, objectSize, progress);
       equipment.drawEquipment(theme, Offset.zero, canvas, objectSize, progress);
@@ -39,6 +39,9 @@ class ObjectPainter extends CustomPainter{
 
   @override
   bool shouldRepaint(ObjectPainter oldDelegate) {
-    return oldDelegate.material != material || oldDelegate.equipment != equipment || oldDelegate.progress != progress || oldDelegate.objectSize != objectSize;
+    return oldDelegate.material != material ||
+        oldDelegate.equipment != equipment ||
+        oldDelegate.progress != progress ||
+        oldDelegate.objectSize != objectSize;
   }
 }

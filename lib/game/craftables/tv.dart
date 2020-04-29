@@ -1,16 +1,32 @@
 part of factory_material;
 
-class Tv extends FactoryMaterialModel{
+class Tv extends FactoryMaterialModel {
   Tv.fromOffset(Offset o) : super(o.dx, o.dy, 7100.0, FactoryMaterialType.tv, state: FactoryMaterialState.crafted);
 
-  Tv.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.tv, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  Tv.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.tv,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
-
-    double _size = size * 0.8;
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
+    final double _size = size * 0.8;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -24,12 +40,8 @@ class Tv extends FactoryMaterialModel{
     final Path _screen = Path();
 
     _screen.addRRect(RRect.fromRectAndRadius(
-      Rect.fromCenter(
-        center: Offset(0.0, -_size * 0.1),
-        height: _size * 1.2,
-        width: _size * 1.6
-      ), Radius.circular(_size * 0.1))
-    );
+        Rect.fromCenter(center: Offset(0.0, -_size * 0.1), height: _size * 1.2, width: _size * 1.6),
+        Radius.circular(_size * 0.1)));
 
     _p.color = Colors.brown.shade800.withOpacity(opacity);
     _p.strokeWidth = 0.8;
@@ -59,10 +71,10 @@ class Tv extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

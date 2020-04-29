@@ -4,7 +4,7 @@ import 'package:flutter_factory/game/model/factory_equipment_model.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
 
 class SplitterOptionsWidget extends StatefulWidget {
-  SplitterOptionsWidget({@required this.splitter, Key key}) : super(key: key);
+  const SplitterOptionsWidget({@required this.splitter, Key key}) : super(key: key);
 
   final Splitter splitter;
 
@@ -15,21 +15,24 @@ class SplitterOptionsWidget extends StatefulWidget {
 class _SplitterOptionsWidgetState extends State<SplitterOptionsWidget> {
   bool _addMode = true;
 
-  Widget _buildButton(Direction d){
+  Widget _buildButton(Direction d) {
     return OutlineButton(
       padding: const EdgeInsets.all(8.0),
-      onPressed: (){
-        if(_addMode){
+      onPressed: () {
+        if (_addMode) {
           widget.splitter.directions.add(d);
-        }else{
-          if(widget.splitter.directions.length > 1){
+        } else {
+          if (widget.splitter.directions.length > 1) {
             widget.splitter.directions.remove(d);
           }
         }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Text('${directionToString(d)}\n[${widget.splitter.directions.where((Direction _d) => _d == d).length}]', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+        child: Text(
+          '${directionToString(d)}\n[${widget.splitter.directions.where((Direction _d) => _d == d).length}]',
+          style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),
+        ),
       ),
     );
   }
@@ -46,30 +49,44 @@ class _SplitterOptionsWidgetState extends State<SplitterOptionsWidget> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               _buildButton(Direction.south),
-              SizedBox(height: 24.0,),
+              const SizedBox(
+                height: 24.0,
+              ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   _buildButton(Direction.west),
-                  SizedBox(width: 12.0,),
+                  const SizedBox(
+                    width: 12.0,
+                  ),
                   AnimatedContainer(
-                    duration: Duration(milliseconds: 150),
-                    color: _addMode ? DynamicTheme.of(context).data.positiveActionButtonColor : DynamicTheme.of(context).data.negativeActionButtonColor,
+                    duration: const Duration(milliseconds: 150),
+                    color: _addMode
+                        ? DynamicTheme.of(context).data.positiveActionButtonColor
+                        : DynamicTheme.of(context).data.negativeActionButtonColor,
                     child: FlatButton(
                       padding: EdgeInsets.zero,
-                      onPressed: (){
+                      onPressed: () {
                         setState(() {
                           _addMode = !_addMode;
                         });
                       },
-                      child: Text(_addMode ? '+' : '-', style: Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),),
+                      child: Text(
+                        _addMode ? '+' : '-',
+                        style:
+                            Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.w900, fontSize: 18.0),
+                      ),
                     ),
                   ),
-                  SizedBox(width: 12.0,),
+                  const SizedBox(
+                    width: 12.0,
+                  ),
                   _buildButton(Direction.east),
                 ],
               ),
-              SizedBox(height: 24.0,),
+              const SizedBox(
+                height: 24.0,
+              ),
               _buildButton(Direction.north),
             ],
           ),

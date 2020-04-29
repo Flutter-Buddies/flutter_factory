@@ -1,16 +1,34 @@
 part of factory_material;
 
-class AiRobotBody extends FactoryMaterialModel{
-  AiRobotBody.fromOffset(Offset o) : super(o.dx, o.dy, 2800000.0, FactoryMaterialType.robotBody, state: FactoryMaterialState.crafted);
+class AiRobotBody extends FactoryMaterialModel {
+  AiRobotBody.fromOffset(Offset o)
+      : super(o.dx, o.dy, 2800000.0, FactoryMaterialType.robotBody, state: FactoryMaterialState.crafted);
 
-  AiRobotBody.custom({double x, double y, double value, double size = 8.0, FactoryMaterialState state = FactoryMaterialState.crafted, double rotation, double offsetX, double offsetY}) :
-      super.custom(x: x, y: y, value: value, type: FactoryMaterialType.robotBody, size: size, state: state, rotation: rotation, offsetX: offsetX, offsetY: offsetY);
+  AiRobotBody.custom(
+      {double x,
+      double y,
+      double value,
+      double size = 8.0,
+      FactoryMaterialState state = FactoryMaterialState.crafted,
+      double rotation,
+      double offsetX,
+      double offsetY})
+      : super.custom(
+            x: x,
+            y: y,
+            value: value,
+            type: FactoryMaterialType.robotBody,
+            size: size,
+            state: state,
+            rotation: rotation,
+            offsetX: offsetX,
+            offsetY: offsetY);
 
   @override
-  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}){
-    Paint _p = Paint();
+  void drawMaterial(Offset offset, Canvas canvas, double progress, {double opacity = 1.0}) {
+    final Paint _p = Paint();
 
-    double _size = size * 0.6;
+    final double _size = size * 0.6;
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
@@ -64,10 +82,10 @@ class AiRobotBody extends FactoryMaterialModel{
       y: y ?? this.y,
       size: size ?? this.size,
       value: value ?? this.value,
-      state: this.state,
-      rotation: this.rotation,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
+      state: state,
+      rotation: rotation,
+      offsetX: offsetX,
+      offsetY: offsetY,
     );
   }
 }

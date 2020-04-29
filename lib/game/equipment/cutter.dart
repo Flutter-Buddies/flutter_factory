@@ -1,7 +1,8 @@
 part of factory_equipment;
 
-class Cutter extends FactoryEquipmentModel{
-  Cutter(Coordinates coordinates, Direction direction, {this.cutCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.cutter, tickDuration: tickDuration);
+class Cutter extends FactoryEquipmentModel {
+  Cutter(Coordinates coordinates, Direction direction, {this.cutCapacity = 1, int tickDuration = 1})
+      : super(coordinates, direction, EquipmentType.cutter, tickDuration: tickDuration);
 
   final int cutCapacity;
 
@@ -9,26 +10,23 @@ class Cutter extends FactoryEquipmentModel{
 
   @override
   Cutter copyWith({Coordinates coordinates, Direction direction, int cutCapacity}) {
-    return Cutter(
-      coordinates ?? this.coordinates,
-      direction ?? this.direction,
-      cutCapacity: cutCapacity ?? this.cutCapacity
-    );
+    return Cutter(coordinates ?? this.coordinates, direction ?? this.direction,
+        cutCapacity: cutCapacity ?? this.cutCapacity);
   }
 
   @override
   List<FactoryMaterialModel> tick() {
-    if(tickDuration > 1 && counter % tickDuration != 1 && _outputMaterial.isEmpty){
+    if (tickDuration > 1 && counter % tickDuration != 1 && _outputMaterial.isEmpty) {
       print('Not ticking!');
       return <FactoryMaterialModel>[];
     }
 
-    if(tickDuration == 1){
+    if (tickDuration == 1) {
       final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(_outputMaterial);
       _outputMaterial.clear();
       _processMaterial();
 
-      _fm.map((FactoryMaterialModel fm){
+      _fm.map((FactoryMaterialModel fm) {
         fm.direction = direction;
         fm.moveMaterial(type);
       }).toList();
@@ -36,7 +34,7 @@ class Cutter extends FactoryEquipmentModel{
       return _fm;
     }
 
-    if(_outputMaterial.isEmpty){
+    if (_outputMaterial.isEmpty) {
       _processMaterial();
       return <FactoryMaterialModel>[];
     }
@@ -44,7 +42,7 @@ class Cutter extends FactoryEquipmentModel{
     final List<FactoryMaterialModel> _material = <FactoryMaterialModel>[]..addAll(_outputMaterial);
     _outputMaterial.clear();
 
-    _material.map((FactoryMaterialModel fm){
+    _material.map((FactoryMaterialModel fm) {
       fm.direction = direction;
       fm.moveMaterial(type);
     }).toList();
@@ -52,42 +50,80 @@ class Cutter extends FactoryEquipmentModel{
     return _material;
   }
 
-  void _processMaterial(){
+  void _processMaterial() {
     _outputMaterial = objects.getRange(0, min(cutCapacity, objects.length)).toList();
     objects.removeRange(0, min(cutCapacity, objects.length));
-    _outputMaterial.forEach((FactoryMaterialModel m)=> m.changeState(FactoryMaterialState.gear));
+
+    void _changeState(FactoryMaterialModel fmm) {
+      fmm.changeState(FactoryMaterialState.gear);
+    }
+
+    _outputMaterial.forEach(_changeState);
   }
 
   @override
   void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
-    double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
+    final double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
-    if(tickDuration == 1){
+    if (tickDuration == 1) {
       _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
     }
 
-    if(objects.isEmpty && _outputMaterial.isEmpty){
+    if (objects.isEmpty && _outputMaterial.isEmpty) {
       _machineProgress = 0.0;
     }
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = theme.machinePrimaryLightColor);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)),
+            Radius.circular(size / 2.4 / 2)),
+        Paint()..color = theme.machinePrimaryLightColor);
 
     final double _change = Curves.easeInOut.transform(_machineProgress);
 
-    if(direction == Direction.south || direction == Direction.north){
-      canvas.drawLine(Offset(size / 2.4, size / 2.4), Offset(size / 2.4, -size / 2.4), Paint()..color = theme.machinePrimaryDarkColor..strokeWidth = 1.6);
-      canvas.drawLine(Offset(-size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4), Paint()..color = theme.machinePrimaryDarkColor..strokeWidth = 1.6);
+    if (direction == Direction.south || direction == Direction.north) {
+      canvas.drawLine(
+          Offset(size / 2.4, size / 2.4),
+          Offset(size / 2.4, -size / 2.4),
+          Paint()
+            ..color = theme.machinePrimaryDarkColor
+            ..strokeWidth = 1.6);
+      canvas.drawLine(
+          Offset(-size / 2.4, size / 2.4),
+          Offset(-size / 2.4, -size / 2.4),
+          Paint()
+            ..color = theme.machinePrimaryDarkColor
+            ..strokeWidth = 1.6);
 
-      canvas.drawLine(Offset(-size / 2.4, (size / 1.2) * _change - (size / 2.4)), Offset(size / 2.4, (size / 1.2) * _change - (size / 2.4)), Paint()..color = theme.machineInActiveColor..strokeWidth = 0.8);
-    }else{
-      canvas.drawLine(Offset(size / 2.4, -size / 2.4), Offset(-size / 2.4, -size / 2.4), Paint()..color = theme.machinePrimaryDarkColor..strokeWidth = 1.6);
-      canvas.drawLine(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, size / 2.4), Paint()..color = theme.machinePrimaryDarkColor..strokeWidth = 1.6);
+      canvas.drawLine(
+          Offset(-size / 2.4, (size / 1.2) * _change - (size / 2.4)),
+          Offset(size / 2.4, (size / 1.2) * _change - (size / 2.4)),
+          Paint()
+            ..color = theme.machineInActiveColor
+            ..strokeWidth = 0.8);
+    } else {
+      canvas.drawLine(
+          Offset(size / 2.4, -size / 2.4),
+          Offset(-size / 2.4, -size / 2.4),
+          Paint()
+            ..color = theme.machinePrimaryDarkColor
+            ..strokeWidth = 1.6);
+      canvas.drawLine(
+          Offset(size / 2.4, size / 2.4),
+          Offset(-size / 2.4, size / 2.4),
+          Paint()
+            ..color = theme.machinePrimaryDarkColor
+            ..strokeWidth = 1.6);
 
-      canvas.drawLine(Offset((size / 1.2) * _change - (size / 2.4), -size / 2.4), Offset((size / 1.2) * _change - (size / 2.4), size / 2.4), Paint()..color = theme.machineInActiveColor..strokeWidth = 0.8);
+      canvas.drawLine(
+          Offset((size / 1.2) * _change - (size / 2.4), -size / 2.4),
+          Offset((size / 1.2) * _change - (size / 2.4), size / 2.4),
+          Paint()
+            ..color = theme.machineInActiveColor
+            ..strokeWidth = 0.8);
     }
 
     canvas.restore();
@@ -102,15 +138,15 @@ class Cutter extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(_outputMaterial.isEmpty){
+    if (_outputMaterial.isEmpty) {
       return;
     }
 
-    switch(direction){
+    switch (direction) {
       case Direction.east:
         _moveX = progress * size;
         break;
@@ -125,16 +161,17 @@ class Cutter extends FactoryEquipmentModel{
         break;
     }
 
-    _outputMaterial.forEach((FactoryMaterialModel fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
-  }
+    void _drawMaterial(FactoryMaterialModel fmm) {
+      fmm.drawMaterial(offset + Offset(_moveX + fmm.offsetX, _moveY + fmm.offsetY), canvas, progress);
+    }
 
+    _outputMaterial.forEach(_drawMaterial);
+  }
 
   @override
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
-    _map.addAll(<String, dynamic>{
-      'cut_capacity': cutCapacity
-    });
+    _map.addAll(<String, dynamic>{'cut_capacity': cutCapacity});
     return _map;
   }
 }

@@ -31,10 +31,10 @@ class SandboxBloc extends GameBloc {
     await hiveBox.compact();
   }
 
+  final int mapSize = 500;
+
   @override
   Future<void> loadFactoryFloor() async {
-    final int mapSize = 500;
-
     mapHeight = mapSize;
     mapWidth = mapSize;
 
@@ -72,7 +72,7 @@ class SandboxBloc extends GameBloc {
 
     final List<UndergroundPortal> _portals = getAll<UndergroundPortal>();
 
-    _portals.forEach((UndergroundPortal up) {
+    void _findPortals(UndergroundPortal up) {
       final UndergroundPortal _connectingPortal =
           _portals.firstWhere((UndergroundPortal _up) => _up.coordinates == up.connectingPortal, orElse: () => null);
 
@@ -85,7 +85,9 @@ class SandboxBloc extends GameBloc {
         _connectingPortal.lineColor = _lineColor;
         up.lineColor = _lineColor;
       }
-    });
+    }
+
+    _portals.forEach(_findPortals);
 
     print(_result);
   }
