@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master
+    tags:
+      - all
+      - web
 jobs:
   build:
     name: Build Web
