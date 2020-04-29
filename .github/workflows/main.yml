@@ -1,8 +1,6 @@
 name: Flutter Web
 on:
   push:
-    branches:
-      - master
     tags:
       - all
       - web
