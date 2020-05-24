@@ -39,9 +39,7 @@ class ThemeProvider extends StatelessWidget {
     @required this.data,
     this.isMaterialAppThemeProvider = false,
     @required this.child,
-  }) : assert(child != null),
-      assert(data != null),
-      super(key: key);
+  }) : super(key: key);
 
   /// Specifies the color and typography values for descendant widgets.
   final GameTheme data;
@@ -121,11 +119,11 @@ class ThemeProvider extends StatelessWidget {
   ///   );
   /// }
   /// ```
-  static GameTheme of(BuildContext context, { bool shadowThemeProviderOnly = false }) {
-    final _InheritedGameThemeProvider inheritedThemeProvider = context.inheritFromWidgetOfExactType(_InheritedGameThemeProvider);
+  static GameTheme of(BuildContext context, {bool shadowThemeProviderOnly = false}) {
+    final _InheritedGameThemeProvider inheritedThemeProvider =
+        context.inheritFromWidgetOfExactType(_InheritedGameThemeProvider);
     if (shadowThemeProviderOnly) {
-      if (inheritedThemeProvider == null || inheritedThemeProvider.theme.isMaterialAppThemeProvider)
-        return null;
+      if (inheritedThemeProvider == null || inheritedThemeProvider.theme.isMaterialAppThemeProvider) return null;
       return inheritedThemeProvider.theme.data;
     }
 
@@ -135,10 +133,7 @@ class ThemeProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _InheritedGameThemeProvider(
-      theme: this,
-      child: child
-    );
+    return _InheritedGameThemeProvider(theme: this, child: child);
   }
 
   @override
@@ -153,14 +148,14 @@ class _InheritedGameThemeProvider extends InheritedTheme {
     Key key,
     @required this.theme,
     @required Widget child,
-  }) : assert(theme != null),
-      super(key: key, child: child);
+  }) : super(key: key, child: child);
 
   final ThemeProvider theme;
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final _InheritedGameThemeProvider ancestorThemeProvider = context.ancestorWidgetOfExactType(_InheritedGameThemeProvider);
+    final _InheritedGameThemeProvider ancestorThemeProvider =
+        context.ancestorWidgetOfExactType(_InheritedGameThemeProvider);
     return identical(this, ancestorThemeProvider) ? child : ThemeProvider(data: theme.data, child: child);
   }
 
@@ -180,7 +175,7 @@ class GameThemeTween extends Tween<GameTheme> {
   /// The [begin] and [end] properties must be non-null before the tween is
   /// first used, but the arguments can be null if the values are going to be
   /// filled in later.
-  GameThemeTween({ GameTheme begin, GameTheme end }) : super(begin: begin, end: end);
+  GameThemeTween({GameTheme begin, GameTheme end}) : super(begin: begin, end: end);
 
   @override
   GameTheme lerp(double t) => GameTheme.lerp(begin, end, t);
@@ -212,9 +207,7 @@ class AnimatedThemeProvider extends ImplicitlyAnimatedWidget {
     Curve curve = Curves.linear,
     Duration duration = kThemeProviderAnimationDuration,
     @required this.child,
-  }) : assert(child != null),
-      assert(data != null),
-      super(key: key, curve: curve, duration: duration);
+  }) : super(key: key, curve: curve, duration: duration);
 
   /// Specifies the color and typography values for descendant widgets.
   final GameTheme data;
@@ -238,7 +231,6 @@ class _AnimatedThemeProviderState extends AnimatedWidgetBaseState<AnimatedThemeP
   void forEachTween(TweenVisitor<dynamic> visitor) {
     // TODO(ianh): Use constructor tear-offs when it becomes possible
     _data = visitor(_data, widget.data, (dynamic value) => GameThemeTween(begin: value));
-    assert(_data != null);
   }
 
   @override

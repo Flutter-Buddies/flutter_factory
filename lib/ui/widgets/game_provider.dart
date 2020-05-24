@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_factory/game_bloc.dart';
 
 class GameProvider extends InheritedWidget {
-  const GameProvider({Key key, @required Widget child, this.bloc})  : assert(child != null), super(key: key, child: child);
+  const GameProvider({Key key, @required Widget child, this.bloc}) : super(key: key, child: child);
 
   final GameBloc bloc;
 
