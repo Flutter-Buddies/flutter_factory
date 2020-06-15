@@ -16,6 +16,8 @@ String getThemeName(ThemeType type) {
     case ThemeType.oledDark:
       return 'OLED Dark';
   }
+
+  return '';
 }
 
 typedef ThemedWidgetBuilder = Widget Function(BuildContext context, GameTheme data);
