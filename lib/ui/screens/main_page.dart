@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_factory/game_bloc.dart';
+import 'package:flutter_factory/ui/screens/floors_screen.dart';
+import 'package:flutter_factory/ui/screens/settings_screen.dart';
 import 'package:flutter_factory/ui/theme/dynamic_theme.dart';
-import 'package:flutter_factory/ui/widgets/floors_screen.dart';
 import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
-import 'package:flutter_factory/ui/widgets/settings_screen.dart';
 import 'package:flutter_factory/ui/widgets/slide_game_panel.dart';
 import 'package:flutter_factory/util/utils.dart';
 import 'package:provider/provider.dart';
