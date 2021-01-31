@@ -66,6 +66,16 @@ class Dispenser extends FactoryEquipmentModel {
   }
 
   @override
+  void drawTrack(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+
+    drawSplitter(theme, direction, canvas, size, _materials.isNotEmpty ? progress : 0.0);
+
+    canvas.restore();
+  }
+
+  @override
   void drawEquipment(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);

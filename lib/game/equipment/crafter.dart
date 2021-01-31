@@ -30,7 +30,6 @@ class Crafter extends FactoryEquipmentModel{
   @override
   List<FactoryMaterialModel> tick() {
     if(tickDuration > 1 && counter % tickDuration != 1 && _crafted == null){
-      print('Not ticking!');
       return <FactoryMaterialModel>[];
     }
 

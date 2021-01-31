@@ -1,7 +1,8 @@
 part of factory_equipment;
 
-class WireBender extends FactoryEquipmentModel{
-  WireBender(Coordinates coordinates, Direction direction, {this.wireCapacity = 1, int tickDuration = 1}) : super(coordinates, direction, EquipmentType.wire_bender, tickDuration: tickDuration);
+class WireBender extends FactoryEquipmentModel {
+  WireBender(Coordinates coordinates, Direction direction, {this.wireCapacity = 1, int tickDuration = 1})
+      : super(coordinates, direction, EquipmentType.wire_bender, tickDuration: tickDuration);
 
   final int wireCapacity;
 
@@ -9,26 +10,22 @@ class WireBender extends FactoryEquipmentModel{
 
   @override
   WireBender copyWith({Coordinates coordinates, Direction direction, int wireCapacity}) {
-    return WireBender(
-      coordinates ?? this.coordinates,
-      direction ?? this.direction,
-      wireCapacity: wireCapacity ?? this.wireCapacity
-    );
+    return WireBender(coordinates ?? this.coordinates, direction ?? this.direction,
+        wireCapacity: wireCapacity ?? this.wireCapacity);
   }
 
   @override
   List<FactoryMaterialModel> tick() {
-    if(tickDuration > 1 && counter % tickDuration != 1 && _outputMaterial.isEmpty){
-      print('Not ticking!');
+    if (tickDuration > 1 && counter % tickDuration != 1 && _outputMaterial.isEmpty) {
       return <FactoryMaterialModel>[];
     }
 
-    if(tickDuration == 1){
+    if (tickDuration == 1) {
       final List<FactoryMaterialModel> _fm = <FactoryMaterialModel>[]..addAll(_outputMaterial);
       _outputMaterial.clear();
       _processMaterial();
 
-      _fm.map((FactoryMaterialModel fm){
+      _fm.map((FactoryMaterialModel fm) {
         fm.direction = direction;
         fm.moveMaterial(type);
       }).toList();
@@ -36,7 +33,7 @@ class WireBender extends FactoryEquipmentModel{
       return _fm;
     }
 
-    if(_outputMaterial.isEmpty){
+    if (_outputMaterial.isEmpty) {
       _processMaterial();
       return <FactoryMaterialModel>[];
     }
@@ -44,7 +41,7 @@ class WireBender extends FactoryEquipmentModel{
     final List<FactoryMaterialModel> _material = <FactoryMaterialModel>[]..addAll(_outputMaterial);
     _outputMaterial.clear();
 
-    _material.map((FactoryMaterialModel fm){
+    _material.map((FactoryMaterialModel fm) {
       fm.direction = direction;
       fm.moveMaterial(type);
     }).toList();
@@ -52,10 +49,10 @@ class WireBender extends FactoryEquipmentModel{
     return _material;
   }
 
-  void _processMaterial(){
+  void _processMaterial() {
     _outputMaterial = objects.getRange(0, min(wireCapacity, objects.length)).toList();
     objects.removeRange(0, min(wireCapacity, objects.length));
-    _outputMaterial.forEach((FactoryMaterialModel m)=> m.changeState(FactoryMaterialState.spring));
+    _outputMaterial.forEach((FactoryMaterialModel m) => m.changeState(FactoryMaterialState.spring));
   }
 
   @override
@@ -63,18 +60,21 @@ class WireBender extends FactoryEquipmentModel{
     double _myProgress = ((counter % tickDuration) / tickDuration) + (progress / tickDuration);
     double _machineProgress = (counter % tickDuration) >= (tickDuration / 2) ? _myProgress : (1 - _myProgress);
 
-    if(tickDuration == 1){
+    if (tickDuration == 1) {
       _machineProgress = (_myProgress > 0.5) ? ((_myProgress * 2) - 1) : (1 - (_myProgress * 2));
     }
 
-    if(objects.isEmpty && _outputMaterial.isEmpty){
+    if (objects.isEmpty && _outputMaterial.isEmpty) {
       _machineProgress = 0.0;
     }
 
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)), Radius.circular(size / 2.4 / 2)), Paint()..color = theme.machineAccentColor);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromPoints(Offset(size / 2.4, size / 2.4), Offset(-size / 2.4, -size / 2.4)),
+            Radius.circular(size / 2.4 / 2)),
+        Paint()..color = theme.machineAccentColor);
 
     final double _change = Curves.elasticInOut.transform(_machineProgress) * 6.28;
     final double _size = size / 4.2;
@@ -105,15 +105,15 @@ class WireBender extends FactoryEquipmentModel{
   }
 
   @override
-  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress){
+  void drawMaterial(GameTheme theme, Offset offset, Canvas canvas, double size, double progress) {
     double _moveX = 0.0;
     double _moveY = 0.0;
 
-    if(_outputMaterial.isEmpty){
+    if (_outputMaterial.isEmpty) {
       return;
     }
 
-    switch(direction){
+    switch (direction) {
       case Direction.east:
         _moveX = progress * size;
         break;
@@ -128,16 +128,14 @@ class WireBender extends FactoryEquipmentModel{
         break;
     }
 
-    _outputMaterial.forEach((FactoryMaterialModel fm) => fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
+    _outputMaterial.forEach((FactoryMaterialModel fm) =>
+        fm.drawMaterial(offset + Offset(_moveX + fm.offsetX, _moveY + fm.offsetY), canvas, progress));
   }
-
 
   @override
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> _map = super.toMap();
-    _map.addAll(<String, dynamic>{
-      'wire_capacity': wireCapacity
-    });
+    _map.addAll(<String, dynamic>{'wire_capacity': wireCapacity});
     return _map;
   }
 }

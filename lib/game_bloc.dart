@@ -565,15 +565,22 @@ class GameBloc {
       moneyManager.buyEquipment(e.type, bulkBuy: selectedTiles.length);
     }
 
+    /// TODO: Save and load current upgrades (tick duration/cost/dispenseAmount)
     switch (buildSelectedEquipmentType) {
       case EquipmentType.dispenser:
-        _addEquipment(Dispenser(Coordinates(0, 0), buildSelectedEquipmentDirection, FactoryMaterialType.iron));
+        _addEquipment(Dispenser(
+          Coordinates(0, 0),
+          buildSelectedEquipmentDirection,
+          FactoryMaterialType.iron,
+          dispenseAmount: 1,
+          dispenseTickDuration: 3,
+        ));
         break;
       case EquipmentType.roller:
         _addEquipment(Roller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
       case EquipmentType.crafter:
-        _addEquipment(Crafter(Coordinates(0, 0), buildSelectedEquipmentDirection, null));
+        _addEquipment(Crafter(Coordinates(0, 0), buildSelectedEquipmentDirection, null, craftingTickDuration: 3));
         break;
       case EquipmentType.splitter:
         _addEquipment(
@@ -587,16 +594,16 @@ class GameBloc {
         _addEquipment(Seller(Coordinates(0, 0), buildSelectedEquipmentDirection));
         break;
       case EquipmentType.hydraulic_press:
-        _addEquipment(HydraulicPress(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        _addEquipment(HydraulicPress(Coordinates(0, 0), buildSelectedEquipmentDirection, tickDuration: 3));
         break;
       case EquipmentType.wire_bender:
-        _addEquipment(WireBender(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        _addEquipment(WireBender(Coordinates(0, 0), buildSelectedEquipmentDirection, tickDuration: 3));
         break;
       case EquipmentType.cutter:
-        _addEquipment(Cutter(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        _addEquipment(Cutter(Coordinates(0, 0), buildSelectedEquipmentDirection, tickDuration: 3));
         break;
       case EquipmentType.melter:
-        _addEquipment(Melter(Coordinates(0, 0), buildSelectedEquipmentDirection));
+        _addEquipment(Melter(Coordinates(0, 0), buildSelectedEquipmentDirection, tickDuration: 3));
         break;
       case EquipmentType.freeRoller:
         _addEquipment(FreeRoller(Coordinates(0, 0), buildSelectedEquipmentDirection));

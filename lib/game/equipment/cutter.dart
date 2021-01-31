@@ -19,7 +19,6 @@ class Cutter extends FactoryEquipmentModel{
   @override
   List<FactoryMaterialModel> tick() {
     if(tickDuration > 1 && counter % tickDuration != 1 && _outputMaterial.isEmpty){
-      print('Not ticking!');
       return <FactoryMaterialModel>[];
     }
 
