@@ -33,7 +33,7 @@ class DynamicTheme extends StatefulWidget {
   DynamicThemeState createState() => DynamicThemeState();
 
   static DynamicThemeState of(BuildContext context) {
-    return context.ancestorStateOfType(const TypeMatcher<DynamicThemeState>());
+    return context.findAncestorStateOfType<DynamicThemeState>();
   }
 }
 

@@ -20,7 +20,6 @@ import 'package:flutter_factory/ui/widgets/game_provider.dart';
 import 'package:flutter_factory/ui/widgets/game_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   TargetPlatform targetPlatform;
@@ -206,34 +205,8 @@ class HomeButtons extends StatelessWidget {
             },
           ),
           SizedBox(height: 24.0),
-          RaisedButton(
-            child: Container(
-              height: 20.0,
-              margin: const EdgeInsets.all(24.0),
-              child: Center(
-                child: Text(
-                  'Discord',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      .copyWith(color: DynamicTheme.of(context).data.positiveActionIconColor),
-                ),
-              ),
-            ),
-            color: Colors.deepPurple,
-            onPressed: _launchURL,
-          ),
         ],
       ),
     );
-  }
-
-  void _launchURL() async {
-    const url = 'https://discordapp.com/invite/hBNwHvb';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }

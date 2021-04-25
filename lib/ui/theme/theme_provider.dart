@@ -121,7 +121,7 @@ class ThemeProvider extends StatelessWidget {
   /// ```
   static GameTheme of(BuildContext context, {bool shadowThemeProviderOnly = false}) {
     final _InheritedGameThemeProvider inheritedThemeProvider =
-        context.inheritFromWidgetOfExactType(_InheritedGameThemeProvider);
+        context.dependOnInheritedWidgetOfExactType<_InheritedGameThemeProvider>();
     if (shadowThemeProviderOnly) {
       if (inheritedThemeProvider == null || inheritedThemeProvider.theme.isMaterialAppThemeProvider) return null;
       return inheritedThemeProvider.theme.data;
@@ -155,7 +155,7 @@ class _InheritedGameThemeProvider extends InheritedTheme {
   @override
   Widget wrap(BuildContext context, Widget child) {
     final _InheritedGameThemeProvider ancestorThemeProvider =
-        context.ancestorWidgetOfExactType(_InheritedGameThemeProvider);
+        context.findAncestorWidgetOfExactType<_InheritedGameThemeProvider>();
     return identical(this, ancestorThemeProvider) ? child : ThemeProvider(data: theme.data, child: child);
   }
 
