@@ -21,7 +21,7 @@ jobs:
           git config --global user.email luka.knezic@gmail.com
           git config --global user.name knezzz
           git status
-          git remote add origin https://${{secrets.commit_secret}}@github.com/knezzz/flutter_factory.git
+          git remote add origin https://${{secrets.commit_secret}}@github.com/Flutter-Buddies/flutter_factory.git
           git checkout -b gh-pages
           git add --all
           git commit -m "update"
